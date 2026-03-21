@@ -8,7 +8,3 @@
 | # | Critique | Severity | Status | Response |
 |---|----------|----------|--------|----------|
 
-## Model Paper Comparison
-
-| # | Quality dimension | Model paper | Our draft | Status | Gap |
-|---|-------------------|-------------|-----------|--------|-----|

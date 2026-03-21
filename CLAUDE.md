@@ -1,4 +1,7 @@
-# IntelligencePriceIndex — Agent Instructions
+# IntelligencePriceIndex — Agent Philosophy & Instructions
+
+For project setup and directory structure, see `setup.md`.
+For human-facing instructions, see `README.md`.
 
 ## Core Philosophy
 
@@ -40,16 +43,7 @@ When a plan is complete, move it from `plans/active/` to `plans/completed/`. Thi
 
 Track known technical debt in `plans/tech-debt-tracker.md` — a living document of shortcuts taken, things deferred, and cleanup needed. Each entry should note what, why it was deferred, and rough priority.
 
-### Structure
-
-```
-plans/
-    active/              execution plans currently in progress
-    completed/           finished plans (moved here when done)
-    tech-debt-tracker.md known shortcuts, deferred work, cleanup needed
-```
-
-### Plan file format
+#### Plan file format
 
 ```markdown
 # Plan: [title]
@@ -77,30 +71,15 @@ Agents should read `plans/active/` at session start to understand ongoing work w
 
 ### 5. Paper Test Infrastructure
 
-Every claim in the paper must survive scrutiny before submission. Tests are modular, mapped 1:1 to draft sections, and driven by two complementary lenses:
+Every claim in the paper must survive scrutiny before submission. Tests are modular and organized in three layers:
 
-**Lens A — Reviewer Simulation.** For each section, anticipate how a critical reviewer would attack the experiments, claims, methodology, and framing. Each anticipated critique becomes a test case: either the draft already addresses it (PASS), needs revision (FAIL), or requires additional experiments (BLOCKED). This is the primary defense against desk-reject and major-revision feedback.
+**Layer 1 — Master Tests (`tests/master.test.md`).** Cross-cutting quality criteria that apply to every section: clarity, logical flow, claim-evidence alignment, notation consistency, etc. These are checked against the whole draft.
 
-**Lens B — Model Paper Comparison.** Identify a model paper (an accepted, high-quality paper in the same domain or venue). Use it as a structural and rigor benchmark — not a text source. For each section, test whether our draft meets the standard the model paper sets: depth of related work, methodological transparency, statistical rigor, limitation honesty, etc.
+**Layer 2 — Section Tests (`tests/<section>.test.md`).** Reviewer simulation for each individual section. Anticipate how a critical reviewer would attack the experiments, claims, methodology, and framing specific to that section. Each anticipated critique becomes a test case: PASS, FAIL, or BLOCKED.
 
-### Test structure
+**Layer 3 — Model Paper Tests (`tests/model-paper.test.md`).** A separate, standalone comparison against one or more accepted high-quality papers. Benchmarks our draft's rigor, structure, and depth against the standard those papers set — not section-by-section inside each test file, but as a dedicated cross-cutting analysis.
 
-Each draft section in `drafts/sections/` has a corresponding test file in `tests/`:
-
-```
-tests/
-    model-paper.md           notes on the model paper: what makes it strong, section-by-section
-    abstract.test.md
-    introduction.test.md
-    related-work.test.md
-    method.test.md
-    findings.test.md
-    discussion.test.md
-    limitations.test.md
-    conclusion.test.md
-```
-
-### Test file format
+#### Section test file format
 
 ```markdown
 # Tests: [Section Name]
@@ -114,111 +93,20 @@ tests/
 |---|----------|----------|--------|----------|
 | R1 | "Sample size too small for claim X" | major | FAIL | Need to add power analysis |
 | R2 | "No comparison to baseline Y" | major | PASS | Addressed in §3.2 |
-| R3 | "Unclear how Z was operationalized" | minor | FAIL | Revise definition |
-
-## Model Paper Comparison
-
-| # | Quality dimension | Model paper | Our draft | Status | Gap |
-|---|-------------------|-------------|-----------|--------|-----|
-| M1 | Related work breadth | 80+ refs across 4 subfields | 12 refs | FAIL | Need lit review pass |
-| M2 | Method reproducibility | Full pseudocode + params | Prose only | FAIL | Add algorithm box |
-| M3 | Limitation depth | 6 concrete limitations | Placeholder | FAIL | Draft after findings |
 ```
 
-### Status values
+#### Status values
 
 - **PASS** — the draft addresses this adequately; no action needed.
 - **FAIL** — the draft does not yet handle this; revision or new work required.
 - **BLOCKED** — cannot resolve until a dependency is met (e.g., experiment not yet run).
-- **N/A** — not applicable to this section.
+- **N/A** — not applicable.
 
-### Workflow
+#### Workflow
 
 1. When a draft section is written or substantially revised, update its test file.
 2. When planning new experiments, check test files for FAIL/BLOCKED items — these drive the research agenda.
-3. Before any submission milestone, all tests across all sections should be PASS or N/A.
-
-### Human workflow
-
-The user primarily edits three things:
-- **Plan documents** (`plans/active/`) — what to do and why.
-- **Draft sections** (`drafts/sections/`) — the paper content.
-- **Test files** (`tests/`) — what must be true for the paper to hold up.
-
-Agents handle execution: running experiments, collecting data, updating progress, and re-rendering drafts. Tests are the contract between human judgment and agent execution.
-
-## Paper Drafting Infrastructure
-
-### Structure
-
-```
-drafts/
-    main.md              master document — assembles sections via :(sections/file.md)
-    sections/            individual section markdown files
-    render.py            script to assemble and render HTML
-    draft-YYYY-MM-DD.html   rendered snapshots (dated)
-```
-
-### Section Files
-
-Each section is a standalone markdown file in `drafts/sections/`. Example sections:
-
-```
-sections/abstract.md
-sections/introduction.md
-sections/related-work.md
-sections/method.md
-sections/findings.md
-sections/discussion.md
-sections/limitations.md
-sections/conclusion.md
-```
-
-Add or rename sections as the paper evolves.
-
-### Assembly
-
-`drafts/main.md` defines section order using include directives:
-
-```
-# Paper Title
-
-:(sections/abstract.md)
-
-:(sections/introduction.md)
-
-...
-```
-
-### Rendering
-
-Run `python3 drafts/render.py` to produce `drafts/draft-YYYY-MM-DD.html`.
-
-The render script:
-1. Reads `main.md` and resolves `:(sections/file.md)` includes.
-2. Converts the assembled markdown to HTML.
-3. Wraps it in a print-friendly template with a dated "WORKING DRAFT" banner.
-4. Writes to `drafts/draft-YYYY-MM-DD.html`.
-
-**Re-render after every substantive draft change.**
-
-## Project Structure
-
-```
-CLAUDE.md              this file
-progress.md            reverse-chronological progress log
-plans/                 execution plans, completed plans, tech debt
-  active/              plans currently in progress
-  completed/           finished plans
-  tech-debt-tracker.md known shortcuts and deferred work
-drafts/                paper drafts and rendering
-tests/                 paper unit tests (1:1 with draft sections)
-  model-paper.md       model paper analysis
-  *.test.md            per-section test files
-code/                  scripts, pipelines, analysis code
-data/                  datasets and derived outputs
-runs/                  run-specific logs, checkpoints, temporary artifacts
-```
+3. Before any submission milestone, all tests across all layers should be PASS or N/A.
 
 ## Conventions
 
@@ -228,3 +116,4 @@ runs/                  run-specific logs, checkpoints, temporary artifacts
 - Use `progress.md` for the audit trail, not git log.
 - Citation placeholders: `[CITE-key]`.
 - When referencing figures that don't exist yet, use HTML comments: `<!-- FIGURE: description -->`.
+- Re-render the draft HTML after every substantive draft change.

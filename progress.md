@@ -1,5 +1,16 @@
 # Progress Log
 
+## 2026-03-21 — Restructured docs and test infrastructure
+
+- Decoupled `CLAUDE.md` into three files:
+  - `CLAUDE.md` — agent philosophy and operating instructions only.
+  - `setup.md` — agent bootstrapping and session-start checklist.
+  - `README.md` — human-facing project overview and contributor guide.
+- Restructured tests into three layers:
+  - `tests/master.test.md` — cross-section quality criteria (applies to all sections).
+  - `tests/<section>.test.md` — reviewer simulation only (removed model paper comparison from individual sections).
+  - `tests/model-paper.test.md` — standalone model paper benchmark (replaces old `model-paper.md`).
+
 ## 2026-03-21 — Added Paper Test Infrastructure
 
 - Added Philosophy #5: Paper test infrastructure with two lenses (reviewer simulation + model paper comparison).
