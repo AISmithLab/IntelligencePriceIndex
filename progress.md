@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-03-21 — Added Paper Test Infrastructure
+
+- Added Philosophy #5: Paper test infrastructure with two lenses (reviewer simulation + model paper comparison).
+- Created `tests/` directory with per-section test files (`*.test.md`) mirroring `drafts/sections/`.
+- Created `tests/model-paper.md` for model paper analysis.
+- Test files use PASS/FAIL/BLOCKED/N/A status for each critique and quality dimension.
+- Clarified human workflow: user primarily edits plans, drafts, and test files; agents handle execution.
+
 ## 2026-03-21 — Added Plans Infrastructure
 
 - Added Philosophy #4: Plans as first-class artifacts.

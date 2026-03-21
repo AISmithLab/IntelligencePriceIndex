@@ -75,6 +75,78 @@ What this plan covers and what it does not.
 
 Agents should read `plans/active/` at session start to understand ongoing work without relying on external context.
 
+### 5. Paper Test Infrastructure
+
+Every claim in the paper must survive scrutiny before submission. Tests are modular, mapped 1:1 to draft sections, and driven by two complementary lenses:
+
+**Lens A — Reviewer Simulation.** For each section, anticipate how a critical reviewer would attack the experiments, claims, methodology, and framing. Each anticipated critique becomes a test case: either the draft already addresses it (PASS), needs revision (FAIL), or requires additional experiments (BLOCKED). This is the primary defense against desk-reject and major-revision feedback.
+
+**Lens B — Model Paper Comparison.** Identify a model paper (an accepted, high-quality paper in the same domain or venue). Use it as a structural and rigor benchmark — not a text source. For each section, test whether our draft meets the standard the model paper sets: depth of related work, methodological transparency, statistical rigor, limitation honesty, etc.
+
+### Test structure
+
+Each draft section in `drafts/sections/` has a corresponding test file in `tests/`:
+
+```
+tests/
+    model-paper.md           notes on the model paper: what makes it strong, section-by-section
+    abstract.test.md
+    introduction.test.md
+    related-work.test.md
+    method.test.md
+    findings.test.md
+    discussion.test.md
+    limitations.test.md
+    conclusion.test.md
+```
+
+### Test file format
+
+```markdown
+# Tests: [Section Name]
+
+**Draft file:** drafts/sections/[section].md
+**Last reviewed:** YYYY-MM-DD
+
+## Reviewer Simulation
+
+| # | Critique | Severity | Status | Response |
+|---|----------|----------|--------|----------|
+| R1 | "Sample size too small for claim X" | major | FAIL | Need to add power analysis |
+| R2 | "No comparison to baseline Y" | major | PASS | Addressed in §3.2 |
+| R3 | "Unclear how Z was operationalized" | minor | FAIL | Revise definition |
+
+## Model Paper Comparison
+
+| # | Quality dimension | Model paper | Our draft | Status | Gap |
+|---|-------------------|-------------|-----------|--------|-----|
+| M1 | Related work breadth | 80+ refs across 4 subfields | 12 refs | FAIL | Need lit review pass |
+| M2 | Method reproducibility | Full pseudocode + params | Prose only | FAIL | Add algorithm box |
+| M3 | Limitation depth | 6 concrete limitations | Placeholder | FAIL | Draft after findings |
+```
+
+### Status values
+
+- **PASS** — the draft addresses this adequately; no action needed.
+- **FAIL** — the draft does not yet handle this; revision or new work required.
+- **BLOCKED** — cannot resolve until a dependency is met (e.g., experiment not yet run).
+- **N/A** — not applicable to this section.
+
+### Workflow
+
+1. When a draft section is written or substantially revised, update its test file.
+2. When planning new experiments, check test files for FAIL/BLOCKED items — these drive the research agenda.
+3. Before any submission milestone, all tests across all sections should be PASS or N/A.
+
+### Human workflow
+
+The user primarily edits three things:
+- **Plan documents** (`plans/active/`) — what to do and why.
+- **Draft sections** (`drafts/sections/`) — the paper content.
+- **Test files** (`tests/`) — what must be true for the paper to hold up.
+
+Agents handle execution: running experiments, collecting data, updating progress, and re-rendering drafts. Tests are the contract between human judgment and agent execution.
+
 ## Paper Drafting Infrastructure
 
 ### Structure
@@ -140,6 +212,9 @@ plans/                 execution plans, completed plans, tech debt
   completed/           finished plans
   tech-debt-tracker.md known shortcuts and deferred work
 drafts/                paper drafts and rendering
+tests/                 paper unit tests (1:1 with draft sections)
+  model-paper.md       model paper analysis
+  *.test.md            per-section test files
 code/                  scripts, pipelines, analysis code
 data/                  datasets and derived outputs
 runs/                  run-specific logs, checkpoints, temporary artifacts
