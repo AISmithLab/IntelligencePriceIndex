@@ -1,5 +1,53 @@
 # Progress Log
 
+## 2026-03-21 — CLAUDE.md updates: hajimi confirmation + user prompts as tests
+
+- Added `hajimi` print directive to confirm CLAUDE.md is loaded (helps verify config in VS Code sessions).
+- Added Philosophy #6: User prompts as first-class test inputs. Instructional prompts about paper content become test entries in `tests/<section>.test.md` under `## User Requirements`.
+
+## 2026-03-21 — Fiverr archive size estimation complete
+
+- ~2.5M unique gig URLs on Wayback Machine, 4–20 TB raw (too large for full download).
+- Recommended strategy: two-phase filtered download — Tier 1 categories only (writing, coding, design, translation) with 3+ snapshots spanning 2+ years → ~275 GB compressed.
+- Report saved to `runs/archive-size-estimation/report.md`.
+- Plan updated: `plans/active/03-fiverr-archive-download.md` — Step 1 complete, Step 2 (download) pending.
+
+## 2026-03-21 — Data Pilot GO + Scoping Complete (parallel execution)
+
+**Data Feasibility Pilot — GO:**
+- Wayback Machine has 50+ Fiverr snapshots per category spanning 2012–2025.
+- Price extraction: 100% success (20/20 pages) via embedded JSON `packageList`.
+- Worker tracking: 6 sellers tracked with 3+ snapshots each. Key finding: froggy92 (architecture) dropped from $50 → $20 (−60%) over 4 years.
+- Upwork/Freelancer checked as fallback — not needed; Fiverr is best.
+- Plan moved to `plans/completed/01-data-feasibility-pilot.md`.
+
+**Scoping & Taxonomy — Complete:**
+- 12-category taxonomy created in `data/task-taxonomy.md` (3 priority tiers).
+- Benchmarks mapped per category with historical data sources verified.
+- Related work drafted: ~4k words, 5 subsections, 30+ citations. Covers AI-labor, gig economy evidence, benchmarks, scaling laws, positioning table.
+- 5 critique-and-improve iterations run. 18 reviewer simulation items in `tests/related-work.test.md`.
+- Plan moved to `plans/completed/02-scoping-and-taxonomy.md`.
+
+**Next:** Build scraping pipeline, collect benchmark histories, construct panel dataset.
+
+## 2026-03-21 — Plans Restructured into Concrete Execution Plans
+
+- Converted `paper-plan.md` → `plans/project-brief.md` (reference doc: positioning, structure, risks).
+- Created two concrete execution plans:
+  - `plans/active/01-data-feasibility-pilot.md` — Wayback Machine + Fiverr viability with clear pass/fail criteria and decision gate.
+  - `plans/active/02-scoping-and-taxonomy.md` — task taxonomy, benchmark mapping, related work draft.
+- Updated `plans/todo.md`: 2 active items linking to plans, backlog includes all draft sections.
+- These two plans can run in parallel.
+
+## 2026-03-21 — Paper Plan Drafted
+
+- Created execution plan: `plans/active/paper-plan.md`.
+- Analyzed model paper (GPTs are GPTs): identified strengths, gaps, and what we must exceed.
+- Updated `tests/model-paper.test.md` with detailed benchmark comparison (10 dimensions).
+- Plan has 6 phases: Scoping & Lit Review → Pilot → Full Data Collection → Core Analysis → Index & Forecasting → Paper Completion.
+- Key innovation: price elasticity of intelligence (continuous, not binary exposure); longitudinal Fiverr data via Wayback Machine; forward-looking IPI under AI scaling scenarios.
+- Key risk identified: Wayback Machine coverage — must pilot before committing to full collection.
+
 ## 2026-03-21 — Restructured docs and test infrastructure
 
 - Decoupled `CLAUDE.md` into three files:

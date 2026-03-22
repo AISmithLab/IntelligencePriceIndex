@@ -1,10 +1,42 @@
 # Tests: Related Work
 
 **Draft file:** drafts/sections/related-work.md
-**Last reviewed:** —
+**Last reviewed:** 2026-03-21
 
 ## Reviewer Simulation
 
 | # | Critique | Severity | Status | Response |
 |---|----------|----------|--------|----------|
+| R1 | The paper assumes benchmark scores causally drive gig-economy prices, but AI research may be *directed* at tasks already cheap on gig platforms (endogeneity). What is the identification strategy? | HIGH | ADDRESSED | Section 2.2 now explicitly flags endogeneity in AI research direction. We note that the staggered, domain-specific nature of benchmark improvements provides natural variation, and that our panel structure allows category-specific time trends. Full identification strategy deferred to Section 3. |
+| R2 | Falling prices could reflect quality degradation (AI-assisted work is worse) rather than cost reduction (AI makes production cheaper). How do you disentangle price from quality? | HIGH | ADDRESSED | Section 2.2 now discusses the cost-reduction vs. quality-erosion distinction and points to buyer rating data as a way to empirically separate the two mechanisms. Detailed analysis deferred to Section 4. |
+| R3 | The "price elasticity of intelligence" is a novel term but is not grounded in existing economic theory. It sounds like a branding exercise rather than a formal concept. | MEDIUM | ADDRESSED | Section 2.1 now explicitly grounds the concept in standard microeconomic price elasticity theory (citing Mas-Colell et al.) and explains the analogy in formal terms. |
+| R4 | The benchmark-to-task mapping is asserted but not validated. Why should SWE-bench scores predict the price of a freelance web development gig? The ecological validity of benchmarks for real-world gig tasks is not established. | HIGH | ADDRESSED | Section 2.3 now discusses the gap between benchmark and deployment performance, explains our preference for task-oriented benchmarks, and notes sensitivity analyses using both frontier scores and deployed-tool release dates. |
+| R5 | Confounding factors (COVID remote work boom, macroeconomic conditions, platform fee changes, globalization of freelance supply) could explain price changes independently of AI. The related work does not adequately discuss these. | HIGH | ADDRESSED | Section 2.2 now discusses remote work supply expansion, platform fee changes, macroeconomic conditions, and globalization as confounds. Notes cross-category variation as a source of identification. |
+| R6 | The Wayback Machine is an unusual data source for economic research. No discussion of web archiving methodology, sampling bias, or precedents for using web archives in economics. | MEDIUM | ADDRESSED | Section 2.2 now cites prior work using web archives for economic research (Cavallo 2017, etc.) and flags non-random coverage as a sampling concern addressed in Sections 3 and 8. |
+| R7 | The "emergent abilities" claim is contested (Schaeffer et al. 2023). Citing it uncritically undermines credibility. | MEDIUM | ADDRESSED | Section 2.4 now presents both sides of the debate (Wei et al. vs. Schaeffer et al.) and frames the practical question as empirical (smooth vs. discontinuous price responses). |
+| R8 | The related work is heavily focused on LLM benchmarks but thin on image/video/audio generation benchmarks, despite these being major gig-economy categories. | MEDIUM | ADDRESSED | Section 2.3 now provides substantially more detail on FID limitations, CLIP scores, CMMD, VBench, EvalCrafter, and audio MOS metrics. Explains why video/audio are classified as Tier 3. |
+| R9 | The scope limitation (gig economy only) is buried. A reviewer studying formal labor markets would dismiss the paper as non-generalizable. This should be flagged prominently in the related work, not just in limitations. | MEDIUM | ADDRESSED | Section 2.5 now explicitly states that the IPI measures the leading edge of price adjustment in gig markets and should not be read as a direct proxy for formal-sector wage effects. |
+| R10 | Missing Noy & Zhang (2023) on ChatGPT and professional writing productivity, which is among the most-cited empirical studies of generative AI's workplace effects. | LOW | ADDRESSED | Added Noy & Zhang (2023) to Section 2.2. |
+| R11 | Missing discussion of general-purpose technology theory (Bresnahan & Trajtenberg 1995), despite the GPTs-are-GPTs paper being built on this framework. | LOW | ADDRESSED | Section 2.1 now explicitly cites Bresnahan & Trajtenberg and discusses the GPT framework's implications for our work (pervasiveness, improvement over time, complementary innovations). |
+| R12 | The complementarity thesis (Autor 2015, "Why are there still so many jobs?") is absent. The related work is too focused on displacement and doesn't adequately represent the view that AI may complement rather than replace labor. | MEDIUM | ADDRESSED | Section 2.1 now includes Autor (2015) and discusses how complementarity may manifest as rising prices for high-judgment tasks when routine components are automated. |
+| R13 | No discussion of how open-source vs. closed-source model availability affects the timing and degree of labor market displacement. Frontier benchmark scores may not reflect tools freelancers actually compete with. | MEDIUM | ADDRESSED | Section 2.3 now discusses the open-source vs. proprietary API distinction and its implications for the timing of displacement effects. |
+| R14 | The prediction-judgment spectrum from Agrawal et al. is invoked but not operationalized for gig tasks. Which gig tasks are "prediction" and which are "judgment"? | MEDIUM | ADDRESSED | Section 2.4 now provides concrete examples of prediction-heavy (data entry, simple translation) vs. judgment-heavy (logo design, consulting) gig tasks and describes how the taxonomy codes this dimension. Also connects to hedonic pricing literature (Rosen 1974). |
+| R15 | The CPI analogy is used loosely. No citation to the actual CPI methodology or the index number theory literature. If you're building a price index, you should reference how economists actually construct price indices. | LOW | ADDRESSED | Section 2.2 now cites the BLS CPI Handbook and PPI methodology as precedents for the index construction framing. |
+| R16 | The section on new task creation (AI prompt engineering, AI humanization) is underdeveloped. If AI creates new categories, how does the IPI handle a changing basket of tasks over time? This is the same challenge the CPI faces with new products. | MEDIUM | PARTIAL | Section 2.2 flags emerging categories and connects to Acemoglu & Restrepo's reinstatement effect and Autor et al. (2024). Full treatment of how the index handles category entry/exit belongs in Section 3 (Methods). |
+| R17 | The comparison table in Section 2.5 is useful but could be seen as self-serving (every column is designed so that only IPI has "Yes" in the last row). A reviewer might ask: is "longitudinal panel" really unique, or could someone construct this from BLS data? | LOW | NOTED | The table is factually accurate -- no prior work in the cited literature combines continuous benchmarks with observed prices in a panel. BLS data covers formal wages, not gig-economy task prices. Could add a footnote clarifying this distinction. |
+| R18 | Geographic heterogeneity in gig pricing is mentioned briefly but not developed. Workers from India, Philippines, etc. compete at very different price points. AI may differentially affect low-cost vs. high-cost country freelancers. | MEDIUM | PARTIAL | Section 2.2 briefly flags geographic diversity of gig platforms. Full analysis of geographic heterogeneity belongs in empirical sections. |
 
+## Quality Checks
+
+| # | Check | Status |
+|---|-------|--------|
+| Q1 | All major AI-labor papers cited (Autor, Acemoglu, Frey & Osborne, Eloundou et al., Felten et al., Webb, Brynjolfsson et al., Anthropic) | PASS |
+| Q2 | Gig economy empirical studies cited (Hui et al., Demirci et al., Whalley et al.) | PASS |
+| Q3 | AI benchmark landscape covered for all major task categories | PASS |
+| Q4 | Scaling laws literature reviewed (Kaplan, Hoffmann/Chinchilla, Epoch AI) | PASS |
+| Q5 | Economic theory grounding (Agrawal et al., Bresnahan & Trajtenberg, Rosen, Autor 2015) | PASS |
+| Q6 | Clear positioning relative to model paper (GPTs are GPTs) | PASS |
+| Q7 | Honest about limitations (benchmark validity, scope to gig economy, confounds) | PASS |
+| Q8 | Comparison table present with key dimensions | PASS |
+| Q9 | [CITE-key] placeholders used consistently throughout | PASS |
+| Q10 | Section structure matches model paper pattern (thematic subsections) | PASS |

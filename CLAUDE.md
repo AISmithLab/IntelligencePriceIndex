@@ -1,5 +1,7 @@
 # IntelligencePriceIndex — Agent Philosophy & Instructions
 
+**On every response, start by printing `hajimi` to confirm this CLAUDE.md is loaded.**
+
 For project setup and directory structure, see `setup.md`.
 For human-facing instructions, see `README.md`.
 
@@ -34,16 +36,41 @@ Update `progress.md` after every meaningful milestone (experiment completed, sec
 
 ### 4. Plans as First-Class Artifacts
 
-Plans are versioned, co-located, and checked into the repository — not ephemeral conversation context.
+Plans are versioned, co-located, and checked into the repository — not ephemeral conversation context. Plans are expected to evolve as research progresses — rigidity is a bug, not a feature.
 
-- **Lightweight plans** (small changes, single-session work): write directly in `progress.md` or as inline notes. No ceremony needed.
-- **Execution plans** (multi-step, multi-session, or architecturally significant work): create a dedicated plan file in `plans/active/` with scope, steps, progress log, and decision rationale. Update the plan as work proceeds.
+**Two layers:**
 
-When a plan is complete, move it from `plans/active/` to `plans/completed/`. This creates a durable record of what was planned, what actually happened, and why decisions were made.
+- **`plans/todo.md`** — the master to-do list. A single, living document that tracks all open work items across the project. Items are added, reprioritized, and checked off as research evolves. This is the primary steering document — check it at session start to know what to work on next.
+- **`plans/active/<name>.md`** — focused execution plans for specific tasks that need their own scope, decision log, and progress tracking. Create one when a to-do item is complex enough to warrant its own file. Move to `plans/completed/` when done.
 
-Track known technical debt in `plans/tech-debt-tracker.md` — a living document of shortcuts taken, things deferred, and cleanup needed. Each entry should note what, why it was deferred, and rough priority.
+The to-do list drives what gets done. Execution plans capture how complex items get done. Not every to-do item needs an execution plan — only create one when the work benefits from structured tracking.
 
-#### Plan file format
+Track known technical debt in `plans/tech-debt-tracker.md`.
+
+#### todo.md format
+
+```markdown
+# To-Do
+
+## Active
+- [ ] Item with priority and brief context
+
+## Backlog
+- [ ] Lower priority items
+
+## Done
+- [x] Completed items (move here, don't delete — audit trail)
+
+## Dropped
+- ~~task description~~ — dropped YYYY-MM-DD: reason
+
+## Change Log
+- YYYY-MM-DD: what changed and why
+```
+
+The **Dropped** section records items that were removed and why, so they don't get silently re-added. The **Change Log** tracks additions, reprioritizations, and drops in reverse chronological order — this is the version history of the to-do list itself.
+
+#### Execution plan format
 
 ```markdown
 # Plan: [title]
@@ -67,7 +94,7 @@ What this plan covers and what it does not.
 - YYYY-MM-DD: [what was done]
 ```
 
-Agents should read `plans/active/` at session start to understand ongoing work without relying on external context.
+Agents should read `plans/todo.md` and `plans/active/` at session start to understand ongoing work without relying on external context.
 
 ### 5. Paper Test Infrastructure
 
@@ -107,6 +134,30 @@ Every claim in the paper must survive scrutiny before submission. Tests are modu
 1. When a draft section is written or substantially revised, update its test file.
 2. When planning new experiments, check test files for FAIL/BLOCKED items — these drive the research agenda.
 3. Before any submission milestone, all tests across all layers should be PASS or N/A.
+
+### 6. User Prompts as First-Class Test Inputs
+
+When the user gives an instruction about the paper content — e.g., "change the framing to X", "make the intro emphasize Y", "the method should mention Z" — that instruction is not just a one-time edit. It represents the user's intent for what the paper should say.
+
+**Convert instructional prompts into tests.** After executing the edit, add a corresponding test entry to the relevant `tests/<section>.test.md` file. This ensures:
+- The instruction is preserved as a durable requirement, not lost in conversation history.
+- Future edits don't silently regress the user's intent.
+- The test file becomes a record of what the user cares about.
+
+#### Format
+
+Add entries under a `## User Requirements` section in the test file:
+
+```markdown
+## User Requirements
+
+| # | Instruction | Date | Status | Location |
+|---|-------------|------|--------|----------|
+| U1 | "Emphasize that IPI uses revealed prices, not surveys" | 2026-03-21 | PASS | §1 para 3 |
+| U2 | "Remove hedging language in the abstract" | 2026-03-22 | PASS | Abstract |
+```
+
+Not every prompt is a test — only instructions that express intent about what the paper should contain or how it should read. Questions, exploration requests, and meta-discussion are not tests.
 
 ## Conventions
 

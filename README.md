@@ -8,8 +8,9 @@ Research project investigating intelligence pricing trends and dynamics.
 
 You primarily work in three places:
 
-### 1. Plans (`plans/active/`)
-Define what to do and why. Create execution plans for multi-step work. Lightweight tasks can go straight into `progress.md`.
+### 1. Plans (`plans/`)
+- **`plans/todo.md`** — the master to-do list. Add items, reprioritize, check things off. This is where you steer the project.
+- **`plans/active/`** — execution plans for complex tasks that need their own scope and tracking. Most to-do items don't need one.
 
 ### 2. Drafts (`drafts/sections/`)
 Write and revise paper sections. Each section is a standalone markdown file. The master document `drafts/main.md` assembles them in order.
@@ -40,7 +41,8 @@ README.md              this file — human instructions
 progress.md            reverse-chronological progress log
 
 plans/
-  active/              execution plans in progress
+  todo.md              master to-do list
+  active/              execution plans for complex tasks
   completed/           finished plans
   tech-debt-tracker.md known shortcuts and deferred work
 
