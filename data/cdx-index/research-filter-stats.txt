@@ -1,0 +1,46 @@
+
+============================================================
+RESEARCH FILTER RESULTS
+============================================================
+
+Input:            22,739,659 records
+Category match:   11,899,730 records
+Passing filter:   3,998,786 records (28,186 gigs)
+Record retention: 17.6%
+Est. download:    2250 GB raw, ~750 GB compressed
+
+BY CATEGORY:
+  Category                 Gigs    Snapshots  Avg snaps
+  -------------------- -------- ------------ ----------
+  design                 12,255    1,890,823      154.3
+  writing                 7,616    1,169,023      153.5
+  coding                  6,330      712,211      112.5
+  translation             1,526      180,414      118.2
+  data_analysis             459       46,315      100.9
+
+BY YEAR:
+  Year      Snapshots
+  ------ ------------
+  2011              5
+  2012             17
+  2013            282
+  2014            937
+  2015          1,976
+  2016          3,632
+  2017          1,268
+  2018         24,374
+  2019        123,755
+  2020        560,821
+  2021        646,945
+  2022      1,025,829
+  2023      1,116,644
+  2024        491,409
+  2025            782
+  2026            110
+
+SELLER PANEL:
+  Total unique sellers:     23,970
+  Sellers with ≥2 gigs:     2,987
+  (enables within-seller analysis of upskilling)
+
+Output: /home/exouser/IntelligencePriceIndex/data/cdx-index/download-manifest-research.tsv

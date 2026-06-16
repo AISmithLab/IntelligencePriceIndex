@@ -1,5 +1,36 @@
 # Progress Log
 
+## 2026-03-23 — IPI constructed, full paper drafted and self-reviewed
+
+- **Price extraction:** 22,632/22,632 HTML files extracted (100% success). Methods: packageList JSON (72.9%), old JSON (15.2%), dollar fallback (11.2%), HTML span (0.7%). Output: `data/pilot/pilot-prices.csv`.
+- **Item clustering:** 1,908 unique gigs clustered into 150 service items (TF-IDF + agglomerative, k=150, silhouette=0.114). Output: `data/pilot/gig-items.csv`, `data/pilot/item-clusters.csv`.
+- **AI benchmark dataset:** Created `data/ai-benchmarks.csv` with 8 benchmarks (HumanEval, SWE-bench, WMT BLEU, AlpacaEval, Chatbot Arena, FID, GSM8K, Whisper WER) spanning 2017–2025.
+- **IPI construction (cross-sectional):** Script `code/11-build-ipi.py` — Laspeyres-style index, 9 categories. Revealed platform-wide price inflation masking AI effects.
+- **IPI construction (panel):** Script `code/12-panel-ipi.py` — Matched-model Jevons/Törnqvist index tracking same-gig prices. Key results:
+  - IPI: 100 (2019Q1) → peak 312 (Q4 2024) → 246 (Q2 2025), **−21% from peak in 2025**.
+  - Price elasticity of intelligence: audio β=−0.49 (substitution), writing β=+0.21, coding β=+0.30, marketing β=+0.70, design β=+1.10 (complementarity). All significant p<0.01.
+  - Novel concept: "shadow deflation" — AI effect masked by platform inflation, visible only as deceleration.
+- **Full paper drafted:** All 8 sections written (abstract, introduction, related work, methods, findings, discussion, limitations, conclusion).
+- **Self-review and polish:** Fixed number inconsistencies (312% → "peaked at 312"), section numbering (8→7 sections), missing data flow explanation (14,938→1,908 gigs), added 4 missing categories to elasticity table, trimmed CPI analogy and survivorship bias redundancy, fixed broken cross-references in related work.
+- Key outputs: `data/pilot/panel-ipi.csv`, `data/pilot/panel-summary.md`, `data/pilot/panel-elasticity.csv`, all drafts in `drafts/sections/`.
+
+## 2026-03-22 — Phase 1 complete + Pilot download launched
+
+- **Phase 1 (CDX filtering) complete:** Steps 1.1–1.6 all done.
+  - Fixed OOM crashes in dedup/filter scripts by switching from in-memory dicts to external sort + streaming.
+  - Full census: 5.6M unique gigs, 822K unique sellers across 10 categories + uncategorized.
+  - 60M raw CDX → 22.7M deduped → classified by category → longitudinal filter applied.
+- **Sampling strategy refined toward CPI-style index:**
+  - User wants to track price impact of AI, weight by transaction volume (like CPI basket).
+  - Decided to sample at user level (preserves within-seller panel for upskilling analysis).
+  - Survivorship bias is acceptable — gig disappearance is part of the AI impact signal.
+  - Wayback Machine coverage bias acknowledged as limitation (over-represents popular gigs).
+- **Pilot: 500 users sampled** (from 48,643 qualifying users with ≥5 monthly snapshots spanning ≥2 years).
+  - 500 users, 14,938 gigs, 26,603 monthly snapshots.
+  - Download launched (~5 GB compressed, ~30–45 min).
+  - Scripts: `code/06c-pilot-longitudinal.py`, `code/07-pilot-500.py`, `code/08-download-html.py`.
+- Key outputs: `data/pilot/pilot-500-manifest.tsv`, `data/pilot/html/` (downloading).
+
 ## 2026-03-21 — CLAUDE.md updates: hajimi confirmation + user prompts as tests
 
 - Added `hajimi` print directive to confirm CLAUDE.md is loaded (helps verify config in VS Code sessions).

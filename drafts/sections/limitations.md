@@ -1,3 +1,19 @@
 ## 6. Limitations
 
-*To be drafted.*
+We acknowledge several limitations that bound the interpretation of our results.
+
+**Platform coverage bias.** Fiverr represents one segment of the cognitive labor market—relatively standardized, low-to-mid-complexity tasks priced in a competitive marketplace. Results may not generalize to enterprise freelancing (Upwork, Toptal), formal employment, or tasks requiring deep domain expertise. The IPI should be understood as a *gig-economy* price index, not a universal cognitive labor price index.
+
+**Wayback Machine sampling.** The Internet Archive does not crawl all pages with equal frequency. Popular gig pages (high traffic, many external links) are archived more frequently than niche ones, introducing a selection bias toward high-visibility gigs. This means our panel over-represents successful, established sellers—precisely the ones most likely to show price resilience. The true deflationary effect of AI on the *full* gig market (including sellers who never established a presence or quickly exited) is likely larger than our estimates suggest.
+
+**Survivorship bias in the panel.** Our matched-model approach, while eliminating compositional confounds, captures only the *intensive margin* of price adjustment for surviving gigs. Gigs that were discontinued—potentially because AI made them unviable—are not represented as price declines but as *exits*. The IPI therefore understates the total economic impact of AI on cognitive labor. This limitation is inherent to matched-model indices (the CPI faces the same issue when products are discontinued) but is important to acknowledge.
+
+**Benchmark-to-task mapping validity.** Our mapping of AI benchmarks to gig categories involves judgment calls (e.g., using AlpacaEval as a proxy for writing quality, GSM8K for data analysis capability). These benchmarks measure specific technical capabilities that may not perfectly correspond to the skills required for real-world gig work. The price elasticity of intelligence is only as valid as the benchmark-to-task mapping. Sensitivity analysis with alternative benchmark choices would strengthen confidence in the results.
+
+**Confounding factors.** Gig prices reflect many forces beyond AI capability: general inflation, platform policies, demand shocks (COVID-19), competitive dynamics, and seller reputation accumulation. Our log-log specification does not include controls for these factors. While the matched-model approach controls for time-invariant gig characteristics, time-varying confounders (macroeconomic conditions, platform fee changes) are not accounted for. The elasticity estimates should be interpreted as *associations*, not causal effects.
+
+**Sample size.** Our pilot of 500 sellers, while yielding over 22,000 price observations, is modest relative to Fiverr's total marketplace. Some categories (translation: 26 panel gigs; data analysis: 38) have limited statistical power. Estimates for these categories should be treated as suggestive rather than definitive.
+
+**Temporal limitations.** The most striking finding—the 2025 price reversal—is based on only two quarters of data (Q1–Q2 2025). Whether this represents the beginning of a secular deflationary trend or a transient fluctuation cannot be determined from the current data. Continued monitoring is essential.
+
+**Price vs. value.** The IPI measures listed prices, not transaction prices or delivered value. A seller who uses AI tools to produce higher-quality output but maintains the same listed price has experienced *quality-adjusted* deflation that the IPI does not capture. Conversely, a seller who raises prices because AI tools allow them to offer more comprehensive services may show IPI inflation even though the price-per-unit-of-value has declined. Quality adjustment is the oldest problem in price index construction, and we do not solve it here.

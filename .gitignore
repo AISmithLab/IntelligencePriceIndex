@@ -1,0 +1,19 @@
+# === Large raw data — NOT version-controlled (multi-GB) ===
+
+# CDX / Common Crawl index dumps and intermediate manifests
+data/cdx-index/raw/
+data/cdx-index/*.tsv
+data/cdx-index/*.tmp
+
+# Raw scraped HTML pages
+data/pilot/html/
+
+# Large pilot manifests (small derived CSVs/summaries are kept)
+data/pilot/*-manifest*.tsv
+
+# === Python / OS cruft ===
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.ipynb_checkpoints/

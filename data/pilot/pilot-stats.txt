@@ -1,0 +1,34 @@
+
+============================================================
+PILOT SAMPLE STATS
+============================================================
+
+Users sampled:      5,000
+Total gigs:         38,666
+Total snapshots:    150,355
+Avg gigs/user:      7.7
+Avg snaps/user:     30.1
+Users with ≥2 gigs: 2,784 (55.7%)
+Est. download:      84.6 GB raw, ~28.2 GB compressed
+
+BY YEAR:
+  2011:    1,354
+  2012:    2,321
+  2013:    4,582
+  2014:    2,970
+  2015:    1,436
+  2016:    1,115
+  2017:      839
+  2018:    4,926
+  2019:    8,979
+  2020:   26,273
+  2021:   25,778
+  2022:   23,732
+  2023:   20,605
+  2024:   25,093
+  2025:      339
+  2026:       13
+
+Files:
+  Users:    /home/exouser/IntelligencePriceIndex/data/pilot/sample-users.txt
+  Manifest: /home/exouser/IntelligencePriceIndex/data/pilot/pilot-manifest.tsv
