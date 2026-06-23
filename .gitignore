@@ -17,3 +17,10 @@ __pycache__/
 *.pyo
 .DS_Store
 .ipynb_checkpoints/
+
+# Generated archive data
+data/cdx-index/raw-2025/
+data/pilot-2025/
+
+# Logs
+runs/*.log

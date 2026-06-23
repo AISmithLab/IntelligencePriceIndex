@@ -21,7 +21,7 @@ RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 CDX_API = "https://web.archive.org/cdx/search/cdx"
 FIELDS = "urlkey,timestamp,original,statuscode,digest,length"
-MAX_CONCURRENT = 3  # be polite to the Wayback Machine
+MAX_CONCURRENT = 1  # be polite to the Wayback Machine
 RETRY_LIMIT = 5
 RETRY_BACKOFF = 10  # seconds base backoff
 
@@ -33,7 +33,7 @@ async def get_num_pages(session, prefix):
         "matchType": "prefix",
         "showNumPages": "true",
         "from": "20250101000000",
-        "to": "20251231235959"
+        "to": "20260630235959"
     }
     for attempt in range(RETRY_LIMIT):
         try:
@@ -64,7 +64,7 @@ async def download_page(session, prefix, page, num_pages):
         "fl": FIELDS,
         "page": str(page),
         "from": "20250101000000",
-        "to": "20251231235959"
+        "to": "20260630235959"
     }
     for attempt in range(RETRY_LIMIT):
         try:
