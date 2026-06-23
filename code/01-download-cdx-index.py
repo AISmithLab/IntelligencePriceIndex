@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-RAW_DIR = BASE_DIR / "data" / "cdx-index" / "raw"
+RAW_DIR = BASE_DIR / "data" / "cdx-index" / "raw-2025"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 CDX_API = "https://web.archive.org/cdx/search/cdx"
@@ -32,6 +32,8 @@ async def get_num_pages(session, prefix):
         "url": f"fiverr.com/{prefix}",
         "matchType": "prefix",
         "showNumPages": "true",
+        "from": "20250101000000",
+        "to": "20251231235959"
     }
     for attempt in range(RETRY_LIMIT):
         try:
@@ -61,6 +63,8 @@ async def download_page(session, prefix, page, num_pages):
         "output": "text",
         "fl": FIELDS,
         "page": str(page),
+        "from": "20250101000000",
+        "to": "20251231235959"
     }
     for attempt in range(RETRY_LIMIT):
         try:
