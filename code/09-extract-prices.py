@@ -293,7 +293,10 @@ def process_file(filepath):
     result["year"] = year
     result["month"] = month
     result["title"] = extract_title(html)
-    result["file_path"] = str(filepath.relative_to(BASE_DIR))
+    try:
+        result["file_path"] = str(Path(filepath).resolve().relative_to(BASE_DIR))
+    except ValueError:
+        result["file_path"] = str(filepath)
 
     rating, review_count = extract_rating(html)
     result["rating"] = rating if rating is not None else ""
@@ -303,7 +306,17 @@ def process_file(filepath):
 
 
 def main():
+    import argparse
+    global HTML_DIR, OUTPUT, ERRORS_LOG
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--html-dir", type=Path, default=HTML_DIR)
+    ap.add_argument("--output", type=Path, default=OUTPUT)
+    ap.add_argument("--errors-log", type=Path, default=ERRORS_LOG)
+    a = ap.parse_args()
+    HTML_DIR, OUTPUT, ERRORS_LOG = a.html_dir, a.output, a.errors_log
+
     print("Extracting prices from downloaded HTML...")
+    print(f"  Input: {HTML_DIR}")
 
     html_files = sorted(HTML_DIR.rglob("*.html"))
     print(f"  Found {len(html_files):,} HTML files")
