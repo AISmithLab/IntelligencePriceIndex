@@ -8,7 +8,7 @@
   - **`site/index.html` + `site/ipi.js`** (vanilla JS + Plotly): heaviest-weighted-first checklist (each row shows Δ12mo, weight, panel gigs), bold composite + thin per-category lines, select-all/none, headline that updates with the basket. Composite recomputed client-side as `exp(Σ wᶜ·ln(idxᶜ)/Σ wᶜ)`, mirroring `composite()` in step 14.
   - **Validated offline** (no server, per user): JS syntax OK; client recompute over all categories reproduces `composite_all` exactly; unchecking design (71% wt) shifts the basket −2.1% → +0.8%.
   - **Headline:** all-categories composite trailing-12mo = **−2.1%** (2025-02→2026-02). **Caveat shipped on the page:** thin categories (audio/marketing/video; translation drops out monthly) read near-flat at monthly cadence; quarterly figures in `recent-ipi-summary.md` are more robust.
-  - **Remaining:** GitHub Pages deploy.
+  - **Deployed:** published `site/` to an orphan `gh-pages` branch (files at root + `.nojekyll`) and pushed to origin. Added `scripts/deploy-site.sh` for one-command redeploys (regenerate `data.json` → publish to `gh-pages`). **One-time manual step left:** enable Pages in repo Settings → Pages → branch `gh-pages` / root. Live URL once enabled: https://aismithlab.github.io/IntelligencePriceIndex/
 
 ## 2026-06-27 — Trailing-12-month IPI built (past-year data retrieval complete)
 

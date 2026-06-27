@@ -2,7 +2,7 @@
 
 ## Active
 
-- [ ] **CSRankings-style IPI website** — BUILT 2026-06-27, deploy pending. → `plans/active/04-ipi-website.md`. `code/15-build-site-data.py` → `site/data.json`; `site/index.html` + `site/ipi.js` (monthly, trailing-12mo, live client-side composite recompute, verified to match pipeline). **Remaining: GitHub Pages deploy.**
+- [ ] **CSRankings-style IPI website** — BUILT + PUSHED to `gh-pages` 2026-06-27. → `plans/active/04-ipi-website.md`. `code/15-build-site-data.py` → `site/data.json`; `site/index.html` + `site/ipi.js`; `scripts/deploy-site.sh` for redeploys. **Remaining: one-time enable Pages in repo Settings (branch `gh-pages` / root) → https://aismithlab.github.io/IntelligencePriceIndex/**
 - [ ] **Validation & robustness checks** — compare IPI to GPTs-are-GPTs exposure scores, Anthropic index, BLS wage data. Sensitivity analysis with alternative benchmark choices.
 - [ ] **Forward-looking forecasts** — project IPI under AI scaling scenarios (smooth scaling, punctuated improvement, plateau).
 - [ ] **Worker-level analysis** — same worker over time: upskilling vs. price reduction. Panel within-seller regressions.
