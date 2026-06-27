@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-27 — Website taken down (user building their own frontend)
+
+- The page wasn't working (GitHub Pages was never enabled in repo settings) and the user decided to build their own website instead.
+- **Took down the frontend + deployment** (user-confirmed scope "Frontend + live, keep data"):
+  - Deleted the remote and local `gh-pages` branch (unpublished the site).
+  - Removed `site/index.html`, `site/ipi.js`, and `scripts/deploy-site.sh`.
+- **Kept** `code/15-build-site-data.py` and `site/data.json` so the user's own site can reuse the generated data (documented data-contract: months, categories, per-category monthly index, weights, composite, delta12; composite recompute = `exp(Σ wᶜ·ln(idxᶜ)/Σ wᶜ)`).
+- The underlying recent IPI data and pipeline (steps 13–15) are untouched.
+
 ## 2026-06-27 — CSRankings-style IPI website built (monthly, client-side recompute)
 
 - **Built the static IPI website** (`site/`), CSRankings-inspired: a category checklist drives a live, in-browser recompute of the composite index.

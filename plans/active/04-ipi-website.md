@@ -1,6 +1,6 @@
 # Plan: CSRankings-style IPI website
 
-**Status:** active (site built & validated; deploy pending)
+**Status:** dropped 2026-06-27 — frontend taken down (page wasn't working; user building their own site). Data layer (`code/15-build-site-data.py` → `site/data.json`) retained for the user's own frontend.
 **Created:** 2026-06-26
 **Goal:** A static, client-side website where users check/uncheck Fiverr categories and watch the Intelligence Price Index time series recompute live — analogous to csrankings.com.
 

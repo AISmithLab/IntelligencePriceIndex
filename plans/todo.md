@@ -2,7 +2,7 @@
 
 ## Active
 
-- [ ] **CSRankings-style IPI website** — BUILT + PUSHED to `gh-pages` 2026-06-27. → `plans/active/04-ipi-website.md`. `code/15-build-site-data.py` → `site/data.json`; `site/index.html` + `site/ipi.js`; `scripts/deploy-site.sh` for redeploys. **Remaining: one-time enable Pages in repo Settings (branch `gh-pages` / root) → https://aismithlab.github.io/IntelligencePriceIndex/**
+- [ ] **IPI website (user-built)** — My CSRankings-style frontend was taken down 2026-06-27 (page wasn't working; user is building their own). Kept the data layer: `code/15-build-site-data.py` → `site/data.json` (documented contract). Open: user's own frontend consuming `site/data.json`.
 - [ ] **Validation & robustness checks** — compare IPI to GPTs-are-GPTs exposure scores, Anthropic index, BLS wage data. Sensitivity analysis with alternative benchmark choices.
 - [ ] **Forward-looking forecasts** — project IPI under AI scaling scenarios (smooth scaling, punctuated improvement, plateau).
 - [ ] **Worker-level analysis** — same worker over time: upskilling vs. price reduction. Panel within-seller regressions.
@@ -38,6 +38,7 @@
 
 ## Change Log
 
+- 2026-06-27: Website taken down (page wasn't working; user building own). Deleted `gh-pages` branch + frontend (`site/index.html`, `site/ipi.js`, `scripts/deploy-site.sh`). Kept `code/15-build-site-data.py` + `site/data.json` as the data layer for the user's own site.
 - 2026-06-27: CSRankings-style website built (`site/`, monthly + live recompute, validated). Only GitHub Pages deploy remains. Added `code/15-build-site-data.py`.
 - 2026-06-27: Trailing-12-month IPI retrieval+build complete (moved to Done). Website item unblocked. Fixed a path bug in `code/09-extract-prices.py` that had silently produced an empty prices CSV.
 - 2026-06-26: Added CSRankings-style IPI website item (plan 04, blocked on recent index; vanilla JS + Plotly, build on recent data). Fixed crash-bug in step 14 and added weights export.
