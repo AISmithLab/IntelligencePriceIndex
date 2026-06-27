@@ -2,7 +2,7 @@
 
 ## Active
 
-- [ ] **CSRankings-style IPI website** — UNBLOCKED 2026-06-27 (recent index built). → `plans/active/04-ipi-website.md`. Static site, vanilla JS + Plotly: category checklist toggles → composite IPI time series recomputes live in-browser. Build on recent (not pilot) data. Next: write `code/15-build-site-data.py` → `site/data.json`, then `site/index.html` + `site/ipi.js`.
+- [ ] **CSRankings-style IPI website** — BUILT 2026-06-27, deploy pending. → `plans/active/04-ipi-website.md`. `code/15-build-site-data.py` → `site/data.json`; `site/index.html` + `site/ipi.js` (monthly, trailing-12mo, live client-side composite recompute, verified to match pipeline). **Remaining: GitHub Pages deploy.**
 - [ ] **Validation & robustness checks** — compare IPI to GPTs-are-GPTs exposure scores, Anthropic index, BLS wage data. Sensitivity analysis with alternative benchmark choices.
 - [ ] **Forward-looking forecasts** — project IPI under AI scaling scenarios (smooth scaling, punctuated improvement, plateau).
 - [ ] **Worker-level analysis** — same worker over time: upskilling vs. price reduction. Panel within-seller regressions.
@@ -38,6 +38,7 @@
 
 ## Change Log
 
+- 2026-06-27: CSRankings-style website built (`site/`, monthly + live recompute, validated). Only GitHub Pages deploy remains. Added `code/15-build-site-data.py`.
 - 2026-06-27: Trailing-12-month IPI retrieval+build complete (moved to Done). Website item unblocked. Fixed a path bug in `code/09-extract-prices.py` that had silently produced an empty prices CSV.
 - 2026-06-26: Added CSRankings-style IPI website item (plan 04, blocked on recent index; vanilla JS + Plotly, build on recent data). Fixed crash-bug in step 14 and added weights export.
 - 2026-03-23: Massive progress — extraction, clustering, IPI construction, full paper draft, and self-review all completed. Moved 8 items to Done. Active items now focus on validation, forecasting, figures, and scale-up.

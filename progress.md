@@ -1,5 +1,15 @@
 # Progress Log
 
+## 2026-06-27 — CSRankings-style IPI website built (monthly, client-side recompute)
+
+- **Built the static IPI website** (`site/`), CSRankings-inspired: a category checklist drives a live, in-browser recompute of the composite index.
+  - **`code/15-build-site-data.py`** — reuses step 14's matched-model machinery via `importlib` to emit the **monthly per-category index** (step 14 computes this internally but only ever wrote the monthly *composite*). No re-download or pipeline change. Output: **`site/data.json` (2.2 KB)** — just small arrays, none of the 21 GB of HTML.
+  - **Monthly cadence** (user: "show the IPI per month"), **trailing 12 months only** = last 13 months with a real composite (2025-02 → 2026-02; no forward-filled phantom tail), each category **re-based to window-start = 100**.
+  - **`site/index.html` + `site/ipi.js`** (vanilla JS + Plotly): heaviest-weighted-first checklist (each row shows Δ12mo, weight, panel gigs), bold composite + thin per-category lines, select-all/none, headline that updates with the basket. Composite recomputed client-side as `exp(Σ wᶜ·ln(idxᶜ)/Σ wᶜ)`, mirroring `composite()` in step 14.
+  - **Validated offline** (no server, per user): JS syntax OK; client recompute over all categories reproduces `composite_all` exactly; unchecking design (71% wt) shifts the basket −2.1% → +0.8%.
+  - **Headline:** all-categories composite trailing-12mo = **−2.1%** (2025-02→2026-02). **Caveat shipped on the page:** thin categories (audio/marketing/video; translation drops out monthly) read near-flat at monthly cadence; quarterly figures in `recent-ipi-summary.md` are more robust.
+  - **Remaining:** GitHub Pages deploy.
+
 ## 2026-06-27 — Trailing-12-month IPI built (past-year data retrieval complete)
 
 - **Resumed the stalled recent-window download** (was 12,949/15,309) via `code/run-recent-pipeline.sh`. Final: **15,150/15,309 captured (99.0%)**, 21 GB. The 159 misses are persistent Wayback 429/timeout (exhausted retries over 2 passes; no 403/ban signal).

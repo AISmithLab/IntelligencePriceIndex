@@ -1,6 +1,6 @@
 # Plan: CSRankings-style IPI website
 
-**Status:** blocked (waiting on recent trailing-12-month index, step 14)
+**Status:** active (site built & validated; deploy pending)
 **Created:** 2026-06-26
 **Goal:** A static, client-side website where users check/uncheck Fiverr categories and watch the Intelligence Price Index time series recompute live — analogous to csrankings.com.
 
@@ -30,12 +30,18 @@ Does not cover: any backend/server, live scraping, or auth. All computation is c
 ## Steps
 - [x] Patch step 14 to emit `recent-category-weights.csv` (done 2026-06-26).
 - [x] Fix pre-existing SyntaxError in step 14 (global decl before use) that would have crashed the pipeline (done 2026-06-26).
-- [ ] Wait for download → 09 → 14 to finish; confirm `recent-category-indices.csv`, `recent-category-weights.csv`, `recent-ipi.csv` exist and are sane.
-- [ ] Write `code/15-build-site-data.py` — CSVs → `site/data.json`.
-- [ ] Build `site/index.html` + `site/ipi.js`: category checklist (with per-category Δ12mo), Plotly line chart (one line per checked category + bold composite), live recompute on toggle, trailing-12mo headline for the selection.
-- [ ] "Select all / none" + sensible default (all categories checked).
-- [ ] Sanity-check numbers match `recent-ipi-summary.md`.
+- [x] Wait for download → 09 → 14 to finish; confirm `recent-category-indices.csv`, `recent-category-weights.csv`, `recent-ipi.csv` exist and are sane (done 2026-06-27).
+- [x] Write `code/15-build-site-data.py` — reuses step 14's machinery to emit the MONTHLY per-category index (which step 14 computes but never wrote), trailing 12 months only, re-based to window-start=100 → `site/data.json` (2.2 KB). (done 2026-06-27)
+- [x] Build `site/index.html` + `site/ipi.js`: category checklist (per-category Δ12mo + weight + panel gigs), Plotly **monthly** line chart (thin line per checked category + bold composite), live recompute on toggle, trailing-12mo headline for the selection. (done 2026-06-27)
+- [x] "Select all / none" + sensible default (all categories checked). (done 2026-06-27)
+- [x] Sanity-check numbers: client recompute over all categories reproduces `composite_all` exactly; verified via offline replication. (done 2026-06-27)
 - [ ] Deploy to GitHub Pages.
+
+## Build decisions (2026-06-27)
+- **Monthly, not quarterly** (user: "show the IPI per month"). Step 14 already runs a full monthly `build()` internally — step 15 imports it via `importlib`, so no re-download or pipeline change was needed.
+- **Trailing 12 months only**: window = last 13 months *with a real composite* (`m["ipi"]` keys) = 2025-02 → 2026-02. No forward-filled phantom tail; 2024 stays on disk as anchor data only.
+- **Re-based to window-start = 100** so the chart reads as a clean "past-year" index; re-basing is a pure rescale of matched-model relatives, so the composite formula is preserved and client recompute stays exact.
+- **Known caveat shipped on the page**: thin categories (audio/marketing/video; translation drops out monthly) have sparse month-to-month matched pairs and read near-flat at monthly cadence. Design dominates basket weight (71%). Quarterly figures in `recent-ipi-summary.md` are more robust.
 
 ## Decision Log
 - 2026-06-26: Stack = vanilla JS + Plotly; build on recent data only (user choices via AskUserQuestion).
@@ -43,4 +49,5 @@ Does not cover: any backend/server, live scraping, or auth. All computation is c
 - 2026-06-26: Composite recomputed client-side from per-category indices + weights, so checkbox toggles need no server.
 
 ## Progress
+- 2026-06-27: **Site built and validated.** `code/15-build-site-data.py` → `site/data.json` (2.2 KB, monthly, trailing 12mo, rebased). `site/index.html` + `site/ipi.js` (CSRankings-style: heaviest-weighted-first checklist, live composite recompute, Plotly monthly chart, select-all/none, headline that updates with the basket). Verified: JS syntax OK; client composite over all categories reproduces `composite_all` exactly; unchecking design (71% wt) moves the basket −2.1% → +0.8%. Composite all-categories trailing-12mo = −2.1% (2025-02→2026-02). Only deploy remains.
 - 2026-06-26: Plan created. Step 14 patched to export weights and fixed to compile. Site build deferred until the recent index lands; watcher (bg task) will signal completion.
