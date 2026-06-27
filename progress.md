@@ -1,5 +1,28 @@
 # Progress Log
 
+## 2026-06-27 — Trailing-12-month IPI built (past-year data retrieval complete)
+
+- **Resumed the stalled recent-window download** (was 12,949/15,309) via `code/run-recent-pipeline.sh`. Final: **15,150/15,309 captured (99.0%)**, 21 GB. The 159 misses are persistent Wayback 429/timeout (exhausted retries over 2 passes; no 403/ban signal).
+- **Fixed a bug in `code/09-extract-prices.py`:** `filepath.relative_to(BASE_DIR)` crashed when `--html-dir` is a relative path (BASE_DIR is absolute). Now resolves the path first, falls back to the raw string. This had silently produced an empty `recent-prices.csv` on the first driver run, making the index build report "no data."
+- **Extraction: 15,150/15,150 (100%)** → `data/pilot/recent-prices.csv`. Methods: packageList JSON 74.6%, dollar fallback 25.4%.
+- **Trailing-12-month IPI built** (`code/14-recent-ipi.py`), matched-model, base 2024Q3=100, window 2024Q3→2026Q1. Panel: 3,566 gigs across 7 categories.
+  - **Composite IPI essentially flat over the past year: 2025Q1 → 2026Q1 = −0.3%** (level ~90, down from the 100→100.5 2024 anchor — a one-step ~10% drop into 2025Q1, then flat).
+  - Per-category Δ12mo: video −11.6%, coding −6.8%, writing −6.6%, translation −2.7%, marketing −1.2%, audio +0.6%, design +2.1%.
+  - Weights are design-dominated (w=0.71) — design's +2.1% offsets the AI-exposed categories' declines, flattening the composite.
+  - Outputs: `recent-ipi.csv`, `recent-category-indices.csv`, `recent-category-weights.csv`, `recent-ipi-monthly.csv`, `recent-ipi-summary.md`.
+- **Unblocks the CSRankings-style website** (`plans/active/04-ipi-website.md`) — all data-contract CSVs now exist.
+
+## 2026-06-26 — Recent-window data retrieval for trailing-12-month IPI
+
+- **Goal:** extend the IPI to a genuine "past year" (CPI-style trailing 12 months) across all viable Fiverr categories. The original 500-seller pilot was sampled for long histories and goes sparse after 2024Q4, so it can't support a recent index.
+- **Manifest (built prior session, `code/13-recent-manifest.py`):** `data/pilot/recent-manifest.tsv` — selects gigs with ≥2 distinct quarters of coverage anchored at 2024Q3 AND ≥1 snapshot in the trailing window (2025Q3–2026Q2), one snapshot/month each.
+  - **15,309 snapshots, 3,589 distinct gigs, 7 categories:** design 6,959 / coding 2,634 / writing 2,198 / marketing 1,534 / video 1,295 / audio 437 / translation 252. Months span 202407–202603.
+  - Thin categories excluded (uncategorized, data_entry, data_analysis).
+- **Download (`code/08-download-html.py`):** launched full retrieval from Wayback Machine raw (`id_`) captures → `data/pilot/html-recent/`, log `recent-download-log.tsv`, checkpoint `recent-download-checkpoint.txt`.
+  - Tuned concurrency: tested 10/24/10/20. Throughput is latency-bound (~1.6 MB raw fetches, ~15 s each). Failures are 429/timeout exhausted-retries logged as `fail` (NOT 403 — no ban signal) and are NOT checkpointed, so a second pass retries them. Settled on concurrency 20 / 20 req/s (~74% per-attempt success, ~1/s good throughput).
+  - Validation: 210-snapshot pilot test (`recent-pilot-test.tsv` → `html-recent-test/`) had previously confirmed 100% extraction-grade captures.
+- **Pending (this run):** finish full download (~24 GB est.), run a retry pass over `fail` rows, then extract prices into `data/pilot/recent-prices.csv` (parameterized `code/09-extract-prices.py` to accept `--html-dir/--output`).
+
 ## 2026-03-23 — IPI constructed, full paper drafted and self-reviewed
 
 - **Price extraction:** 22,632/22,632 HTML files extracted (100% success). Methods: packageList JSON (72.9%), old JSON (15.2%), dollar fallback (11.2%), HTML span (0.7%). Output: `data/pilot/pilot-prices.csv`.

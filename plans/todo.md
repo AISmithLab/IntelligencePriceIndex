@@ -2,6 +2,7 @@
 
 ## Active
 
+- [ ] **CSRankings-style IPI website** — UNBLOCKED 2026-06-27 (recent index built). → `plans/active/04-ipi-website.md`. Static site, vanilla JS + Plotly: category checklist toggles → composite IPI time series recomputes live in-browser. Build on recent (not pilot) data. Next: write `code/15-build-site-data.py` → `site/data.json`, then `site/index.html` + `site/ipi.js`.
 - [ ] **Validation & robustness checks** — compare IPI to GPTs-are-GPTs exposure scores, Anthropic index, BLS wage data. Sensitivity analysis with alternative benchmark choices.
 - [ ] **Forward-looking forecasts** — project IPI under AI scaling scenarios (smooth scaling, punctuated improvement, plateau).
 - [ ] **Worker-level analysis** — same worker over time: upskilling vs. price reduction. Panel within-seller regressions.
@@ -25,6 +26,7 @@
 - [x] **Collect AI benchmark score histories** — `data/ai-benchmarks.csv` with 8 benchmarks spanning 2017–2025.
 - [x] **Build linked panel dataset** — `code/12-panel-ipi.py`, panel of 1,245 gigs × 21,461 observations.
 - [x] **Estimate price elasticity of intelligence** — 5 categories estimated, all significant p<0.01. Audio β=−0.49, Design β=+1.10.
+- [x] **Trailing-12-month IPI (past-year data retrieval)** — DONE 2026-06-27. 15,150/15,309 snapshots downloaded (99%), 100% price extraction, matched-model index across 7 categories. Composite −0.3% over 2025Q1→2026Q1. Outputs: `data/pilot/recent-ipi*.csv`, `recent-category-*.csv`, `recent-ipi-summary.md`.
 - [x] **Construct the IPI** — Matched-model Jevons/Törnqvist index. IPI peaked 312 (Q4 2024), declined to 246 (Q2 2025).
 - [x] **Draft all paper sections** — abstract, introduction, related work, methods, findings, discussion, limitations, conclusion.
 - [x] **Self-review and polish** — Fixed number inconsistencies, section numbering, redundancy, missing cross-references.
@@ -36,6 +38,8 @@
 
 ## Change Log
 
+- 2026-06-27: Trailing-12-month IPI retrieval+build complete (moved to Done). Website item unblocked. Fixed a path bug in `code/09-extract-prices.py` that had silently produced an empty prices CSV.
+- 2026-06-26: Added CSRankings-style IPI website item (plan 04, blocked on recent index; vanilla JS + Plotly, build on recent data). Fixed crash-bug in step 14 and added weights export.
 - 2026-03-23: Massive progress — extraction, clustering, IPI construction, full paper draft, and self-review all completed. Moved 8 items to Done. Active items now focus on validation, forecasting, figures, and scale-up.
 - 2026-03-22: Expanded plan 03 into 3 phases. Size estimation done; Phase 1 active.
 - 2026-03-21: Both plans completed in parallel. Pilot: GO. Scoping: taxonomy + related work drafted.
