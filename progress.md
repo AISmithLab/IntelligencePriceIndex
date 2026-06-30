@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-06-30 — IPI frontend committed + hardened on `mockup` branch
+
+- **Committed the rebuilt frontend** that had been sitting untracked: `site/index.html`, `site/ipi.js`, `site/.nojekyll`, `scripts/deploy-site.sh`. The work is now preserved in git on branch `mockup`.
+- **Correction to the 2026-06-29 note:** the rebuilt `ipi.js` is now **fully self-contained — no Plotly / no external libs**. It hand-rolls the trend chart and per-row sparklines as inline SVG, so the page works offline and over `file://`-style static hosting with zero CDN dependency.
+- **Re-validated before commit:** `node --check site/ipi.js` passes; `data.json` exposes every key `ipi.js` consumes (`months`, `categories`, `weights`, `index`, `composite_all`, `delta12`, `panel_gigs`, `generated`); client-side composite recompute reproduces `composite_all` (max abs diff 5.2e-3, all from JSON 2-dp rounding) and the trailing-12mo headline recomputes to **−2.10%**, matching the stored `delta12.composite` (−2.1).
+- **Status:** frontend committed and validated on `mockup`. `gh-pages` Pages setting still not enabled (the user is steering hosting). `scripts/deploy-site.sh` remains the one-command redeploy path but was **not run** (it force-pushes `gh-pages`). Also present on this branch: `scripts/make_mock_ipi.py`, a 20-category synthetic-data + matplotlib mockup generator (separate exploration, untouched).
+
+## 2026-06-29 — IPI frontend rebuilt on `mockup` branch (uncommitted)
+
+- After the 2026-06-27 takedown, the interactive site was **rebuilt** against the kept data layer. Recreated (currently **untracked** — not yet committed): `site/index.html`, `site/ipi.js`, `site/.nojekyll`, `scripts/deploy-site.sh`.
+- **Reuses the committed data contract** (`site/data.json` from 2026-06-27, plus `site/README.md` + `site/GUIDE.md`) — no pipeline re-run.
+- **Verified consistent:** `ipi.js` consumes exactly the keys `data.json` exposes (`months`, `categories`, `weights`, `delta12`, `panel_gigs`, `index`, `generated`); client-side composite mirrors `composite()` in `code/14-recent-ipi.py` as `exp(Σ wᶜ·ln(idxᶜ)/Σ wᶜ)`. Window = 13 months (2025-02 → 2026-02), **6 categories** (translation drops out at monthly cadence; handled gracefully). Page caveat re-shipped: design ~71% weight, thin categories read near-flat monthly, quarterly figures more robust.
+- **Status:** working frontend exists on branch `mockup` but is uncommitted; `gh-pages` Pages setting still not enabled. Next steps if continuing: commit the rebuilt `site/` + `scripts/deploy-site.sh`, then enable Pages (or deploy via the user's own hosting).
+
 ## 2026-06-27 — Website taken down (user building their own frontend)
 
 - The page wasn't working (GitHub Pages was never enabled in repo settings) and the user decided to build their own website instead.
