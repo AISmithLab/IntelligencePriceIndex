@@ -2,7 +2,7 @@
 
 ## Active
 
-- [ ] **IPI website (deploy)** — Self-contained CSRankings-style frontend (`site/index.html`, `site/ipi.js`, inline-SVG charts, no external libs) rebuilt, validated, and **committed on `mockup` 2026-06-30**. Data layer: `code/15-build-site-data.py` → `site/data.json` (documented contract). Open: enable GitHub Pages (Settings → Pages → `gh-pages`/root) or deploy via user's own hosting, then run `scripts/deploy-site.sh`. User is steering hosting.
+- [ ] **IPI website (deploy)** — Self-contained CSRankings-style frontend (`site/index.html`, `site/ipi.js`, inline-SVG charts, no external libs), committed on `mockup`. Data layer: `code/15-build-site-data.py` → `site/data.json`. **2026-06-30: repo made public; chose GitHub Actions deploy from `mockup`.** Added `.github/workflows/pages.yml` (uploads `site/`, deploys on push). **Blocked on one manual step:** user must set Settings → Pages → Build and deployment → Source = "GitHub Actions" (one-time). Then the workflow auto-publishes to https://aismithlab.github.io/IntelligencePriceIndex/.
 - [ ] **Validation & robustness checks** — compare IPI to GPTs-are-GPTs exposure scores, Anthropic index, BLS wage data. Sensitivity analysis with alternative benchmark choices.
 - [ ] **Forward-looking forecasts** — project IPI under AI scaling scenarios (smooth scaling, punctuated improvement, plateau).
 - [ ] **Worker-level analysis** — same worker over time: upskilling vs. price reduction. Panel within-seller regressions.
