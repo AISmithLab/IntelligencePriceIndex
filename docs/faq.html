@@ -4,75 +4,111 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Intelligence Price Index — FAQ &amp; Methodology</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M5 11l6 5 4-3 12 7' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <style>
-    :root { --line:#dddddd; --ink:#222; --mut:#777; --link:#0645ad;
-            --up:#188038; --down:#c5221f; --hi:#f5f7fa; }
+    :root {
+      --bg:#f5f6f9; --card:#ffffff; --line:#e8eaf0; --line-2:#eef0f5;
+      --ink:#1c2230; --mut:#6b7280; --faint:#9aa1ad;
+      --accent:#4f46e5; --accent-d:#4338ca; --link:#4f46e5;
+      --up:#15803d; --down:#dc2626; --hi:#f5f7fc;
+    }
     * { box-sizing: border-box; }
-    body { font: 14px/1.55 Arial, Helvetica, "Liberation Sans", sans-serif;
-           color: var(--ink); margin: 0; background: #fff; }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 0 18px 80px; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { font: 15px/1.62 "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+           Helvetica, Arial, sans-serif; color: var(--ink); margin: 0;
+           background: var(--bg); -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 0 20px 80px; }
 
-    header { padding: 22px 0 8px; border-bottom: 1px solid var(--line); }
-    header h1 { font-size: 24px; margin: 0 0 3px; font-weight: 700; }
-    header p { margin: 0; color: var(--mut); font-size: 13px; }
-    nav { font-size: 13px; margin: 12px 0 2px; }
-    nav a { color: var(--link); text-decoration: none; }
-    nav a:hover { text-decoration: underline; }
-    nav .sep { color: #ccc; padding: 0 8px; }
+    /* header ---------------------------------------------------------------- */
+    header { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+             padding: 30px 4px 16px; }
+    .logo { width: 44px; height: 44px; border-radius: 11px; flex: none;
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            display: grid; place-items: center;
+            box-shadow: 0 4px 12px -2px rgba(79,70,229,.45); }
+    .logo svg { width: 26px; height: 26px; display: block; }
+    header h1 { font-size: 24px; margin: 0 0 4px; font-weight: 800;
+                letter-spacing: -.02em; line-height: 1.15; }
+    header p { margin: 0; color: var(--mut); font-size: 13.5px; }
+    nav.top { margin-top: 9px; font-size: 13px; }
+    nav.top a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    nav.top a:hover { text-decoration: underline; }
+    .htext { min-width: 0; }
 
-    /* table of contents */
-    .toc { margin: 20px 0 8px; padding: 12px 16px; background: #fafafa;
-           border: 1px solid var(--line); border-radius: 4px; font-size: 13px; }
-    .toc h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
-              color: var(--mut); margin: 0 0 8px; }
-    .toc ol { margin: 0; padding-left: 20px; }
-    .toc li { margin: 2px 0; }
+    /* cards ----------------------------------------------------------------- */
+    .card { background: var(--card); border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18); }
+
+    .toc { padding: 16px 20px; margin: 12px 0 18px; }
+    .toc h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+              color: var(--faint); margin: 0 0 10px; font-weight: 700; }
+    .toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 26px; font-size: 13px; }
+    .toc li { margin: 3px 0; break-inside: avoid; }
     .toc a { color: var(--link); text-decoration: none; }
     .toc a:hover { text-decoration: underline; }
 
-    .q { margin-top: 34px; }
-    .q h3 { font-size: 17px; margin: 0 0 6px; font-weight: 700;
-            scroll-margin-top: 14px; }
-    .q p { margin: 8px 0; }
-    .q ul { margin: 8px 0; padding-left: 22px; }
-    .q li { margin: 4px 0; }
-    code { background: #f3f3f3; padding: 1px 5px; border-radius: 3px;
-           font-size: 12.5px; }
+    .paper { padding: 8px 30px 26px; }
+
+    .q { padding-top: 26px; margin-top: 26px; border-top: 1px solid var(--line-2); }
+    .q:first-child { border-top: none; margin-top: 0; }
+    .q h3 { font-size: 18px; margin: 0 0 8px; font-weight: 700;
+            letter-spacing: -.01em; scroll-margin-top: 16px; }
+    .q p { margin: 9px 0; }
+    .q ul { margin: 9px 0; padding-left: 22px; }
+    .q li { margin: 5px 0; }
+    code { background: #eef0f6; padding: 1.5px 6px; border-radius: 5px;
+           font-size: 13px; color: var(--ink); }
     .lead { color: var(--mut); }
     .up { color: var(--up); font-weight: 700; }
     .down { color: var(--down); font-weight: 700; }
+    a { color: var(--link); }
 
-    /* ---- math rendering (pure HTML/CSS, no libraries) ---- */
-    .math { font-family: Georgia, "Times New Roman", serif; font-size: 18px;
-            text-align: center; margin: 16px 0; color: #111;
-            overflow-x: auto; }
+    /* math (pure HTML/CSS, no libraries) ------------------------------------ */
+    .math { font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+            font-size: 19px; text-align: center; margin: 18px 0; color: #111;
+            background: #fafbfd; border: 1px solid var(--line-2); border-radius: 10px;
+            padding: 16px 12px; overflow-x: auto; }
     .math i { font-style: italic; }
     .frac { display: inline-flex; flex-direction: column; vertical-align: middle;
             text-align: center; margin: 0 .25em; }
-    .frac > span { padding: 0 .5em; line-height: 1.25; }
-    .frac > .num { border-bottom: 1px solid #333; }
+    .frac > span { padding: 0 .5em; line-height: 1.3; }
+    .frac > .num { border-bottom: 1.5px solid #333; }
     .big { font-size: 1.5em; vertical-align: -.22em; line-height: 0; }
-    .legend { font-size: 12.5px; color: var(--mut); margin: 6px 0 0;
-              border-left: 2px solid var(--line); padding-left: 12px; }
+    .legend { font-size: 13px; color: var(--mut); margin: 8px 0 0;
+              border-left: 3px solid var(--line); padding-left: 14px; line-height: 1.65; }
     .legend b { color: var(--ink); font-weight: 700; }
-    .step { font-size: 12px; text-transform: uppercase; letter-spacing: .05em;
-            color: var(--mut); margin: 22px 0 0; font-weight: 700; }
+    .step { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em;
+            color: var(--accent); margin: 24px 0 0; font-weight: 700; }
 
-    footer { color: #999; font-size: 12px; margin-top: 40px; padding-top: 14px;
-             border-top: 1px solid var(--line); }
+    footer { color: var(--faint); font-size: 12px; margin-top: 30px;
+             padding: 16px 4px 0; border-top: 1px solid var(--line); }
     footer a { color: var(--link); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 560px) {
+      .paper { padding: 4px 18px 20px; }
+      .toc ol { columns: 1; }
+      .math { font-size: 17px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Intelligence Price Index — FAQ &amp; Methodology</h1>
-      <p>What the IPI measures, where the numbers come from, and the exact formulas behind them.</p>
-      <nav><a href="index.html">&larr; Back to the index</a></nav>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M5 11l6 5 4-3 12 7"
+          stroke="white" stroke-width="2.6" stroke-linecap="round"
+          stroke-linejoin="round"/></svg>
+      </div>
+      <div class="htext">
+        <h1>FAQ &amp; Methodology</h1>
+        <p>What the IPI measures, where the numbers come from, and the exact formulas behind them.</p>
+        <nav class="top"><a href="index.html">&larr; Back to the index</a></nav>
+      </div>
     </header>
 
-    <div class="toc">
+    <div class="card toc">
       <h2>Contents</h2>
       <ol>
         <li><a href="#what">What is the Intelligence Price Index?</a></li>
@@ -88,6 +124,7 @@
       </ol>
     </div>
 
+    <div class="card paper">
     <!-- 1 -->
     <div class="q" id="what">
       <h3>1. What is the Intelligence Price Index?</h3>
@@ -306,6 +343,7 @@
       client-side. The data contract and build steps are documented in
       <code>README.md</code> and <code>GUIDE.md</code> alongside this page.</p>
     </div>
+    </div><!-- /.paper -->
 
     <footer>
       Intelligence Price Index &middot; matched-model index of Fiverr gig prices via the Wayback Machine.

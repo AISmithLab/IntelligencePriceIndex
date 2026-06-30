@@ -4,108 +4,168 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Intelligence Price Index</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M5 11l6 5 4-3 12 7' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <style>
-    :root { --line:#dddddd; --ink:#222; --mut:#777; --link:#0645ad;
-            --up:#188038; --down:#c5221f; --hi:#f5f7fa; }
+    :root {
+      --bg:#f5f6f9; --card:#ffffff; --line:#e8eaf0; --line-2:#eef0f5;
+      --ink:#1c2230; --mut:#6b7280; --faint:#9aa1ad;
+      --accent:#4f46e5; --accent-d:#4338ca; --link:#4f46e5;
+      --up:#15803d; --up-bg:#e9f6ee; --down:#dc2626; --down-bg:#fdecec; --hi:#f5f7fc;
+    }
     * { box-sizing: border-box; }
-    body { font: 14px/1.45 Arial, Helvetica, "Liberation Sans", sans-serif;
-           color: var(--ink); margin: 0; background: #fff; }
-    .wrap { max-width: 960px; margin: 0 auto; padding: 0 18px 60px; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { font: 14px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+           Helvetica, Arial, sans-serif; color: var(--ink); margin: 0;
+           background: var(--bg); -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px 72px; }
+    a { color: var(--link); }
 
-    header { padding: 22px 0 10px; border-bottom: 1px solid var(--line); }
-    header h1 { font-size: 24px; margin: 0 0 3px; font-weight: 700; }
-    header p { margin: 0; color: var(--mut); font-size: 13px; }
-
-    /* headline / toolbar -------------------------------------------------- */
-    .bar { display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap;
-           padding: 16px 0 10px; }
-    .headline .num { font-size: 32px; font-weight: 700; line-height: 1;
-                     font-variant-numeric: tabular-nums; }
-    .headline .num.up { color: var(--up); } .headline .num.down { color: var(--down); }
-    .headline .sub { color: var(--mut); font-size: 12px; margin-top: 3px; }
-    .toggles { margin-left: auto; font-size: 13px; color: var(--mut); }
-    .toggles a { color: var(--link); cursor: pointer; text-decoration: none; padding: 0 2px; }
-    .toggles a:hover { text-decoration: underline; }
-    header nav { font-size: 13px; margin-top: 8px; }
-    header nav a { color: var(--link); text-decoration: none; }
+    /* header ---------------------------------------------------------------- */
+    header { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+             padding: 30px 4px 20px; }
+    .logo { width: 44px; height: 44px; border-radius: 11px; flex: none;
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            display: grid; place-items: center;
+            box-shadow: 0 4px 12px -2px rgba(79,70,229,.45); }
+    .logo svg { width: 26px; height: 26px; display: block; }
+    header h1 { font-size: 25px; margin: 0 0 4px; font-weight: 800;
+                letter-spacing: -.02em; line-height: 1.1; }
+    header p { margin: 0; color: var(--mut); font-size: 13.5px; max-width: 62ch; }
+    header nav { margin-top: 9px; font-size: 13px; }
+    header nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
     header nav a:hover { text-decoration: underline; }
+    .htext { min-width: 0; }
 
-    /* chart --------------------------------------------------------------- */
-    #chart { position: relative; width: 100%; }
+    /* card -------------------------------------------------------------------*/
+    .card { background: var(--card); border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18); }
+    .hero { padding: 20px 22px 16px; }
+
+    /* headline / toolbar ---------------------------------------------------- */
+    .bar { display: flex; align-items: flex-start; gap: 22px; flex-wrap: wrap;
+           padding-bottom: 6px; }
+    .headline .num { font-size: 38px; font-weight: 800; line-height: 1;
+                     letter-spacing: -.025em; font-variant-numeric: tabular-nums;
+                     color: var(--ink); }
+    .headline .num.up { color: var(--up); } .headline .num.down { color: var(--down); }
+    .headline .sub { color: var(--mut); font-size: 12.5px; margin-top: 7px; }
+    .headline .sub #hRange { color: var(--faint); }
+    .toggles { margin-left: auto; font-size: 12.5px; color: var(--mut);
+               display: flex; align-items: center; gap: 7px; padding-top: 4px; }
+    .toggles a { color: var(--accent); cursor: pointer; text-decoration: none;
+                 padding: 3px 11px; border: 1px solid var(--line);
+                 border-radius: 999px; background: #fff; font-weight: 600;
+                 transition: background .12s, border-color .12s, color .12s; }
+    .toggles a:hover { background: var(--accent); border-color: var(--accent);
+                       color: #fff; }
+
+    /* chart ----------------------------------------------------------------- */
+    #chart { position: relative; width: 100%; margin-top: 4px; }
     #chart svg { display: block; width: 100%; height: auto; }
     .tip { position: absolute; pointer-events: none; background: #fff;
-           border: 1px solid var(--line); box-shadow: 0 1px 4px rgba(0,0,0,.12);
-           font-size: 12px; padding: 6px 8px; border-radius: 3px; white-space: nowrap;
-           display: none; z-index: 5; }
+           border: 1px solid var(--line); box-shadow: 0 6px 20px -6px rgba(17,24,39,.28);
+           font-size: 12px; padding: 8px 10px; border-radius: 8px; white-space: nowrap;
+           display: none; z-index: 5; line-height: 1.5; }
     .tip b { font-weight: 700; } .tip .k { display:inline-block; width:9px; height:9px;
-            border-radius:2px; margin-right:5px; vertical-align:-1px; }
+            border-radius:3px; margin-right:6px; vertical-align:-1px; }
 
-    /* table --------------------------------------------------------------- */
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { padding: 6px 8px; border-bottom: 1px solid var(--line);
+    /* table ----------------------------------------------------------------- */
+    .tablewrap { margin-top: 18px; padding: 6px 10px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line-2);
              font-variant-numeric: tabular-nums; }
-    thead th { text-align: right; font-weight: 700; font-size: 12px; color: var(--mut);
-               border-bottom: 2px solid #ccc; cursor: pointer; user-select: none;
-               white-space: nowrap; }
+    thead th { text-align: right; font-weight: 600; font-size: 11px;
+               letter-spacing: .04em; text-transform: uppercase; color: var(--faint);
+               border-bottom: 1px solid var(--line); cursor: pointer; user-select: none;
+               white-space: nowrap; transition: color .12s; }
+    thead th:hover { color: var(--accent); }
     thead th.l { text-align: left; }
-    thead th .arr { color: #aaa; font-size: 10px; }
+    thead th .arr { color: var(--accent); font-size: 10px; }
     td.num { text-align: right; }
+    tbody tr.cat { transition: background .1s; }
     tbody tr.cat:hover { background: var(--hi); }
-    .caret { color: var(--mut); cursor: pointer; width: 14px; display: inline-block; }
-    .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block;
-              vertical-align: -1px; margin-right: 7px; }
-    .name { text-transform: capitalize; }
+    tbody tr.cat td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+    tbody tr.cat td:last-child  { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+    .caret { color: var(--faint); cursor: pointer; width: 14px; display: inline-block;
+             transition: color .12s; } .caret:hover { color: var(--accent); }
+    .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+              vertical-align: -1px; margin-right: 8px; }
+    .name { text-transform: capitalize; font-weight: 600; color: var(--ink); }
+    td.d { font-weight: 600; }
     td.d.up { color: var(--up); } td.d.down { color: var(--down); }
     td.faint { color: var(--mut); }
-    tr.detail td { background: #fafafa; color: var(--mut); font-size: 12px; padding: 8px 14px; }
-    tr.detail .vals { font-variant-numeric: tabular-nums; line-height: 1.7; }
-    tfoot td { border-top: 2px solid #ccc; font-weight: 700; }
-    input[type=checkbox] { cursor: pointer; vertical-align: -2px; }
+    tr.detail td { background: #fafbfd; color: var(--mut); font-size: 12px;
+                   padding: 9px 16px; }
+    tr.detail .vals { font-variant-numeric: tabular-nums; line-height: 1.8; }
+    tfoot td { border-top: 2px solid var(--line); border-bottom: none;
+               font-weight: 700; color: var(--ink); }
+    input[type=checkbox] { cursor: pointer; vertical-align: -2px; accent-color: var(--accent); }
     .spark { vertical-align: middle; }
 
-    .notes { color: var(--mut); font-size: 12px; margin: 18px 0 0; }
-    footer { color: #999; font-size: 12px; margin-top: 20px; padding-top: 12px;
-             border-top: 1px solid var(--line); }
-    footer code { background: #f3f3f3; padding: 1px 4px; border-radius: 3px; }
+    /* notes / footer -------------------------------------------------------- */
+    .notes { color: var(--mut); font-size: 12px; margin: 18px 4px 0;
+             padding-left: 14px; border-left: 3px solid var(--line);
+             line-height: 1.6; }
+    footer { color: var(--faint); font-size: 12px; margin-top: 22px; padding: 16px 4px 0;
+             border-top: 1px solid var(--line); line-height: 1.6; }
+    footer code { background: #eef0f6; padding: 1.5px 6px; border-radius: 5px;
+                  font-size: 11.5px; color: var(--ink); }
+
+    @media (max-width: 560px) {
+      .headline .num { font-size: 32px; }
+      .hero { padding: 16px 14px 12px; }
+      header { padding-top: 22px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Intelligence Price Index</h1>
-      <p>The revealed price of AI-exposed knowledge work &mdash; a matched-model price index of Fiverr gig prices, trailing 12 months.</p>
-      <nav><a href="faq.html">FAQ &amp; methodology &rarr;</a></nav>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M5 11l6 5 4-3 12 7"
+          stroke="white" stroke-width="2.6" stroke-linecap="round"
+          stroke-linejoin="round"/></svg>
+      </div>
+      <div class="htext">
+        <h1>Intelligence Price Index</h1>
+        <p>The revealed price of AI-exposed knowledge work &mdash; a matched-model price index of Fiverr gig prices, trailing 12 months.</p>
+        <nav><a href="faq.html">FAQ &amp; methodology &rarr;</a></nav>
+      </div>
     </header>
 
-    <div class="bar">
-      <div class="headline">
-        <div class="num" id="hNum">&mdash;</div>
-        <div class="sub">composite, trailing 12&nbsp;months <span id="hRange"></span></div>
+    <section class="card hero">
+      <div class="bar">
+        <div class="headline">
+          <div class="num" id="hNum">&mdash;</div>
+          <div class="sub">composite, trailing 12&nbsp;months <span id="hRange"></span></div>
+        </div>
+        <div class="toggles">basket:
+          <a id="selAll">All</a>
+          <a id="selNone">None</a>
+        </div>
       </div>
-      <div class="toggles">basket:
-        <a id="selAll">All</a> &middot;
-        <a id="selNone">None</a>
-      </div>
-    </div>
+      <div id="chart"><div class="tip" id="tip"></div></div>
+    </section>
 
-    <div id="chart"><div class="tip" id="tip"></div></div>
-
-    <table id="tbl">
-      <thead>
-        <tr>
-          <th class="l" style="width:18px"></th>
-          <th class="l" style="width:18px"></th>
-          <th class="l" style="width:34px" data-k="rank">#</th>
-          <th class="l" data-k="name">Category</th>
-          <th class="l" style="width:120px">Trend</th>
-          <th data-k="delta">&Delta;12mo</th>
-          <th data-k="weight">Weight</th>
-          <th data-k="gigs">Gigs</th>
-        </tr>
-      </thead>
-      <tbody id="rows"></tbody>
-      <tfoot id="foot"></tfoot>
-    </table>
+    <section class="card tablewrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th class="l" style="width:18px"></th>
+            <th class="l" style="width:18px"></th>
+            <th class="l" style="width:34px" data-k="rank">#</th>
+            <th class="l" data-k="name">Category</th>
+            <th class="l" style="width:120px">Trend</th>
+            <th data-k="delta">&Delta;12mo</th>
+            <th data-k="weight">Weight</th>
+            <th data-k="gigs">Gigs</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+        <tfoot id="foot"></tfoot>
+      </table>
+    </section>
 
     <p class="notes" id="caveat"></p>
     <footer id="src"></footer>
