@@ -8,6 +8,15 @@ const PALETTE = { design:"#2563eb", coding:"#0891b2", writing:"#7c3aed",
                   marketing:"#db2777", video:"#ea580c", audio:"#16a34a",
                   translation:"#ca8a04" };
 const SVGNS = "http://www.w3.org/2000/svg";
+// data.json may carry per-category colors/labels (narrow subcategory mode);
+// fall back to the flat palette + capitalized id for the broad-category build.
+const colorOf = c => (DATA && DATA.colors && DATA.colors[c]) || PALETTE[c] || "#888";
+const labelOf = c => (DATA && DATA.labels && DATA.labels[c]) || cap(c);
+// "main" categories form the basket/composite; "sub" categories are detail lines
+// nested under a parent and excluded from the composite (their gigs sit inside the parent).
+const isSub    = c => !!(DATA && DATA.level && DATA.level[c] === "sub");
+const parentOf = c => (DATA && DATA.parents && DATA.parents[c]) || c;
+const subsOf   = c => DATA.categories.filter(x => isSub(x) && parentOf(x) === c);
 
 const fmtPct = d => d == null ? "n/a" : Math.abs(d) < 0.05 ? "0.0%" : (d > 0 ? "+" : "−") + Math.abs(d).toFixed(1) + "%";
 const cls    = d => d == null || Math.abs(d) < 0.05 ? "" : (d > 0 ? "up" : "down");
@@ -25,9 +34,11 @@ fetch("data.json").then(r => r.json()).then(data => {
   document.getElementById("hRange").textContent =
     `(${DATA.months[0]} → ${DATA.months[DATA.months.length - 1]})`;
   document.getElementById("caveat").textContent =
-    "Index, base month = 100. Categories ranked by 12-month price change (largest decline first). " +
-    "Design carries ~71% of basket weight; thin categories (audio, marketing, video) have sparse " +
-    "matched-pair coverage at monthly cadence and read near-flat — quarterly figures are more robust.";
+    "Index, base month = 100. The composite basket is the main (broad) categories, ranked by " +
+    "12-month price change (largest decline first). Subcategories (dashed, nested under their parent) " +
+    "are shown for detail where they have both solid matched-pair coverage and real movement " +
+    "(e.g. Logo & Brand within Design); they are not added to the basket since their gigs already " +
+    "sit inside the parent. Thin or flat subcategories stay folded into the broad domain.";
   document.getElementById("src").innerHTML =
     `Source: Fiverr gig prices via the Wayback Machine, matched-model index. ` +
     `Composite = review-weighted geometric mean of the selected categories: ` +
@@ -63,10 +74,12 @@ function significantMoves(series, thresh = 0.8) {
     moves.push({ i, pct: (series[i] / series[i - 1] - 1) * 100 });
   }
   const ups = moves.filter(m => m.pct > 0), downs = moves.filter(m => m.pct < 0);
-  const pick = new Map(moves.filter(m => Math.abs(m.pct) >= thresh).map(m => [m.i, m]));
-  if (ups.length) { const m = ups.reduce((a, b) => b.pct > a.pct ? b : a); if (m.pct >= 0.05) pick.set(m.i, m); }
-  if (downs.length) { const m = downs.reduce((a, b) => b.pct < a.pct ? b : a); if (m.pct <= -0.05) pick.set(m.i, m); }
-  return [...pick.values()];
+  // threshold crossings first; the single biggest rise/drop override with a stronger label
+  const pick = new Map(moves.filter(m => Math.abs(m.pct) >= thresh)
+    .map(m => [m.i, { ...m, why: `crossed the ±${thresh}% month-over-month threshold` }]));
+  if (ups.length) { const m = ups.reduce((a, b) => b.pct > a.pct ? b : a); if (m.pct >= 0.05) pick.set(m.i, { ...m, why: "sharpest single-month rise in the window" }); }
+  if (downs.length) { const m = downs.reduce((a, b) => b.pct < a.pct ? b : a); if (m.pct <= -0.05) pick.set(m.i, { ...m, why: "sharpest single-month drop in the window" }); }
+  return [...pick.values()].sort((a, b) => a.i - b.i);
 }
 // shared y-domain across every category + composite, for comparable sparklines
 function domain() {
@@ -100,10 +113,12 @@ function drawChart(cats, comp) {
   const box = document.getElementById("chart");
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
   const tip = document.getElementById("tip");
-  const W = box.clientWidth || 900, H = 320, m = { t: 14, r: 16, b: 28, l: 38 };
+  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 42 };
   const months = DATA.months, n = months.length;
 
-  const series = cats.map(c => ({ name: cap(c), vals: DATA.index[c], color: PALETTE[c] || "#888", w: 1.3, op: 0.5 }));
+  const lineOp = cats.length > 10 ? 0.32 : 0.5;   // dial back when many narrow lines overlap
+  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index[c], color: colorOf(c),
+                                  w: 1.3, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
   if (cats.length) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1 });
 
   const ys = series.flatMap(s => s.vals).filter(v => v != null);
@@ -134,7 +149,8 @@ function drawChart(cats, comp) {
     s.vals.forEach((v, i) => { if (v == null) { pen = false; return; }
       d += `${pen ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)} `; pen = true; });
     svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: s.color,
-      "stroke-width": s.w, opacity: s.op, "stroke-linejoin": "round" }));
+      "stroke-width": s.w, opacity: s.op, "stroke-linejoin": "round",
+      "stroke-dasharray": s.dash || "" }));
   }
   // composite endpoint markers + label
   if (cats.length) {
@@ -180,6 +196,28 @@ function drawChart(cats, comp) {
 
   box.appendChild(svg);
 }
+// ---- highlighted-move descriptions (list under the chart) ------------------
+function renderMoveNotes(comp, cats) {
+  const ul = document.getElementById("movenotes");
+  ul.innerHTML = "";
+  if (!cats.length) return;
+  const moves = significantMoves(comp), months = DATA.months;
+  if (!moves.length) {
+    ul.appendChild(el("li", {}, [
+      "No single month moved the composite sharply over this window — changes were gradual."]));
+    return;
+  }
+  for (const mv of moves) {
+    const up = mv.pct > 0, dir = up ? "up" : "down", verb = up ? "rose +" : "fell −";
+    const li = el("li", {});
+    li.appendChild(el("span", { class: "mk", style: `background:${up ? "#15803d" : "#dc2626"}` }));
+    li.appendChild(el("span", { html:
+      `<b>${months[mv.i - 1]} → ${months[mv.i]}</b>: composite ` +
+      `<span class="${dir}">${verb}${Math.abs(mv.pct).toFixed(1)}%</span> ` +
+      `month-over-month — ${mv.why}.` }));
+    ul.appendChild(li);
+  }
+}
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => s >= raw) || mag;
@@ -197,38 +235,48 @@ function sortedCats() {
   });
 }
 
+// one table row for a category — main, or a nested subcategory detail line
+function catRow(c, rank, sub) {
+  const d = DATA.delta12[c], col = colorOf(c);
+  const tr = el("tr", { class: sub ? "cat sub" : "cat" });
+  const caret = el("td", {}, sub ? [] : [el("span", { class: "caret" }, [open.has(c) ? "▾" : "▸"])]);
+  if (!sub) caret.onclick = () => { open.has(c) ? open.delete(c) : open.add(c); render(); };
+  const cbCell = el("td", {});
+  const cb = el("input", { type: "checkbox" }); cb.checked = checked.has(c);
+  cb.onchange = () => { cb.checked ? checked.add(c) : checked.delete(c); render(); };
+  cbCell.appendChild(cb);
+  const nameCell = el("td", { class: "name" },
+    (sub ? [el("span", { class: "sublead" }, ["↳ "])] : [])
+      .concat([el("span", { class: "swatch", style: `background:${col}` }), labelOf(c)]));
+  const sparkCell = el("td", {}); sparkCell.appendChild(spark(DATA.index[c], 110, 20, col));
+  const wt = (DATA.weights[c] * 100).toFixed(1) + "%";
+  tr.appendChild(caret); tr.appendChild(cbCell);
+  tr.appendChild(el("td", { class: "num faint" }, [sub ? "" : String(rank)]));
+  tr.appendChild(nameCell); tr.appendChild(sparkCell);
+  tr.appendChild(el("td", { class: "num d " + cls(d) }, [fmtPct(d)]));
+  // subs show their gig-share in parens — informational, not part of the basket
+  tr.appendChild(el("td", { class: "num faint" }, [sub ? `(${wt})` : wt]));
+  tr.appendChild(el("td", { class: "num faint" }, [DATA.panel_gigs[c] != null ? String(DATA.panel_gigs[c]) : "–"]));
+  return tr;
+}
+
 function render() {
-  const cats = DATA.categories.filter(c => checked.has(c));
-  const comp = cats.length ? compositeSeries(cats) : DATA.months.map(() => null);
+  const cats = DATA.categories.filter(c => checked.has(c));        // all checked (chart lines)
+  const mainChecked = cats.filter(c => !isSub(c));                  // basket members only
+  const comp = mainChecked.length ? compositeSeries(mainChecked) : DATA.months.map(() => null);
 
   const num = document.getElementById("hNum");
-  const pc = cats.length ? pctChange(comp) : null;
-  num.textContent = cats.length ? fmtPct(pc) : "—";
+  const pc = mainChecked.length ? pctChange(comp) : null;
+  num.textContent = mainChecked.length ? fmtPct(pc) : "—";
   num.className = "num " + cls(pc);
 
-  drawChart(cats, comp);
+  drawChart(cats, comp);                 // every checked line; composite from main only
+  renderMoveNotes(comp, mainChecked);
 
   const tb = document.getElementById("rows"); tb.innerHTML = "";
-  const order = sortedCats();
+  const order = sortedCats().filter(c => !isSub(c));
   order.forEach((c, idx) => {
-    const d = DATA.delta12[c], col = PALETTE[c] || "#888";
-    const tr = el("tr", { class: "cat" });
-    const caret = el("td", {}, [el("span", { class: "caret" }, [open.has(c) ? "▾" : "▸"])]);
-    caret.onclick = () => { open.has(c) ? open.delete(c) : open.add(c); render(); };
-    const cbCell = el("td", {});
-    const cb = el("input", { type: "checkbox" }); cb.checked = checked.has(c);
-    cb.onchange = () => { cb.checked ? checked.add(c) : checked.delete(c); render(); };
-    cbCell.appendChild(cb);
-    const nameCell = el("td", { class: "name" }, [
-      el("span", { class: "swatch", style: `background:${col}` }), cap(c)]);
-    const sparkCell = el("td", {}); sparkCell.appendChild(spark(DATA.index[c], 110, 20, col));
-    tr.appendChild(caret); tr.appendChild(cbCell);
-    tr.appendChild(el("td", { class: "num faint" }, [String(idx + 1)]));
-    tr.appendChild(nameCell); tr.appendChild(sparkCell);
-    tr.appendChild(el("td", { class: "num d " + cls(d) }, [fmtPct(d)]));
-    tr.appendChild(el("td", { class: "num faint" }, [(DATA.weights[c] * 100).toFixed(1) + "%"]));
-    tr.appendChild(el("td", { class: "num faint" }, [DATA.panel_gigs[c] != null ? String(DATA.panel_gigs[c]) : "–"]));
-    tb.appendChild(tr);
+    tb.appendChild(catRow(c, idx + 1, false));
 
     if (open.has(c)) {
       const vals = DATA.months.map((mo, i) => {
@@ -239,17 +287,21 @@ function render() {
         el("td", {}), el("td", {}), el("td", {}),
         el("td", { colspan: 5, class: "vals", html: vals })]));
     }
+    // nested subcategory detail lines under this domain
+    subsOf(c).sort((a, b) => (DATA.delta12[a] ?? 0) - (DATA.delta12[b] ?? 0))
+      .forEach(sc => tb.appendChild(catRow(sc, null, true)));
   });
 
-  // composite footer row
+  // composite footer row (main categories only — subs aren't in the basket)
   const ft = document.getElementById("foot"); ft.innerHTML = "";
-  if (cats.length) {
+  const mainCount = DATA.categories.filter(c => !isSub(c)).length;
+  if (mainChecked.length) {
     const ftr = el("tr", {});
-    ftr.appendChild(el("td", { colspan: 4, html: `Composite &middot; <span style="font-weight:400;color:#777">${cats.length} of ${DATA.categories.length} categories</span>` }));
+    ftr.appendChild(el("td", { colspan: 4, html: `Composite &middot; <span style="font-weight:400;color:#777">${mainChecked.length} of ${mainCount} categories</span>` }));
     const sc = el("td", {}); sc.appendChild(spark(comp, 110, 20, "#111")); ftr.appendChild(sc);
     ftr.appendChild(el("td", { class: "num d " + cls(pc) }, [fmtPct(pc)]));
     ftr.appendChild(el("td", { class: "num" }, ["100%"]));
-    ftr.appendChild(el("td", { class: "num" }, [String(DATA.categories.filter(c => checked.has(c)).reduce((s, c) => s + (DATA.panel_gigs[c] || 0), 0))]));
+    ftr.appendChild(el("td", { class: "num" }, [String(mainChecked.reduce((s, c) => s + (DATA.panel_gigs[c] || 0), 0))]));
     ft.appendChild(ftr);
   }
 

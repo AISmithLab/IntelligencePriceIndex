@@ -52,8 +52,14 @@ def composite(levels_by_cat, weights, month):
     return math.exp(log_sum / w_sum) if w_sum > 0 else None
 
 
-def main():
+def build_site_data(manifest=None):
+    """Assemble the site data dict. If `manifest` is given, step 14 reads its
+    category labels from that file instead of the default broad manifest — this is
+    how step 17 swaps in narrow subcategories while reusing all the matched-model
+    machinery. Returns the data dict (caller writes it)."""
     m14 = load_step14()
+    if manifest is not None:
+        m14.MANIFEST_FILE = Path(manifest)
     m = m14.build(m14.to_month, m14.month_to_float, "monthly")
     if not m:
         raise SystemExit("No monthly data — is recent-prices.csv populated?")
@@ -114,24 +120,32 @@ def main():
         "composite_all": [round(comp[mo], 2) if comp[mo] else None for mo in months],
         "delta12": {k: (round(v, 1) if v is not None else None) for k, v in delta.items()},
     }
+    return data
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT, "w") as f:
+
+def write_and_report(data, out=OUT):
+    months, cats, delta = data["months"], data["categories"], data["delta12"]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"Wrote {OUT}  ({OUT.stat().st_size/1024:.1f} KB)")
-    print(f"Window: {months[0]} -> {months[-1]} ({len(months)} months), anchor {anchor}=100")
-    print(f"Categories: {', '.join(cats)}")
+    print(f"Wrote {out}  ({out.stat().st_size/1024:.1f} KB)")
+    print(f"Window: {months[0]} -> {months[-1]} ({len(months)} months), anchor {data['base_month']}=100")
+    print(f"Categories ({len(cats)}): {', '.join(cats)}")
+    comp = data["composite_all"]
     print(f"\nComposite (all categories):")
-    for mo in months:
-        v = comp[mo]
+    for mo, v in zip(months, comp):
         bar = "#" * int(v / 3) if v else ""
         print(f"  {mo}  {v:7.1f}  {bar}" if v else f"  {mo}    n/a")
-    print(f"\nComposite trailing-12mo: {delta['composite']:+.1f}%")
+    print(f"\nComposite trailing-12mo: {delta.get('composite'):+.1f}%")
     print("Per-category trailing-12mo:")
     for c in sorted(cats, key=lambda x: delta[x] if delta[x] is not None else 0):
         d = delta[c]
-        print(f"  {c:<12} {d:+6.1f}%" if d is not None else f"  {c:<12}   n/a")
+        print(f"  {c:<22} {d:+6.1f}%" if d is not None else f"  {c:<22}   n/a")
+
+
+def main():
+    write_and_report(build_site_data())
 
 
 if __name__ == "__main__":

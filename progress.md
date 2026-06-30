@@ -1,5 +1,38 @@
 # Progress Log
 
+## 2026-06-30 — Site: show BOTH main (broad) categories AND subcategories
+
+- **User: "can you do both subcategories and main?"** Switched from carving subcats *out of* their parent to a two-level model: **main** = full broad domains (the basket/composite), **sub** = relevant subcategory detail lines nested under their parent and **excluded from the composite** (their gigs already sit inside the parent — including them would double-count).
+- **`code/17-build-site-data-narrow.py`** — now builds the production broad index (`build_site_data()`) as the main basket, then grafts the relevant subcats (from the full-narrow build) with `level`/`parent`/`label`/`color` metadata. Subcat weight is carried for display only. Composite stays the robust broad −2.1%.
+- **`docs/ipi.js`** — composite now computed over `mainChecked` (`level != "sub"`) only; `drawChart` renders sub lines **dashed** ("5 3"); table factored into a `catRow(c, rank, sub)` helper that renders mains and nests each domain's subcats beneath it (indented "↳", gig-share weight in parens, no rank). Footer counts mains only. Caveat + chart legend updated (dashed = subcategory, not in composite).
+- **`docs/index.html`** — `.sub` row styling + a dashed-line legend swatch.
+- **Result:** main = audio, coding, design, marketing, video, writing; one sub = **Logo & Brand** (Δ −1.8%, 45.2% of basket reviews) nested under Design (Δ −3.3%, 70.6%). Verified: main-only composite recomputes to −2.1% (= stored), main weights sum to 0.997, main/sub colors distinct. `node --check` passes.
+
+## 2026-06-30 — Site: keep only the RELEVANT subcategories (collapse the rest)
+
+- **User: "include the relevant subcategories."** Replaced the show-everything subdivision with a relevance filter in **`code/17-build-site-data-narrow.py`**: a subcat earns its own line only if it BOTH (a) moves — index range ≥ 1.5 pts — AND (b) is well-covered — ≥ 7/12 chainable months. Movement alone admits noise (design-ui_ux_web swung +14% off only 4/12 covered months); coverage alone admits dead-flat lines (most subcats sit at exactly 100 because their matched gig-pairs have unchanged prices). Subcats failing either test collapse back into their broad parent, so that parent keeps its real movement.
+- Added **`measure_coverage()` / `relevant_subcats()`** + a `keep`-aware `write_narrow_manifest()` to **`code/16-subclassify-narrow.py`**, and broad-remainder bucket metadata (darker family-hue shade) to `category_meta()`.
+- **Result:** the data supports exactly **one** breakout — **design-logo_brand** (range 10, 11/12 coverage, −1.8%). Final basket = 6 broad domains (audio, coding, design, marketing, video, writing) + Logo & Brand carved out of design; translation still too thin to chain. Design's −3.3% broad decline decomposes into Logo & Brand −1.8% and a +1.4% design remainder — i.e. the deflation concentrates in logo/branding.
+- **Correctness check:** every untouched domain's delta matches the production broad build exactly (writing +2.3, coding −0.1, marketing/video/audio +0.0); only design differs (logo_brand carved out). **Composition caveat:** the all-categories composite reads −0.2% narrow vs −2.1% broad — a matched-model artifact (splitting design thins per-transition matched pairs and erodes the chained decline), not real economics. Caveat text updated to say the broad/quarterly figures remain the robust headline.
+- `node --check ipi.js` passes; `data.json` (3.1 KB) carries labels/colors/parents for all 7 categories.
+
+## 2026-06-30 — Site: narrow subcategories + marketing-name wrap fix
+
+- **Marketing wrap fix** — in the narrowed right-hand table column the category name wrapped *under* its color swatch. Fixed with `.name { white-space: nowrap }` (and dropped `text-transform: capitalize`, which would mangle pre-formatted labels like "eBook").
+- **Narrow subcategories (user: "subdivide everything anyway")** — added a subdivision pipeline that reuses step 14's matched-model machinery unchanged:
+  - **`code/16-subclassify-narrow.py`** — narrow taxonomy (34 subcats across the 7 broad domains), re-labels `recent-manifest.tsv` → `recent-manifest-narrow.tsv` by keyword-matching slugs within each parent. Also emits display `labels`, `parents`, and parent-hued `colors` (HSL shades of the broad family color).
+  - **`code/15-build-site-data.py`** — refactored into `build_site_data(manifest=None)` + `write_and_report()` so a custom manifest can be swapped in (sets `m14.MANIFEST_FILE`) without duplicating the rebasing/weight/composite logic. Default behavior unchanged.
+  - **`code/17-build-site-data-narrow.py`** — orchestrates: narrow manifest → `build_site_data(narrow)` → attach labels/parents/colors → write `docs/data.json`. Revert to broad = re-run step 15.
+  - **`docs/ipi.js`** — added `colorOf()`/`labelOf()` (read `DATA.colors`/`DATA.labels`, fall back to flat palette + `cap()` so the broad build still works); dialed line opacity to 0.32 when >10 categories overlap; updated the caveat to describe narrow-subcategory thinness.
+- **Pilot first (per CLAUDE.md):** measured matched-pair coverage before committing. At monthly cadence with the ≥3-pair gate, current broad cats chain 7–11/12 months; only **design** subcats (and coding/web-dev) clear that bar. Recorded in the pilot script.
+- **Result:** 17 of 34 subcats survive step 14's `len(idx)>=2` gate; 18 too thin and dropped. **Honest caveat surfaced to user:** most survivors read +0.0% (single chainable transition, forward-filled flat), `design-ui_ux_web` is a noisy +14% off few pairs, and the composite reads −0.8% (vs −2.1% broad) because flat subcats dilute design's real decline. Offered design-only or broad revert as cleaner alternatives.
+- `node --check ipi.js` passes; `data.json` carries `labels`/`colors`/`parents` for all 17 categories.
+
+## 2026-06-30 — Site: taller chart + descriptions for each highlighted move
+
+- **`docs/ipi.js`** — (1) enlarged the trend chart (`H` 320 → 420, slightly larger margins) so it reads bigger alongside the already-widened left column. (2) Added `renderMoveNotes()` which now **populates the previously-empty `#movenotes` list** under the chart: one short line per highlighted move (e.g. *"2025-10 → 2025-11: composite fell −2.3% month-over-month — sharpest single-month drop in the window."*). `significantMoves()` now tags each move with a `why` (threshold crossing vs. biggest rise/drop) and returns them in chronological order so the list reads top-to-bottom in time.
+- **Note:** the `#movenotes` element + CSS were added in the prior commit but never filled by JS — they were dead until this change. `node --check` passes; full basket yields 4 described moves.
+
 ## 2026-06-30 — Site: highlight significant composite moves on the chart
 
 - **`docs/ipi.js`** — added `significantMoves()` (month-over-month moves past a 0.8% threshold, always including the single biggest rise + biggest drop) and overlaid them on the composite line in `drawChart`: thicker green/red segment, endpoint dot, and a `±x.x%` label. Recomputes live as categories are toggled. With the full basket it flags +0.9% (Mar '25), −1.6% (Sep '25), −2.3% (Nov '25, biggest drop), +1.3% (Dec '25, biggest rebound).

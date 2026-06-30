@@ -17,7 +17,7 @@
     body { font: 14px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
            Helvetica, Arial, sans-serif; color: var(--ink); margin: 0;
            background: var(--bg); -webkit-font-smoothing: antialiased; }
-    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 72px; }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px 72px; }
     a { color: var(--link); }
 
     /* header ---------------------------------------------------------------- */
@@ -48,9 +48,19 @@
                  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
     .chartnote .dot { display: inline-block; width: 18px; height: 3px; border-radius: 2px;
                       margin-right: 6px; vertical-align: 2px; }
+    .chartnote .dash { display: inline-block; width: 18px; border-top: 2px dashed #8a90a0;
+                       margin-right: 6px; vertical-align: 4px; }
+    .movenotes { list-style: none; margin: 11px 0 2px; padding: 0; display: grid; gap: 6px;
+                 font-size: 12.5px; color: var(--mut); }
+    .movenotes li { display: flex; gap: 9px; align-items: baseline; line-height: 1.45; }
+    .movenotes .mk { flex: none; width: 8px; height: 8px; border-radius: 50%;
+                     transform: translateY(1px); }
+    .movenotes b { color: var(--ink); font-weight: 700; }
+    .movenotes .up { color: var(--up); font-weight: 600; }
+    .movenotes .down { color: var(--down); font-weight: 600; }
 
     /* side-by-side layout: chart (left) + category selection (right) -------- */
-    .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.08fr);
+    .layout { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr);
               gap: 18px; align-items: start; margin-top: 18px; }
     @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
@@ -107,7 +117,11 @@
              transition: color .12s; } .caret:hover { color: var(--accent); }
     .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block;
               vertical-align: -1px; margin-right: 8px; }
-    .name { text-transform: capitalize; font-weight: 600; color: var(--ink); }
+    .name { font-weight: 600; color: var(--ink); white-space: nowrap; }
+    tbody tr.sub td { background: #fcfcfe; }
+    tbody tr.sub td.name { font-weight: 500; color: var(--mut); font-size: 13px; }
+    tbody tr.sub .swatch { border-radius: 2px; }
+    .sublead { color: var(--faint); margin-right: 1px; }
     td.d { font-weight: 600; }
     td.d.up { color: var(--up); } td.d.down { color: var(--down); }
     td.faint { color: var(--mut); }
@@ -164,7 +178,9 @@
           <span>Highlighted = sharpest month-over-month moves in the composite:</span>
           <span><span class="dot" style="background:#15803d"></span>price rise</span>
           <span><span class="dot" style="background:#dc2626"></span>price drop</span>
+          <span><span class="dash"></span>dashed = subcategory detail (not in composite)</span>
         </div>
+        <ul class="movenotes" id="movenotes"></ul>
       </section>
 
       <section class="card tablewrap">

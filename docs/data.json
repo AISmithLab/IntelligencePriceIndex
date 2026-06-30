@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-27",
+  "generated": "2026-06-30",
   "base_month": "2025-02",
   "window_months": 13,
   "categories": [
@@ -8,7 +8,8 @@
     "design",
     "marketing",
     "video",
-    "writing"
+    "writing",
+    "design-logo_brand"
   ],
   "weights": {
     "audio": 0.018782,
@@ -16,7 +17,8 @@
     "design": 0.705883,
     "marketing": 0.06253,
     "video": 0.045861,
-    "writing": 0.110574
+    "writing": 0.110574,
+    "design-logo_brand": 0.452477
   },
   "panel_gigs": {
     "audio": 95,
@@ -25,7 +27,8 @@
     "marketing": 363,
     "translation": 61,
     "video": 285,
-    "writing": 495
+    "writing": 495,
+    "design-logo_brand": 543
   },
   "months": [
     "2025-02",
@@ -132,6 +135,21 @@
       102.27,
       102.27,
       102.27
+    ],
+    "design-logo_brand": [
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      94.0,
+      94.0,
+      94.0,
+      90.02,
+      91.88,
+      95.88,
+      98.15
     ]
   },
   "composite_all": [
@@ -156,6 +174,43 @@
     "marketing": 0.0,
     "video": 0.0,
     "writing": 2.3,
-    "composite": -2.1
+    "composite": -2.1,
+    "design-logo_brand": -1.8
+  },
+  "level": {
+    "audio": "main",
+    "coding": "main",
+    "design": "main",
+    "marketing": "main",
+    "video": "main",
+    "writing": "main",
+    "design-logo_brand": "sub"
+  },
+  "parents": {
+    "audio": "audio",
+    "coding": "coding",
+    "design": "design",
+    "marketing": "marketing",
+    "video": "video",
+    "writing": "writing",
+    "design-logo_brand": "design"
+  },
+  "labels": {
+    "audio": "Audio",
+    "coding": "Coding",
+    "design": "Design",
+    "marketing": "Marketing",
+    "video": "Video",
+    "writing": "Writing",
+    "design-logo_brand": "Logo & Brand"
+  },
+  "colors": {
+    "audio": "#2a6f47",
+    "coding": "#2a636f",
+    "design": "#2a3c6f",
+    "marketing": "#6f2a4d",
+    "video": "#6f462a",
+    "writing": "#472a6f",
+    "design-logo_brand": "#567adc"
   }
 }
