@@ -28,7 +28,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 STEP14 = BASE_DIR / "code" / "14-recent-ipi.py"
-OUT = BASE_DIR / "site" / "data.json"
+OUT = BASE_DIR / "docs" / "data.json"
 
 WINDOW = 13  # month-points to display (12-month change + the anchor)
 
