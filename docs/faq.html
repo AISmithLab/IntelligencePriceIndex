@@ -81,6 +81,22 @@
     .step { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em;
             color: var(--accent); margin: 24px 0 0; font-weight: 700; }
 
+    /* compact data tables --------------------------------------------------- */
+    .ftable { width: 100%; border-collapse: collapse; margin: 14px 0 4px;
+              font-size: 13px; }
+    .ftable th, .ftable td { text-align: left; padding: 8px 10px;
+              border-bottom: 1px solid var(--line-2); vertical-align: top; }
+    .ftable thead th { font-size: 10.5px; text-transform: uppercase;
+              letter-spacing: .04em; color: var(--faint); font-weight: 700;
+              border-bottom: 1px solid var(--line); }
+    .ftable td.r, .ftable th.r { text-align: right; white-space: nowrap;
+              font-variant-numeric: tabular-nums; }
+    .ftable tbody tr:hover { background: var(--hi); }
+    .ftable .res { font-weight: 700; color: var(--ink); }
+    .funnel { font-size: 12.5px; color: var(--mut); margin: 10px 4px 0;
+              font-variant-numeric: tabular-nums; line-height: 1.7; }
+    .funnel b { color: var(--ink); }
+
     footer { color: var(--faint); font-size: 12px; margin-top: 30px;
              padding: 16px 4px 0; border-top: 1px solid var(--line); }
     footer a { color: var(--link); text-decoration: none; }
@@ -175,19 +191,65 @@
     <!-- 4 -->
     <div class="q" id="data">
       <h3>4. Where does the data come from?</h3>
-      <p>Prices are recovered from archived Fiverr gig pages stored in the Internet Archive's
-      <b>Wayback Machine</b>, which has snapshotted the marketplace for over a decade. The pipeline,
-      in brief:</p>
+      <p>Every price on this site is a <b>real, historical Fiverr list price</b> recovered from the
+      Internet Archive's <b>Wayback Machine</b> — the public web archive that has been snapshotting
+      Fiverr gig pages since around 2011. Nobody is surveyed and nothing is estimated: we simply read
+      the prices sellers actually posted, as preserved in old archived copies of their pages, and line
+      them up over time.</p>
+
+      <p class="step">Why Fiverr, and why the Wayback Machine?</p>
       <ul>
-        <li>Query the Wayback CDX index for archived <code>fiverr.com</code> gig URLs.</li>
-        <li>Deduplicate to unique (gig, month) snapshots and classify each gig into a service
-        category.</li>
-        <li>Download the archived HTML and extract the posted Basic price from each snapshot.</li>
-        <li>Keep gigs observed in <b>two or more</b> periods to form a matched panel.</li>
+        <li><b>Posted, revealed prices.</b> Fiverr gigs carry explicit price tiers (Basic / Standard /
+        Premium) set by sellers competing for work — market prices, not list estimates or expert guesses.</li>
+        <li><b>Standardized, granular tasks.</b> A gig is a specific, repeatable cognitive task, so its
+        price is comparable across time — exactly what a price index needs.</li>
+        <li><b>A decade of history.</b> The Wayback Machine archived these pages long before generative
+        AI existed, giving a pre-AI baseline to compare against.</li>
       </ul>
-      <p>The figures on this site come from the <b>recent-window pilot</b> — a stratified sample of
-      sellers over the trailing year. See the <a href="#caveats">caveats</a> on sample size before
-      reading too much into any single category.</p>
+
+      <p class="step">From 60 million archived URLs to a clean price panel</p>
+      <p>The data is built through a multi-stage pipeline that narrows a vast pile of raw archive
+      entries down to a set of gigs whose prices can be tracked reliably:</p>
+      <table class="ftable">
+        <thead><tr><th>Stage</th><th>What happens</th><th class="r">Result</th></tr></thead>
+        <tbody>
+          <tr><td>CDX retrieval</td><td>Query the Wayback Machine's index for every archived
+            <code>fiverr.com</code> gig URL.</td><td class="r res">60M entries</td></tr>
+          <tr><td>Dedup &amp; classify</td><td>Collapse to unique (URL, month) snapshots; tag each gig
+            with a service category.</td><td class="r">22.7M unique</td></tr>
+          <tr><td>Longitudinal filter</td><td>Keep sellers with enough history (≥5 monthly snapshots
+            spanning ≥2 years).</td><td class="r res">48,643 sellers</td></tr>
+          <tr><td>Stratified sample</td><td>Draw a representative pilot sample of sellers and list their
+            snapshots to download.</td><td class="r">500 sellers ·<br>26,603 snapshots</td></tr>
+          <tr><td>Download</td><td>Fetch the archived HTML from the Wayback Machine (rate-limited, with
+            retries).</td><td class="r res">22,632 pages (85%)</td></tr>
+          <tr><td>Price extraction</td><td>Parse the Basic price out of each page (see below).</td>
+            <td class="r">prices 2011–2026</td></tr>
+          <tr><td>Matched panel</td><td>Keep only gigs seen in <b>two or more</b> periods, so each
+            price change is measured against the same gig's own past.</td><td class="r res">matched gigs</td></tr>
+        </tbody>
+      </table>
+
+      <p class="step">How a price is read off each page</p>
+      <p>Fiverr's page layout changed a lot over the years, so extraction uses a cascade of four
+      methods, trying the most reliable first and falling back as needed:</p>
+      <table class="ftable">
+        <thead><tr><th>Method</th><th>Era</th><th>How the price is found</th><th class="r">Share</th></tr></thead>
+        <tbody>
+          <tr><td><code>packageList</code> JSON</td><td>2020+</td><td>Embedded JSON array, price in cents</td><td class="r">72.9%</td></tr>
+          <tr><td>Old-style JSON</td><td>pre-2017</td><td>JSON with price as a dollar string</td><td class="r">15.2%</td></tr>
+          <tr><td>Dollar fallback</td><td>all eras</td><td><code>$X</code> pattern in the page text</td><td class="r">11.2%</td></tr>
+          <tr><td>HTML <code>&lt;span&gt;</code></td><td>2018–2020</td><td><code>class="price"</code> DOM element</td><td class="r">0.7%</td></tr>
+        </tbody>
+      </table>
+
+      <p class="step">What this site shows specifically</p>
+      <p>The full study spans 2011–2026. The figures on <i>this page</i> use the <b>recent-window
+      extraction</b> — the same pipeline restricted to roughly the trailing year — so the index reads
+      as a "past 12 months" series, like the headline CPI. The number of matched gigs behind each
+      category is shown in the <code>Gigs</code> column on the <a href="index.html">index page</a>.
+      Because that recent window is a pilot-scale slice, please read the
+      <a href="#caveats">limitations</a> before drawing strong conclusions from any single category.</p>
     </div>
 
     <!-- 5 -->

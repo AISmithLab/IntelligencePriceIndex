@@ -1,5 +1,11 @@
 # Progress Log
 
+## 2026-06-30 — Site: IPI definition under title + side-by-side chart/selection
+
+- **`docs/index.html`** — per user request: (1) added a clear full-sentence **definition of the IPI directly under the page title** (CPI-style price index of AI-exposed freelance work from posted Fiverr gig prices, trailing 12mo); (2) replaced the stacked chart-then-table layout with a **side-by-side CSS grid** (`.layout`): trend chart in the left card, category-selection table in the right card, collapsing to stacked below 900px. Widened `.wrap` to 1180px to fit two columns.
+- **Verified** all element IDs consumed by `ipi.js` (`hNum`, `chart`, `tip`, `rows`, `foot`, `selAll`, `selNone`, `hRange`, `caveat`, `src`) survive the restructure, so the script is unaffected. `faq.html` carried matching aesthetic refresh.
+- **Deployed:** committed + pushed `docs/` on `mockup` (GitHub Pages source) to make the changes live.
+
 ## 2026-06-30 — IPI frontend committed + hardened on `mockup` branch
 
 - **Committed the rebuilt frontend** that had been sitting untracked: `site/index.html`, `site/ipi.js`, `site/.nojekyll`, `scripts/deploy-site.sh`. The work is now preserved in git on branch `mockup`.

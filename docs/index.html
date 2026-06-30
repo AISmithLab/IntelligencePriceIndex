@@ -17,7 +17,7 @@
     body { font: 14px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
            Helvetica, Arial, sans-serif; color: var(--ink); margin: 0;
            background: var(--bg); -webkit-font-smoothing: antialiased; }
-    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px 72px; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 72px; }
     a { color: var(--link); }
 
     /* header ---------------------------------------------------------------- */
@@ -31,6 +31,8 @@
     header h1 { font-size: 25px; margin: 0 0 4px; font-weight: 800;
                 letter-spacing: -.02em; line-height: 1.1; }
     header p { margin: 0; color: var(--mut); font-size: 13.5px; max-width: 62ch; }
+    header p.def { font-size: 14px; line-height: 1.55; color: #4b515e; max-width: 70ch; }
+    header p.def b { color: var(--ink); font-weight: 700; }
     header nav { margin-top: 9px; font-size: 13px; }
     header nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
     header nav a:hover { text-decoration: underline; }
@@ -40,11 +42,21 @@
     .card { background: var(--card); border: 1px solid var(--line);
             border-radius: 16px;
             box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18); }
-    .hero { padding: 20px 22px 16px; }
+    .hero { padding: 20px 22px 18px; }
+    .hero .headline { margin-bottom: 12px; }
 
-    /* headline / toolbar ---------------------------------------------------- */
-    .bar { display: flex; align-items: flex-start; gap: 22px; flex-wrap: wrap;
-           padding-bottom: 6px; }
+    /* side-by-side layout: chart (left) + category selection (right) -------- */
+    .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.08fr);
+              gap: 18px; align-items: start; margin-top: 18px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    /* selection bar (right column header) ----------------------------------- */
+    .selbar { display: flex; align-items: center; gap: 10px; padding: 2px 4px 12px;
+              border-bottom: 1px solid var(--line-2); margin-bottom: 2px; }
+    .selbar .lbl { font-size: 12.5px; font-weight: 600; color: var(--mut);
+                   letter-spacing: .01em; }
+
+    /* headline -------------------------------------------------------------- */
     .headline .num { font-size: 38px; font-weight: 800; line-height: 1;
                      letter-spacing: -.025em; font-variant-numeric: tabular-nums;
                      color: var(--ink); }
@@ -52,7 +64,7 @@
     .headline .sub { color: var(--mut); font-size: 12.5px; margin-top: 7px; }
     .headline .sub #hRange { color: var(--faint); }
     .toggles { margin-left: auto; font-size: 12.5px; color: var(--mut);
-               display: flex; align-items: center; gap: 7px; padding-top: 4px; }
+               display: flex; align-items: center; gap: 7px; }
     .toggles a { color: var(--accent); cursor: pointer; text-decoration: none;
                  padding: 3px 11px; border: 1px solid var(--line);
                  border-radius: 999px; background: #fff; font-weight: 600;
@@ -71,8 +83,8 @@
             border-radius:3px; margin-right:6px; vertical-align:-1px; }
 
     /* table ----------------------------------------------------------------- */
-    .tablewrap { margin-top: 18px; padding: 6px 10px; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    .tablewrap { padding: 14px 14px 6px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 480px; }
     th, td { padding: 11px 12px; border-bottom: 1px solid var(--line-2);
              font-variant-numeric: tabular-nums; }
     thead th { text-align: right; font-weight: 600; font-size: 11px;
@@ -129,43 +141,49 @@
       </div>
       <div class="htext">
         <h1>Intelligence Price Index</h1>
-        <p>The revealed price of AI-exposed knowledge work &mdash; a matched-model price index of Fiverr gig prices, trailing 12 months.</p>
-        <nav><a href="faq.html">FAQ &amp; methodology &rarr;</a></nav>
+        <p class="def">The <b>Intelligence Price Index (IPI)</b> measures how the market price of
+        AI-exposed knowledge work &mdash; freelance tasks like design, writing, coding, video, and
+        audio &mdash; is changing over time. It is a CPI-style price index built from real, posted
+        Fiverr gig prices, shown here over the trailing 12&nbsp;months.</p>
+        <nav><a href="faq.html">Full FAQ &amp; methodology &rarr;</a></nav>
       </div>
     </header>
 
-    <section class="card hero">
-      <div class="bar">
+    <div class="layout">
+      <section class="card hero">
         <div class="headline">
           <div class="num" id="hNum">&mdash;</div>
-          <div class="sub">composite, trailing 12&nbsp;months <span id="hRange"></span></div>
+          <div class="sub">composite &mdash; all selected categories combined, trailing 12&nbsp;months <span id="hRange"></span></div>
         </div>
-        <div class="toggles">basket:
-          <a id="selAll">All</a>
-          <a id="selNone">None</a>
-        </div>
-      </div>
-      <div id="chart"><div class="tip" id="tip"></div></div>
-    </section>
+        <div id="chart"><div class="tip" id="tip"></div></div>
+      </section>
 
-    <section class="card tablewrap">
-      <table id="tbl">
-        <thead>
-          <tr>
-            <th class="l" style="width:18px"></th>
-            <th class="l" style="width:18px"></th>
-            <th class="l" style="width:34px" data-k="rank">#</th>
-            <th class="l" data-k="name">Category</th>
-            <th class="l" style="width:120px">Trend</th>
-            <th data-k="delta">&Delta;12mo</th>
-            <th data-k="weight">Weight</th>
-            <th data-k="gigs">Gigs</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-        <tfoot id="foot"></tfoot>
-      </table>
-    </section>
+      <section class="card tablewrap">
+        <div class="selbar">
+          <span class="lbl">Select categories for the basket</span>
+          <span class="toggles">
+            <a id="selAll">All</a>
+            <a id="selNone">None</a>
+          </span>
+        </div>
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th class="l" style="width:18px"></th>
+              <th class="l" style="width:18px"></th>
+              <th class="l" style="width:34px" data-k="rank">#</th>
+              <th class="l" data-k="name">Category</th>
+              <th class="l" style="width:110px">Trend</th>
+              <th data-k="delta">&Delta;12mo</th>
+              <th data-k="weight">Weight</th>
+              <th data-k="gigs">Gigs</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+          <tfoot id="foot"></tfoot>
+        </table>
+      </section>
+    </div>
 
     <p class="notes" id="caveat"></p>
     <footer id="src"></footer>
