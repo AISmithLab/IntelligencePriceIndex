@@ -1,5 +1,11 @@
 # Progress Log
 
+## 2026-06-30 — Site: highlight significant composite moves on the chart
+
+- **`docs/ipi.js`** — added `significantMoves()` (month-over-month moves past a 0.8% threshold, always including the single biggest rise + biggest drop) and overlaid them on the composite line in `drawChart`: thicker green/red segment, endpoint dot, and a `±x.x%` label. Recomputes live as categories are toggled. With the full basket it flags +0.9% (Mar '25), −1.6% (Sep '25), −2.3% (Nov '25, biggest drop), +1.3% (Dec '25, biggest rebound).
+- **`docs/index.html`** — added a small legend caption under the chart (green = price rise, red = price drop). `node --check` passes.
+- Also clarified for the user that **composite** = the single headline IPI line — the review-weighted geometric mean across the *selected* categories (`exp(Σ w·ln(index)/Σ w)`), i.e. the whole-basket index vs the per-category sub-indices.
+
 ## 2026-06-30 — Site: IPI definition under title + side-by-side chart/selection
 
 - **`docs/index.html`** — per user request: (1) added a clear full-sentence **definition of the IPI directly under the page title** (CPI-style price index of AI-exposed freelance work from posted Fiverr gig prices, trailing 12mo); (2) replaced the stacked chart-then-table layout with a **side-by-side CSS grid** (`.layout`): trend chart in the left card, category-selection table in the right card, collapsing to stacked below 900px. Widened `.wrap` to 1180px to fit two columns.

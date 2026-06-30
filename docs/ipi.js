@@ -54,6 +54,20 @@ const pctChange = s => {
   const a = s.find(v => v != null), b = [...s].reverse().find(v => v != null);
   return a && b ? (b / a - 1) * 100 : null;
 };
+// month-over-month moves worth calling out: anything past a threshold, plus the
+// single biggest rise and biggest drop so the chart always labels its extremes.
+function significantMoves(series, thresh = 0.8) {
+  const moves = [];
+  for (let i = 1; i < series.length; i++) {
+    if (series[i] == null || series[i - 1] == null) continue;
+    moves.push({ i, pct: (series[i] / series[i - 1] - 1) * 100 });
+  }
+  const ups = moves.filter(m => m.pct > 0), downs = moves.filter(m => m.pct < 0);
+  const pick = new Map(moves.filter(m => Math.abs(m.pct) >= thresh).map(m => [m.i, m]));
+  if (ups.length) { const m = ups.reduce((a, b) => b.pct > a.pct ? b : a); if (m.pct >= 0.05) pick.set(m.i, m); }
+  if (downs.length) { const m = downs.reduce((a, b) => b.pct < a.pct ? b : a); if (m.pct <= -0.05) pick.set(m.i, m); }
+  return [...pick.values()];
+}
 // shared y-domain across every category + composite, for comparable sparklines
 function domain() {
   const all = [...DATA.categories.flatMap(c => DATA.index[c]), ...DATA.composite_all].filter(v => v != null);
@@ -128,6 +142,19 @@ function drawChart(cats, comp) {
     const lastV = [...comp].reverse().find(v => v != null), lastI = comp.length - 1;
     if (lastV != null) svg.appendChild(el("text", { _svg: 1, x: X(lastI) - 4, y: Y(lastV) - 8,
       "text-anchor": "end", "font-size": 12, "font-weight": 700, fill: "#111" }, [lastV.toFixed(1)]));
+
+    // highlight the sharpest month-over-month moves in the composite
+    for (const mv of significantMoves(comp)) {
+      const up = mv.pct > 0, color = up ? "#15803d" : "#dc2626";
+      const x1 = X(mv.i - 1), y1 = Y(comp[mv.i - 1]), x2 = X(mv.i), y2 = Y(comp[mv.i]);
+      svg.appendChild(el("line", { _svg: 1, x1, y1, x2, y2, stroke: color,
+        "stroke-width": 4.5, "stroke-linecap": "round", opacity: 0.92 }));
+      svg.appendChild(el("circle", { _svg: 1, cx: x2, cy: y2, r: 3.6, fill: color }));
+      svg.appendChild(el("text", { _svg: 1, x: (x1 + x2) / 2, y: (y1 + y2) / 2 + (up ? -9 : 17),
+        "text-anchor": "middle", "font-size": 11, "font-weight": 700, fill: color,
+        "paint-order": "stroke", stroke: "#fff", "stroke-width": 3, "stroke-linejoin": "round" },
+        [(up ? "+" : "−") + Math.abs(mv.pct).toFixed(1) + "%"]));
+    }
   }
 
   // hover guide

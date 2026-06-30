@@ -44,6 +44,10 @@
             box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18); }
     .hero { padding: 20px 22px 18px; }
     .hero .headline { margin-bottom: 12px; }
+    .chartnote { font-size: 11.5px; color: var(--mut); margin-top: 10px;
+                 display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .chartnote .dot { display: inline-block; width: 18px; height: 3px; border-radius: 2px;
+                      margin-right: 6px; vertical-align: 2px; }
 
     /* side-by-side layout: chart (left) + category selection (right) -------- */
     .layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.08fr);
@@ -156,6 +160,11 @@
           <div class="sub">composite &mdash; all selected categories combined, trailing 12&nbsp;months <span id="hRange"></span></div>
         </div>
         <div id="chart"><div class="tip" id="tip"></div></div>
+        <div class="chartnote">
+          <span>Highlighted = sharpest month-over-month moves in the composite:</span>
+          <span><span class="dot" style="background:#15803d"></span>price rise</span>
+          <span><span class="dot" style="background:#dc2626"></span>price drop</span>
+        </div>
       </section>
 
       <section class="card tablewrap">
