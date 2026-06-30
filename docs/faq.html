@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intelligence Price Index — FAQ &amp; Methodology</title>
+  <style>
+    :root { --line:#dddddd; --ink:#222; --mut:#777; --link:#0645ad;
+            --up:#188038; --down:#c5221f; --hi:#f5f7fa; }
+    * { box-sizing: border-box; }
+    body { font: 14px/1.55 Arial, Helvetica, "Liberation Sans", sans-serif;
+           color: var(--ink); margin: 0; background: #fff; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 18px 80px; }
+
+    header { padding: 22px 0 8px; border-bottom: 1px solid var(--line); }
+    header h1 { font-size: 24px; margin: 0 0 3px; font-weight: 700; }
+    header p { margin: 0; color: var(--mut); font-size: 13px; }
+    nav { font-size: 13px; margin: 12px 0 2px; }
+    nav a { color: var(--link); text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    nav .sep { color: #ccc; padding: 0 8px; }
+
+    /* table of contents */
+    .toc { margin: 20px 0 8px; padding: 12px 16px; background: #fafafa;
+           border: 1px solid var(--line); border-radius: 4px; font-size: 13px; }
+    .toc h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+              color: var(--mut); margin: 0 0 8px; }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--link); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    .q { margin-top: 34px; }
+    .q h3 { font-size: 17px; margin: 0 0 6px; font-weight: 700;
+            scroll-margin-top: 14px; }
+    .q p { margin: 8px 0; }
+    .q ul { margin: 8px 0; padding-left: 22px; }
+    .q li { margin: 4px 0; }
+    code { background: #f3f3f3; padding: 1px 5px; border-radius: 3px;
+           font-size: 12.5px; }
+    .lead { color: var(--mut); }
+    .up { color: var(--up); font-weight: 700; }
+    .down { color: var(--down); font-weight: 700; }
+
+    /* ---- math rendering (pure HTML/CSS, no libraries) ---- */
+    .math { font-family: Georgia, "Times New Roman", serif; font-size: 18px;
+            text-align: center; margin: 16px 0; color: #111;
+            overflow-x: auto; }
+    .math i { font-style: italic; }
+    .frac { display: inline-flex; flex-direction: column; vertical-align: middle;
+            text-align: center; margin: 0 .25em; }
+    .frac > span { padding: 0 .5em; line-height: 1.25; }
+    .frac > .num { border-bottom: 1px solid #333; }
+    .big { font-size: 1.5em; vertical-align: -.22em; line-height: 0; }
+    .legend { font-size: 12.5px; color: var(--mut); margin: 6px 0 0;
+              border-left: 2px solid var(--line); padding-left: 12px; }
+    .legend b { color: var(--ink); font-weight: 700; }
+    .step { font-size: 12px; text-transform: uppercase; letter-spacing: .05em;
+            color: var(--mut); margin: 22px 0 0; font-weight: 700; }
+
+    footer { color: #999; font-size: 12px; margin-top: 40px; padding-top: 14px;
+             border-top: 1px solid var(--line); }
+    footer a { color: var(--link); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Intelligence Price Index — FAQ &amp; Methodology</h1>
+      <p>What the IPI measures, where the numbers come from, and the exact formulas behind them.</p>
+      <nav><a href="index.html">&larr; Back to the index</a></nav>
+    </header>
+
+    <div class="toc">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#what">What is the Intelligence Price Index?</a></li>
+        <li><a href="#headline">What does the headline number mean?</a></li>
+        <li><a href="#priced">What exactly is being priced?</a></li>
+        <li><a href="#data">Where does the data come from?</a></li>
+        <li><a href="#formulas">How is the index calculated? (the formulas)</a></li>
+        <li><a href="#weights">How are the category weights set?</a></li>
+        <li><a href="#geo">Why geometric means instead of plain averages?</a></li>
+        <li><a href="#toggle">Why can I switch categories on and off?</a></li>
+        <li><a href="#caveats">What are the limitations and caveats?</a></li>
+        <li><a href="#repro">Can I reproduce this?</a></li>
+      </ol>
+    </div>
+
+    <!-- 1 -->
+    <div class="q" id="what">
+      <h3>1. What is the Intelligence Price Index?</h3>
+      <p>The <b>Intelligence Price Index (IPI)</b> tracks the <b>revealed price of AI-exposed
+      knowledge work</b> over time. It is a matched-model price index built from the posted prices
+      of freelance "gigs" on Fiverr — tasks like logo design, copywriting, coding, voice-over, and
+      video editing — that generative AI can increasingly perform.</p>
+      <p>The motivating question is simple: <span class="lead">as AI gets better at cognitive tasks,
+      what happens to the market price of doing those tasks?</span> Rather than surveying experts or
+      estimating exposure scores, the IPI reads the answer directly off prices that real sellers set
+      and revise in a competitive marketplace. It is built like the Consumer Price Index (CPI), but
+      the "basket" is cognitive labor instead of groceries and rent.</p>
+    </div>
+
+    <!-- 2 -->
+    <div class="q" id="headline">
+      <h3>2. What does the headline number mean?</h3>
+      <p>The big number at the top of the index is the <b>trailing-12-month change in the composite
+      index</b>. Each category and the composite are set to <code>100</code> at the start of the
+      window, so a reading of, say, <span class="down">−2.1%</span> means the price of the selected
+      basket of AI-exposed work is about 2.1% <i>lower</i> than it was twelve months earlier.</p>
+      <ul>
+        <li>A <span class="down">negative</span> number = <b>deflation</b> — the work is getting
+        cheaper (substitution by AI tends to push this way).</li>
+        <li>A <span class="up">positive</span> number = <b>inflation</b> — the work is getting more
+        expensive (general inflation or AI <i>complementing</i> rather than replacing the worker).</li>
+      </ul>
+      <p>The chart shows the full monthly path of each category and the composite; the table ranks
+      categories by their 12-month change, steepest decline first.</p>
+    </div>
+
+    <!-- 3 -->
+    <div class="q" id="priced">
+      <h3>3. What exactly is being priced?</h3>
+      <p>The unit of observation is a <b>gig</b>: a single, well-defined task a seller offers at a
+      posted price (e.g. "design a minimalist logo," "translate 500 words EN→ES"). We use the
+      <b>Basic</b> price tier. Three properties make these prices well-suited to an index:</p>
+      <ul>
+        <li><b>Revealed, not surveyed.</b> Sellers set these prices in response to competition — they
+        are market outcomes, not estimates.</li>
+        <li><b>Standardized tasks.</b> A gig is a comparable bundle of work, so its price can be
+        tracked over time like a CPI item.</li>
+        <li><b>Matched over time.</b> We only compare a gig's price <i>to its own earlier price</i>,
+        so we measure genuine price movement, not changes in which sellers happen to be in the sample.</li>
+      </ul>
+    </div>
+
+    <!-- 4 -->
+    <div class="q" id="data">
+      <h3>4. Where does the data come from?</h3>
+      <p>Prices are recovered from archived Fiverr gig pages stored in the Internet Archive's
+      <b>Wayback Machine</b>, which has snapshotted the marketplace for over a decade. The pipeline,
+      in brief:</p>
+      <ul>
+        <li>Query the Wayback CDX index for archived <code>fiverr.com</code> gig URLs.</li>
+        <li>Deduplicate to unique (gig, month) snapshots and classify each gig into a service
+        category.</li>
+        <li>Download the archived HTML and extract the posted Basic price from each snapshot.</li>
+        <li>Keep gigs observed in <b>two or more</b> periods to form a matched panel.</li>
+      </ul>
+      <p>The figures on this site come from the <b>recent-window pilot</b> — a stratified sample of
+      sellers over the trailing year. See the <a href="#caveats">caveats</a> on sample size before
+      reading too much into any single category.</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="q" id="formulas">
+      <h3>5. How is the index calculated? (the formulas)</h3>
+      <p>The IPI is a <b>matched-model index</b> built in three steps, following the approach the BLS
+      uses for CPI items that are hard to quality-adjust. The site recomputes the composite
+      <i>live</i> in your browser whenever you change the basket.</p>
+
+      <p class="step">Step 1 — Price relatives (same gig, period to period)</p>
+      <p>For every gig <i>i</i> observed in two consecutive periods, compute the ratio of its new
+      price to its old price:</p>
+      <div class="math">
+        <i>r</i><sub><i>i,t</i></sub> &nbsp;=&nbsp;
+        <span class="frac">
+          <span class="num"><i>p</i><sub><i>i,t</i></sub></span>
+          <span class="den"><i>p</i><sub><i>i,t</i>−1</sub></span>
+        </span>
+      </div>
+      <p class="legend"><b><i>p</i><sub><i>i,t</i></sub></b> = price of gig <i>i</i> in period <i>t</i>
+      (median Basic price if a gig has several snapshots that month). Relatives outside the band
+      <code>0.1–10×</code> are dropped as data errors, and a category-period needs at least
+      <b>3</b> matched gigs to count.</p>
+
+      <p class="step">Step 2 — Category index (Jevons, chained)</p>
+      <p>Within each category, combine that period's price relatives using a <b>Jevons index</b> — the
+      geometric mean of the relatives — and chain it onto the previous period's level:</p>
+      <div class="math">
+        <i>I</i><sup><i>c</i></sup><sub><i>t</i></sub> &nbsp;=&nbsp;
+        <i>I</i><sup><i>c</i></sup><sub><i>t</i>−1</sub>
+        &nbsp;&times;&nbsp;
+        <span style="display:inline-block; position:relative;">
+          <span class="big">(</span>
+          <span class="big" style="position:absolute; left:.55em; top:-.15em; font-size:1.05em;">&prod;</span>
+          <span style="display:inline-block; vertical-align:.1em; padding:0 .2em 0 1.1em;">
+            <i>r</i><sub><i>i,t</i></sub>
+          </span>
+          <span class="big">)</span><sup style="font-size:.62em;">1 / |<i>S</i><sub><i>c,t</i></sub>|</sup>
+        </span>
+      </div>
+      <p class="legend"><b><i>I</i><sup><i>c</i></sup><sub><i>t</i></sub></b> = price index for category
+      <i>c</i> in period <i>t</i>. &nbsp;<b><i>S</i><sub><i>c,t</i></sub></b> = the set of gigs in
+      category <i>c</i> matched between <i>t</i>−1 and <i>t</i>; <b>|<i>S</i><sub><i>c,t</i></sub>|</b>
+      is how many there are. The product-then-1/n-power is exactly the geometric mean of the relatives.
+      The first period in the window is fixed at <code>100</code>.</p>
+
+      <p class="step">Step 3 — Composite IPI (weighted geometric mean)</p>
+      <p>Combine the category indices into one headline number with a Törnqvist-style
+      <b>weighted geometric mean</b>:</p>
+      <div class="math">
+        IPI<sub><i>t</i></sub> &nbsp;=&nbsp; exp
+        <span class="big">(</span>
+        <span class="frac">
+          <span class="num">&sum;<sub><i>c</i></sub> <i>w</i><sub><i>c</i></sub> · ln <i>I</i><sup><i>c</i></sup><sub><i>t</i></sub></span>
+          <span class="den">&sum;<sub><i>c</i></sub> <i>w</i><sub><i>c</i></sub></span>
+        </span>
+        <span class="big">)</span>
+      </div>
+      <p class="legend"><b><i>w</i><sub><i>c</i></sub></b> = the weight of category <i>c</i> (see
+      <a href="#weights">below</a>). Taking the weighted average <i>in logs</i> and then exponentiating
+      is what makes this a geometric — rather than arithmetic — mean. Only categories you have selected
+      enter the sum, which is why the headline updates as you toggle the basket.</p>
+
+      <p class="step">Step 4 — The headline change</p>
+      <p>The number at the top is the percentage change in the composite from the first month of the
+      window (<i>0</i>) to the latest month (<i>T</i>):</p>
+      <div class="math">
+        &Delta;<sub>12mo</sub> &nbsp;=&nbsp;
+        <span class="big">(</span>
+        <span class="frac">
+          <span class="num">IPI<sub><i>T</i></sub></span>
+          <span class="den">IPI<sub>0</sub></span>
+        </span>
+        &nbsp;−&nbsp;1
+        <span class="big">)</span>
+        &nbsp;&times;&nbsp;100%
+      </div>
+      <p class="legend">The same formula gives each category's <code>Δ12mo</code> column, using that
+      category's index in place of the composite.</p>
+    </div>
+
+    <!-- 6 -->
+    <div class="q" id="weights">
+      <h3>6. How are the category weights set?</h3>
+      <p>Like CPI expenditure weights, IPI weights are meant to reflect how much economic activity each
+      category represents. We proxy transaction volume with <b>review counts</b> (a gig accumulates
+      reviews roughly in proportion to sales). For each category we sum the maximum observed review
+      count of its gigs, then normalize so the weights add to 1:</p>
+      <div class="math">
+        <i>w</i><sub><i>c</i></sub> &nbsp;=&nbsp;
+        <span class="frac">
+          <span class="num"><i>R</i><sub><i>c</i></sub></span>
+          <span class="den">&sum;<sub><i>k</i></sub> <i>R</i><sub><i>k</i></sub></span>
+        </span>
+        &nbsp;,&nbsp;&nbsp;
+        <i>R</i><sub><i>c</i></sub> = &sum;<sub><i>i</i>&isin;<i>c</i></sub>
+        max<sub><i>t</i></sub> reviews<sub><i>i,t</i></sub>
+      </div>
+      <p class="legend"><b><i>R</i><sub><i>c</i></sub></b> = total review volume of category <i>c</i>.
+      In the current sample <b>design</b> dominates the basket (~71%), with writing, marketing, coding,
+      video, and audio making up the rest. You can see each category's weight in the <code>Weight</code>
+      column on the index page.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="q" id="geo">
+      <h3>7. Why geometric means instead of plain averages?</h3>
+      <p>Two reasons, both standard in official price statistics:</p>
+      <ul>
+        <li><b>Symmetry.</b> A price that doubles and then halves should net to no change. The geometric
+        mean (Jevons) gives exactly that; an arithmetic mean of relatives would show a spurious increase.</li>
+        <li><b>It is the BLS standard.</b> The geometric mean is what the Bureau of Labor Statistics uses
+        for elementary CPI aggregates, so the IPI stays comparable to how real inflation is measured.</li>
+      </ul>
+    </div>
+
+    <!-- 8 -->
+    <div class="q" id="toggle">
+      <h3>8. Why can I switch categories on and off?</h3>
+      <p>The composite is recomputed in your browser from the category indices and weights every time
+      you change the basket — using exactly the Step&nbsp;3 formula above, renormalized over whatever
+      categories are selected. This lets you ask "what does the index look like for <i>just</i> design
+      and writing?" without trusting a server to do it. Toggle with the checkboxes, or the
+      <b>All / None</b> links.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="q" id="caveats">
+      <h3>9. What are the limitations and caveats?</h3>
+      <ul>
+        <li><b>Pilot scale.</b> These figures come from a sample of sellers, not the full marketplace.
+        Treat them as indicative, not definitive.</li>
+        <li><b>Thin categories read flat.</b> Audio, marketing, and video have sparse matched-pair
+        coverage at monthly cadence and can sit at exactly <code>100</code> for long stretches —
+        that reflects missing matches, not genuine price stability. Quarterly figures are more robust.</li>
+        <li><b>Design dominates.</b> Because design carries ~71% of the weight, the composite mostly
+        follows design. Toggle it off to see the rest of the basket on its own.</li>
+        <li><b>Posted, not transacted.</b> We observe list prices on the Basic tier, not final amounts
+        paid after add-ons, discounts, or negotiation.</li>
+        <li><b>Survivorship and archiving gaps.</b> The Wayback Machine does not snapshot every page
+        every month, and gigs that disappear leave the panel.</li>
+        <li><b>Association, not proven causation.</b> The index documents how prices move; attributing
+        those moves to AI specifically requires the further analysis in the paper.</li>
+      </ul>
+    </div>
+
+    <!-- 10 -->
+    <div class="q" id="repro">
+      <h3>10. Can I reproduce this?</h3>
+      <p>Yes. The index series shown here are generated by the project's analysis pipeline
+      (<code>code/14-recent-ipi.py</code>) and serialized to <code>data.json</code> by
+      <code>code/15-build-site-data.py</code>; the page reads that file and recomputes the composite
+      client-side. The data contract and build steps are documented in
+      <code>README.md</code> and <code>GUIDE.md</code> alongside this page.</p>
+    </div>
+
+    <footer>
+      Intelligence Price Index &middot; matched-model index of Fiverr gig prices via the Wayback Machine.
+      &nbsp;<a href="index.html">Back to the index &rarr;</a>
+    </footer>
+  </div>
+</body>
+</html>
