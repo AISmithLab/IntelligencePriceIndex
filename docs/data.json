@@ -1,216 +1,678 @@
 {
-  "generated": "2026-06-30",
-  "base_month": "2025-02",
-  "window_months": 13,
+  "generated": "2026-07-03",
+  "cadence": "quarterly",
+  "base_period": "2020Q1",
   "categories": [
     "audio",
     "coding",
     "design",
     "marketing",
+    "translation",
     "video",
-    "writing",
-    "design-logo_brand"
+    "writing"
   ],
   "weights": {
-    "audio": 0.018782,
-    "coding": 0.053146,
-    "design": 0.705883,
-    "marketing": 0.06253,
-    "video": 0.045861,
-    "writing": 0.110574,
-    "design-logo_brand": 0.452477
+    "audio": 0.018786,
+    "coding": 0.053159,
+    "design": 0.705811,
+    "marketing": 0.062545,
+    "translation": 0.003225,
+    "video": 0.045872,
+    "writing": 0.110601
   },
   "panel_gigs": {
     "audio": 95,
     "coding": 590,
-    "design": 1681,
+    "design": 1677,
     "marketing": 363,
     "translation": 61,
     "video": 285,
-    "writing": 495,
-    "design-logo_brand": 543
+    "writing": 495
   },
   "months": [
-    "2025-02",
-    "2025-03",
-    "2025-04",
-    "2025-05",
-    "2025-06",
-    "2025-07",
-    "2025-08",
-    "2025-09",
-    "2025-10",
-    "2025-11",
-    "2025-12",
-    "2026-01",
-    "2026-02"
+    "2020Q1",
+    "2020Q2",
+    "2020Q3",
+    "2020Q4",
+    "2021Q1",
+    "2021Q2",
+    "2021Q3",
+    "2021Q4",
+    "2022Q1",
+    "2022Q2",
+    "2022Q3",
+    "2022Q4",
+    "2023Q1",
+    "2023Q2",
+    "2023Q3",
+    "2023Q4",
+    "2024Q1",
+    "2024Q2",
+    "2024Q3",
+    "2024Q4",
+    "2025Q1",
+    "2025Q2",
+    "2025Q3",
+    "2025Q4",
+    "2026Q1"
   ],
   "index": {
     "audio": [
       100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0
+      121.91,
+      135.15,
+      141.03,
+      165.26,
+      253.82,
+      303.12,
+      317.46,
+      336.28,
+      341.61,
+      466.1,
+      535.68,
+      569.27,
+      571.03,
+      650.38,
+      680.03,
+      633.13,
+      706.09,
+      702.9,
+      692.99,
+      466.51,
+      466.51,
+      458.43,
+      458.43,
+      469.47
     ],
     "coding": [
       100.0,
-      100.0,
-      100.0,
-      99.88,
-      99.88,
-      99.88,
-      99.88,
-      99.88,
-      99.88,
-      99.88,
-      99.88,
-      99.88,
-      99.88
+      106.26,
+      109.9,
+      121.55,
+      138.4,
+      149.22,
+      166.83,
+      191.22,
+      205.03,
+      217.61,
+      235.63,
+      218.89,
+      227.41,
+      246.47,
+      263.98,
+      264.75,
+      275.49,
+      341.91,
+      380.22,
+      384.86,
+      318.47,
+      304.1,
+      292.96,
+      295.35,
+      296.72
     ],
     "design": [
       100.0,
-      101.28,
-      101.28,
-      101.28,
-      101.28,
-      100.6,
-      99.51,
-      97.21,
-      97.21,
-      94.04,
-      95.77,
-      96.38,
-      96.71
+      108.59,
+      114.72,
+      123.5,
+      132.85,
+      134.18,
+      143.79,
+      151.0,
+      160.93,
+      180.16,
+      190.71,
+      212.79,
+      238.84,
+      247.59,
+      276.25,
+      285.38,
+      299.36,
+      308.0,
+      317.71,
+      319.07,
+      298.01,
+      298.77,
+      298.99,
+      303.28,
+      304.14
     ],
     "marketing": [
       100.0,
+      122.49,
+      151.48,
+      182.71,
+      171.79,
+      179.91,
+      188.14,
+      207.5,
+      227.6,
+      244.47,
+      297.56,
+      320.47,
+      347.12,
+      395.61,
+      472.37,
+      548.01,
+      631.56,
+      723.28,
+      723.0,
+      725.74,
+      585.19,
+      558.15,
+      568.06,
+      595.82,
+      578.25
+    ],
+    "translation": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
       100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0
+      121.5,
+      90.28,
+      90.28,
+      87.81,
+      87.81,
+      87.81
     ],
     "video": [
       100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0
+      124.71,
+      120.08,
+      137.77,
+      166.59,
+      175.59,
+      195.62,
+      217.09,
+      231.72,
+      268.72,
+      296.94,
+      282.99,
+      337.35,
+      342.72,
+      353.08,
+      392.23,
+      414.16,
+      444.13,
+      502.04,
+      508.26,
+      455.6,
+      455.6,
+      480.4,
+      422.01,
+      402.53
     ],
     "writing": [
       100.0,
-      100.0,
-      100.0,
-      102.27,
-      102.27,
-      102.27,
-      102.27,
-      102.27,
-      102.27,
-      102.27,
-      102.27,
-      102.27,
-      102.27
-    ],
-    "design-logo_brand": [
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      100.0,
-      94.0,
-      94.0,
-      94.0,
-      90.02,
-      91.88,
-      95.88,
-      98.15
+      105.66,
+      112.5,
+      122.6,
+      136.97,
+      155.75,
+      186.56,
+      189.41,
+      212.68,
+      235.25,
+      237.11,
+      246.16,
+      266.78,
+      273.18,
+      299.01,
+      325.0,
+      354.6,
+      357.5,
+      336.62,
+      336.82,
+      284.2,
+      278.52,
+      275.25,
+      266.63,
+      265.42
     ]
   },
   "composite_all": [
     100.0,
-    100.91,
-    100.91,
-    101.15,
-    101.15,
-    100.67,
-    99.89,
-    98.25,
-    98.25,
-    95.97,
-    97.22,
-    97.66,
-    97.9
+    109.89,
+    116.82,
+    127.31,
+    137.75,
+    143.19,
+    156.06,
+    164.95,
+    177.19,
+    196.99,
+    210.89,
+    229.11,
+    254.98,
+    265.76,
+    295.53,
+    309.88,
+    327.63,
+    343.18,
+    350.96,
+    352.69,
+    317.87,
+    316.02,
+    316.13,
+    317.4,
+    316.81
   ],
   "delta12": {
-    "audio": 0.0,
-    "coding": -0.1,
-    "design": -3.3,
-    "marketing": 0.0,
-    "video": 0.0,
-    "writing": 2.3,
-    "composite": -2.1,
-    "design-logo_brand": -1.8
-  },
-  "level": {
-    "audio": "main",
-    "coding": "main",
-    "design": "main",
-    "marketing": "main",
-    "video": "main",
-    "writing": "main",
-    "design-logo_brand": "sub"
-  },
-  "parents": {
-    "audio": "audio",
-    "coding": "coding",
-    "design": "design",
-    "marketing": "marketing",
-    "video": "video",
-    "writing": "writing",
-    "design-logo_brand": "design"
+    "audio": 369.5,
+    "coding": 196.7,
+    "design": 204.1,
+    "marketing": 478.2,
+    "translation": -12.2,
+    "video": 302.5,
+    "writing": 165.4,
+    "composite": 216.8
   },
   "labels": {
     "audio": "Audio",
     "coding": "Coding",
     "design": "Design",
     "marketing": "Marketing",
+    "translation": "Translation",
     "video": "Video",
-    "writing": "Writing",
-    "design-logo_brand": "Logo & Brand"
+    "writing": "Writing"
   },
   "colors": {
     "audio": "#2a6f47",
     "coding": "#2a636f",
     "design": "#2a3c6f",
     "marketing": "#6f2a4d",
+    "translation": "#6f6a2a",
     "video": "#6f462a",
-    "writing": "#472a6f",
-    "design-logo_brand": "#567adc"
+    "writing": "#472a6f"
+  },
+  "rankings": {
+    "audio": {
+      "sellers": 89,
+      "top": [
+        {
+          "seller": "shadowvo",
+          "gigs": 11
+        },
+        {
+          "seller": "motelegal",
+          "gigs": 7
+        },
+        {
+          "seller": "arcticvox",
+          "gigs": 4
+        },
+        {
+          "seller": "leadone",
+          "gigs": 4
+        },
+        {
+          "seller": "therichsounds",
+          "gigs": 3
+        },
+        {
+          "seller": "tomaspalacios",
+          "gigs": 3
+        },
+        {
+          "seller": "aioriar",
+          "gigs": 2
+        },
+        {
+          "seller": "cuoregrigio",
+          "gigs": 2
+        },
+        {
+          "seller": "derricklinmixes",
+          "gigs": 2
+        },
+        {
+          "seller": "djandyguk",
+          "gigs": 2
+        },
+        {
+          "seller": "itunujoe",
+          "gigs": 2
+        },
+        {
+          "seller": "livingvgmusic",
+          "gigs": 2
+        }
+      ]
+    },
+    "coding": {
+      "sellers": 519,
+      "top": [
+        {
+          "seller": "matarrese8",
+          "gigs": 14
+        },
+        {
+          "seller": "midossa01",
+          "gigs": 8
+        },
+        {
+          "seller": "aasimabdullah",
+          "gigs": 6
+        },
+        {
+          "seller": "nabil44th",
+          "gigs": 6
+        },
+        {
+          "seller": "acastrase",
+          "gigs": 5
+        },
+        {
+          "seller": "aneeb_graphic",
+          "gigs": 5
+        },
+        {
+          "seller": "creativesalahu",
+          "gigs": 5
+        },
+        {
+          "seller": "janesonib",
+          "gigs": 5
+        },
+        {
+          "seller": "jayne_shaw",
+          "gigs": 5
+        },
+        {
+          "seller": "kamrulhasan90",
+          "gigs": 5
+        },
+        {
+          "seller": "lwisjammy",
+          "gigs": 5
+        },
+        {
+          "seller": "nhpasha",
+          "gigs": 5
+        }
+      ]
+    },
+    "design": {
+      "sellers": 1528,
+      "top": [
+        {
+          "seller": "ace_art",
+          "gigs": 15
+        },
+        {
+          "seller": "asad_azad",
+          "gigs": 12
+        },
+        {
+          "seller": "alimsarder786",
+          "gigs": 10
+        },
+        {
+          "seller": "aneeb_graphic",
+          "gigs": 9
+        },
+        {
+          "seller": "bintangdel",
+          "gigs": 9
+        },
+        {
+          "seller": "broewnis",
+          "gigs": 9
+        },
+        {
+          "seller": "spindesign",
+          "gigs": 9
+        },
+        {
+          "seller": "amin42",
+          "gigs": 7
+        },
+        {
+          "seller": "andreea_91",
+          "gigs": 7
+        },
+        {
+          "seller": "carddesignrr",
+          "gigs": 7
+        },
+        {
+          "seller": "dalim_artist",
+          "gigs": 7
+        },
+        {
+          "seller": "hasithalak",
+          "gigs": 7
+        }
+      ]
+    },
+    "marketing": {
+      "sellers": 322,
+      "top": [
+        {
+          "seller": "ranafai",
+          "gigs": 11
+        },
+        {
+          "seller": "hamza7554191",
+          "gigs": 8
+        },
+        {
+          "seller": "msazzadit",
+          "gigs": 6
+        },
+        {
+          "seller": "blackbirdbits",
+          "gigs": 5
+        },
+        {
+          "seller": "emailservices7",
+          "gigs": 4
+        },
+        {
+          "seller": "kerolo",
+          "gigs": 4
+        },
+        {
+          "seller": "vip_citation1",
+          "gigs": 4
+        },
+        {
+          "seller": "aladdingraphics",
+          "gigs": 3
+        },
+        {
+          "seller": "ana_seo_85",
+          "gigs": 3
+        },
+        {
+          "seller": "aribrostudio",
+          "gigs": 3
+        },
+        {
+          "seller": "bartleap",
+          "gigs": 3
+        },
+        {
+          "seller": "coder_yousuf",
+          "gigs": 3
+        }
+      ]
+    },
+    "translation": {
+      "sellers": 50,
+      "top": [
+        {
+          "seller": "frederiklund",
+          "gigs": 3
+        },
+        {
+          "seller": "romygraske",
+          "gigs": 3
+        },
+        {
+          "seller": "hebaalghool",
+          "gigs": 2
+        },
+        {
+          "seller": "mariepf",
+          "gigs": 2
+        },
+        {
+          "seller": "ranahassan7755",
+          "gigs": 2
+        },
+        {
+          "seller": "skyler0217",
+          "gigs": 2
+        },
+        {
+          "seller": "translator001",
+          "gigs": 2
+        },
+        {
+          "seller": "virgini9",
+          "gigs": 2
+        },
+        {
+          "seller": "vivihuerta",
+          "gigs": 2
+        },
+        {
+          "seller": "abalone",
+          "gigs": 1
+        },
+        {
+          "seller": "alessandropr991",
+          "gigs": 1
+        },
+        {
+          "seller": "aminahumble",
+          "gigs": 1
+        }
+      ]
+    },
+    "video": {
+      "sellers": 295,
+      "top": [
+        {
+          "seller": "holdaz",
+          "gigs": 10
+        },
+        {
+          "seller": "motiongrapherr",
+          "gigs": 9
+        },
+        {
+          "seller": "umair_khatri",
+          "gigs": 8
+        },
+        {
+          "seller": "zsnake22",
+          "gigs": 8
+        },
+        {
+          "seller": "mob_studios",
+          "gigs": 7
+        },
+        {
+          "seller": "graphicsqueens",
+          "gigs": 6
+        },
+        {
+          "seller": "mazbah_rifat12",
+          "gigs": 6
+        },
+        {
+          "seller": "xian_xian",
+          "gigs": 6
+        },
+        {
+          "seller": "freakyyi",
+          "gigs": 5
+        },
+        {
+          "seller": "mahmoudfathiali",
+          "gigs": 5
+        },
+        {
+          "seller": "nasimasarder007",
+          "gigs": 5
+        },
+        {
+          "seller": "primeera",
+          "gigs": 5
+        }
+      ]
+    },
+    "writing": {
+      "sellers": 494,
+      "top": [
+        {
+          "seller": "mehrabmeraj",
+          "gigs": 9
+        },
+        {
+          "seller": "intladvocate",
+          "gigs": 8
+        },
+        {
+          "seller": "babarshahzad345",
+          "gigs": 5
+        },
+        {
+          "seller": "blackbirdbits",
+          "gigs": 5
+        },
+        {
+          "seller": "cherenef",
+          "gigs": 5
+        },
+        {
+          "seller": "dana_m19",
+          "gigs": 5
+        },
+        {
+          "seller": "asad_azad",
+          "gigs": 4
+        },
+        {
+          "seller": "ekatarin",
+          "gigs": 4
+        },
+        {
+          "seller": "fajlu3252",
+          "gigs": 4
+        },
+        {
+          "seller": "nad1afa",
+          "gigs": 4
+        },
+        {
+          "seller": "prudenciam",
+          "gigs": 4
+        },
+        {
+          "seller": "trademarkassist",
+          "gigs": 4
+        }
+      ]
+    }
   }
 }

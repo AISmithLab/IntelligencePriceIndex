@@ -128,6 +128,24 @@
     tr.detail td { background: #fafbfd; color: var(--mut); font-size: 12px;
                    padding: 9px 16px; }
     tr.detail .vals { font-variant-numeric: tabular-nums; line-height: 1.8; }
+
+    /* freelancer ranking (category expand) ---------------------------------- */
+    .rankbox { padding: 4px 2px 6px; }
+    .rankhead { font-size: 12px; color: var(--mut); margin-bottom: 8px; }
+    .rankhead b { color: var(--ink); font-weight: 700; }
+    .rankhead .rankmut { color: var(--faint); }
+    ol.rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+    ol.rank li { display: grid; grid-template-columns: 20px minmax(90px,1.2fr) 1fr auto;
+                 align-items: center; gap: 10px; font-size: 12.5px; }
+    ol.rank .rk { color: var(--faint); text-align: right; font-variant-numeric: tabular-nums;
+                  font-size: 11px; }
+    ol.rank .rs { color: var(--link); text-decoration: none; font-weight: 600;
+                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    ol.rank .rs:hover { text-decoration: underline; }
+    ol.rank .rbar { height: 8px; background: #edeff5; border-radius: 4px; overflow: hidden; }
+    ol.rank .rfill { display: block; height: 100%; border-radius: 4px; opacity: .78; }
+    ol.rank .rg { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600;
+                  white-space: nowrap; }
     tfoot td { border-top: 2px solid var(--line); border-bottom: none;
                font-weight: 700; color: var(--ink); }
     input[type=checkbox] { cursor: pointer; vertical-align: -2px; accent-color: var(--accent); }
@@ -162,7 +180,7 @@
         <p class="def">The <b>Intelligence Price Index (IPI)</b> measures how the market price of
         AI-exposed knowledge work &mdash; freelance tasks like design, writing, coding, video, and
         audio &mdash; is changing over time. It is a CPI-style price index built from real, posted
-        Fiverr gig prices, shown here over the trailing 12&nbsp;months.</p>
+        Fiverr gig prices, shown here quarterly from 2020 to today.</p>
         <nav><a href="faq.html">Full FAQ &amp; methodology &rarr;</a></nav>
       </div>
     </header>
@@ -171,21 +189,20 @@
       <section class="card hero">
         <div class="headline">
           <div class="num" id="hNum">&mdash;</div>
-          <div class="sub">composite &mdash; all selected categories combined, trailing 12&nbsp;months <span id="hRange"></span></div>
+          <div class="sub">composite &mdash; all selected categories combined, full history <span id="hRange"></span></div>
         </div>
         <div id="chart"><div class="tip" id="tip"></div></div>
         <div class="chartnote">
-          <span>Highlighted = sharpest month-over-month moves in the composite:</span>
+          <span>Highlighted = sharpest quarter-over-quarter moves in the composite:</span>
           <span><span class="dot" style="background:#15803d"></span>price rise</span>
           <span><span class="dot" style="background:#dc2626"></span>price drop</span>
-          <span><span class="dash"></span>dashed = subcategory detail (not in composite)</span>
         </div>
         <ul class="movenotes" id="movenotes"></ul>
       </section>
 
       <section class="card tablewrap">
         <div class="selbar">
-          <span class="lbl">Select categories for the basket</span>
+          <span class="lbl">Select categories &middot; expand (▸) for top freelancers</span>
           <span class="toggles">
             <a id="selAll">All</a>
             <a id="selNone">None</a>
@@ -199,7 +216,7 @@
               <th class="l" style="width:34px" data-k="rank">#</th>
               <th class="l" data-k="name">Category</th>
               <th class="l" style="width:110px">Trend</th>
-              <th data-k="delta">&Delta;12mo</th>
+              <th data-k="delta">&Delta;'20&ndash;'26</th>
               <th data-k="weight">Weight</th>
               <th data-k="gigs">Gigs</th>
             </tr>

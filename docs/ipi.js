@@ -34,15 +34,16 @@ fetch("data.json").then(r => r.json()).then(data => {
   document.getElementById("hRange").textContent =
     `(${DATA.months[0]} → ${DATA.months[DATA.months.length - 1]})`;
   document.getElementById("caveat").textContent =
-    "Index, base month = 100. The composite basket is the main (broad) categories, ranked by " +
-    "12-month price change (largest decline first). Subcategories (dashed, nested under their parent) " +
-    "are shown for detail where they have both solid matched-pair coverage and real movement " +
-    "(e.g. Logo & Brand within Design); they are not added to the basket since their gigs already " +
-    "sit inside the parent. Thin or flat subcategories stay folded into the broad domain.";
+    "Quarterly index, base " + DATA.base_period + " = 100. Categories are ranked by their price " +
+    "change over the whole window. The series chains two matched-model panels — the historical " +
+    "pilot (2020–2024) spliced at 2024Q3 onto the recent trailing-window crawl — so the level is " +
+    "continuous through the join. Expand any category (▸) to see its top freelancers ranked by the " +
+    "number of distinct gigs/services they offer. Note the panel is a sample of archived sellers, " +
+    "and the composite is design-heavy (design ≈ 71% of review weight), so it tracks design closely.";
   document.getElementById("src").innerHTML =
-    `Source: Fiverr gig prices via the Wayback Machine, matched-model index. ` +
+    `Source: Fiverr gig prices via the Wayback Machine, matched-model index (quarterly, ${DATA.base_period}=100). ` +
     `Composite = review-weighted geometric mean of the selected categories: ` +
-    `<code>exp(Σ w·ln(index) / Σ w)</code>. Data generated ${DATA.generated}.`;
+    `<code>exp(Σ w·ln(index) / Σ w)</code>. Freelancer rankings from archived gig counts. Data generated ${DATA.generated}.`;
   wireControls();
   render();
 }).catch(e => {
@@ -65,9 +66,10 @@ const pctChange = s => {
   const a = s.find(v => v != null), b = [...s].reverse().find(v => v != null);
   return a && b ? (b / a - 1) * 100 : null;
 };
-// month-over-month moves worth calling out: anything past a threshold, plus the
+// period-over-period moves worth calling out: anything past a threshold, plus the
 // single biggest rise and biggest drop so the chart always labels its extremes.
-function significantMoves(series, thresh = 0.8) {
+// Threshold scales with cadence (quarterly steps are larger than monthly).
+function significantMoves(series, thresh = 4) {
   const moves = [];
   for (let i = 1; i < series.length; i++) {
     if (series[i] == null || series[i - 1] == null) continue;
@@ -76,22 +78,29 @@ function significantMoves(series, thresh = 0.8) {
   const ups = moves.filter(m => m.pct > 0), downs = moves.filter(m => m.pct < 0);
   // threshold crossings first; the single biggest rise/drop override with a stronger label
   const pick = new Map(moves.filter(m => Math.abs(m.pct) >= thresh)
-    .map(m => [m.i, { ...m, why: `crossed the ±${thresh}% month-over-month threshold` }]));
-  if (ups.length) { const m = ups.reduce((a, b) => b.pct > a.pct ? b : a); if (m.pct >= 0.05) pick.set(m.i, { ...m, why: "sharpest single-month rise in the window" }); }
-  if (downs.length) { const m = downs.reduce((a, b) => b.pct < a.pct ? b : a); if (m.pct <= -0.05) pick.set(m.i, { ...m, why: "sharpest single-month drop in the window" }); }
-  return [...pick.values()].sort((a, b) => a.i - b.i);
+    .map(m => [m.i, { ...m, why: `crossed the ±${thresh}% quarter-over-quarter threshold` }]));
+  const extremes = new Set();
+  if (ups.length) { const m = ups.reduce((a, b) => b.pct > a.pct ? b : a); if (m.pct >= 0.05) { pick.set(m.i, { ...m, why: "sharpest single-quarter rise in the window" }); extremes.add(m.i); } }
+  if (downs.length) { const m = downs.reduce((a, b) => b.pct < a.pct ? b : a); if (m.pct <= -0.05) { pick.set(m.i, { ...m, why: "sharpest single-quarter drop in the window" }); extremes.add(m.i); } }
+  // over a multi-year window many quarters cross the threshold; keep only the most
+  // notable so the chart/list stay readable — always retaining the two extremes.
+  const MAX = 5;
+  let out = [...pick.values()];
+  if (out.length > MAX) {
+    out = out.sort((a, b) => (extremes.has(b.i) - extremes.has(a.i)) || (Math.abs(b.pct) - Math.abs(a.pct)))
+             .slice(0, MAX);
+  }
+  return out.sort((a, b) => a.i - b.i);
 }
-// shared y-domain across every category + composite, for comparable sparklines
-function domain() {
-  const all = [...DATA.categories.flatMap(c => DATA.index[c]), ...DATA.composite_all].filter(v => v != null);
-  let lo = Math.min(...all), hi = Math.max(...all);
-  const pad = Math.max((hi - lo) * 0.12, 0.5);
-  return [lo - pad, hi + pad];
-}
-
 // ---- sparkline (tiny inline svg) ------------------------------------------
 function spark(values, w = 110, h = 20, color = "#888") {
-  const [lo, hi] = domain(), n = values.length;
+  // per-series auto-scale (levels span 100→~580 across categories, so a shared
+  // domain would flatten low-movement rows); keep 100 inside the range as baseline.
+  const present = values.filter(v => v != null);
+  let lo = present.length ? Math.min(100, ...present) : 95;
+  let hi = present.length ? Math.max(100, ...present) : 105;
+  const sp = Math.max((hi - lo) * 0.12, 0.5); lo -= sp; hi += sp;
+  const n = values.length;
   const x = i => (i / (n - 1)) * (w - 2) + 1;
   const y = v => h - 1 - ((v - lo) / (hi - lo)) * (h - 2);
   const svg = el("svg", { _svg: 1, width: w, height: h, class: "spark", viewBox: `0 0 ${w} ${h}` });
@@ -159,7 +168,7 @@ function drawChart(cats, comp) {
     if (lastV != null) svg.appendChild(el("text", { _svg: 1, x: X(lastI) - 4, y: Y(lastV) - 8,
       "text-anchor": "end", "font-size": 12, "font-weight": 700, fill: "#111" }, [lastV.toFixed(1)]));
 
-    // highlight the sharpest month-over-month moves in the composite
+    // highlight the sharpest quarter-over-quarter moves in the composite
     for (const mv of significantMoves(comp)) {
       const up = mv.pct > 0, color = up ? "#15803d" : "#dc2626";
       const x1 = X(mv.i - 1), y1 = Y(comp[mv.i - 1]), x2 = X(mv.i), y2 = Y(comp[mv.i]);
@@ -204,7 +213,7 @@ function renderMoveNotes(comp, cats) {
   const moves = significantMoves(comp), months = DATA.months;
   if (!moves.length) {
     ul.appendChild(el("li", {}, [
-      "No single month moved the composite sharply over this window — changes were gradual."]));
+      "No single quarter moved the composite sharply over this window — changes were gradual."]));
     return;
   }
   for (const mv of moves) {
@@ -214,7 +223,7 @@ function renderMoveNotes(comp, cats) {
     li.appendChild(el("span", { html:
       `<b>${months[mv.i - 1]} → ${months[mv.i]}</b>: composite ` +
       `<span class="${dir}">${verb}${Math.abs(mv.pct).toFixed(1)}%</span> ` +
-      `month-over-month — ${mv.why}.` }));
+      `quarter-over-quarter — ${mv.why}.` }));
     ul.appendChild(li);
   }
 }
@@ -260,6 +269,39 @@ function catRow(c, rank, sub) {
   return tr;
 }
 
+// expanded detail row: top freelancers in this category, ranked by number of
+// distinct gigs/services they offer (from DATA.rankings, built in step 18).
+function rankingRow(c) {
+  const rk = DATA.rankings && DATA.rankings[c];
+  const inner = el("div", { class: "rankbox" });
+  if (!rk || !rk.top || !rk.top.length) {
+    inner.appendChild(el("div", { class: "rankhead" },
+      ["No freelancer ranking available for " + labelOf(c) + "."]));
+  } else {
+    inner.appendChild(el("div", { class: "rankhead", html:
+      `Top freelancers in <b>${labelOf(c)}</b>, ranked by number of gigs offered ` +
+      `<span class="rankmut">— ${rk.sellers.toLocaleString()} archived sellers</span>` }));
+    const ol = el("ol", { class: "rank" });
+    const max = rk.top[0].gigs;
+    rk.top.forEach((s, i) => {
+      const li = el("li", {});
+      li.appendChild(el("span", { class: "rk" }, [String(i + 1)]));
+      li.appendChild(el("a", { class: "rs", href: `https://www.fiverr.com/${s.seller}`,
+        target: "_blank", rel: "noopener" }, [s.seller]));
+      const bar = el("span", { class: "rbar" });
+      bar.appendChild(el("span", { class: "rfill",
+        style: `width:${Math.max(6, (s.gigs / max) * 100)}%;background:${colorOf(c)}` }));
+      li.appendChild(bar);
+      li.appendChild(el("span", { class: "rg" }, [s.gigs + (s.gigs === 1 ? " gig" : " gigs")]));
+      ol.appendChild(li);
+    });
+    inner.appendChild(ol);
+  }
+  return el("tr", { class: "detail" }, [
+    el("td", {}), el("td", {}),
+    el("td", { colspan: 6 }, [inner])]);
+}
+
 function render() {
   const cats = DATA.categories.filter(c => checked.has(c));        // all checked (chart lines)
   const mainChecked = cats.filter(c => !isSub(c));                  // basket members only
@@ -278,15 +320,8 @@ function render() {
   order.forEach((c, idx) => {
     tb.appendChild(catRow(c, idx + 1, false));
 
-    if (open.has(c)) {
-      const vals = DATA.months.map((mo, i) => {
-        const v = DATA.index[c][i];
-        return `${mo} ${v == null ? "–" : v.toFixed(1)}`;
-      }).join("&nbsp;&nbsp;·&nbsp;&nbsp;");
-      tb.appendChild(el("tr", { class: "detail" }, [
-        el("td", {}), el("td", {}), el("td", {}),
-        el("td", { colspan: 5, class: "vals", html: vals })]));
-    }
+    if (open.has(c)) tb.appendChild(rankingRow(c));
+
     // nested subcategory detail lines under this domain
     subsOf(c).sort((a, b) => (DATA.delta12[a] ?? 0) - (DATA.delta12[b] ?? 0))
       .forEach(sc => tb.appendChild(catRow(sc, null, true)));

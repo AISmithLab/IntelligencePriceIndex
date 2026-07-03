@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+"""
+Step 18: Build the FULL-HISTORY data.json the IPI website consumes (2020 -> 2026).
+
+Supersedes the trailing-12-month build (step 15/17) for the site display. Two
+datasets are chained into a single continuous QUARTERLY per-category index:
+
+  - Historical panel (the March 500-seller pilot) -> data/pilot/panel-category-indices.csv
+    Matched-model quarterly index, dense 2018-2024, base 2019Q1=100. We use it for
+    2020Q1 .. the splice quarter.
+  - Recent panel (the trailing-window crawl) -> data/pilot/recent-category-indices.csv
+    Matched-model quarterly index, base 2024Q3=100, covering 2024Q3 .. 2026Q1. We
+    splice it onto the historical level at the shared 2024Q3 link (ratio splice), so
+    the recent segment continues the historical level rather than restarting at 100.
+
+The whole chained series is then re-based to 2020Q1 = 100. Quarterly (not mixed
+monthly/quarterly) keeps the x-axis uniform and comparable, and quarterly is the
+more robust cadence for the thin categories (see recent-ipi-summary.md).
+
+Composite is recomputed client-side from the per-category index + review weights
+(recent-category-weights.csv) as exp(Sum w*ln(idx) / Sum w) -- unchanged contract.
+
+Also emits a `rankings` block: per category, the top freelancers by number of
+distinct gigs/services they offer, derived from the recent manifest.
+
+Output: docs/data.json
+"""
+
+import csv
+import json
+import math
+from collections import defaultdict
+from datetime import date
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+PILOT = BASE_DIR / "data" / "pilot"
+HIST_CSV = PILOT / "panel-category-indices.csv"
+RECENT_CSV = PILOT / "recent-category-indices.csv"
+WEIGHTS_CSV = PILOT / "recent-category-weights.csv"
+MANIFEST = PILOT / "recent-manifest.tsv"
+HIST_PRICES = PILOT / "pilot-prices.csv"     # historical extracted prices (2011->2026)
+HIST_ITEMS = PILOT / "gig-items.csv"         # (seller, slug) -> item_label/description
+OUT = BASE_DIR / "docs" / "data.json"
+
+START_Q = "2020Q1"          # first displayed quarter
+START_YEAR = 2020           # rankings count gigs observed in this year or later
+LINK_Q = "2024Q3"           # shared quarter used to splice recent onto historical
+TOP_N = 12                  # freelancers listed per category ranking
+
+# Fiverr URL path segments that are NOT seller handles (landing/section pages).
+# gig_id is "seller/slug"; when the first segment is one of these it's not a gig.
+RESERVED = {"hire", "agencies", "categories", "category", "search", "gig", "gigs",
+            "s", "users", "user", "profile", "inbox", "support", "help", "business",
+            "pro", "resource", "resources", "cp", "community", "blog", "invite",
+            "logo-maker", "start_selling", "seller_onboarding", "login", "join"}
+
+# broad categories that make up the basket (order/labels/colors for display)
+CATS = ["audio", "coding", "design", "marketing", "translation", "video", "writing"]
+LABELS = {"audio": "Audio", "coding": "Coding", "design": "Design",
+          "marketing": "Marketing", "translation": "Translation",
+          "video": "Video", "writing": "Writing"}
+COLORS = {"audio": "#2a6f47", "coding": "#2a636f", "design": "#2a3c6f",
+          "marketing": "#6f2a4d", "video": "#6f462a", "writing": "#472a6f",
+          "translation": "#6f6a2a"}
+
+# Keyword classifier for HISTORICAL gigs (recent gigs already carry a category).
+# Kept identical to code/12-panel-ipi.py so historical rankings use the same
+# taxonomy the historical price index was built with.
+CATEGORY_KEYWORDS = {
+    "writing": ["write", "article", "blog", "content", "copywriting", "story",
+                "ebook", "book", "proofread", "edit", "ghostwrit", "script",
+                "resume", "cover letter", "press release"],
+    "coding": ["code", "python", "javascript", "app", "mobile app", "web",
+               "wordpress", "shopify", "wix", "html", "css", "developer",
+               "software", "programming", "script", "api", "database",
+               "sql", "discord bot", "game"],
+    "design": ["logo", "design", "graphic", "banner", "flyer", "poster",
+               "illustration", "draw", "cartoon", "caricature", "infographic",
+               "photoshop", "ui", "ux", "brand", "tshirt", "packaging",
+               "mockup", "thumbnail", "book cover", "album cover"],
+    "translation": ["translat", "spanish", "french", "german", "arabic",
+                    "chinese", "japanese", "korean", "hindi", "portuguese"],
+    "video": ["video", "animation", "motion", "whiteboard", "explainer",
+              "intro", "outro", "edit video", "youtube", "after effects",
+              "3d", "render", "model"],
+    "audio": ["voice", "voiceover", "narrat", "sing", "music", "audio",
+              "podcast", "jingle", "sound", "mixing", "master"],
+    "marketing": ["seo", "marketing", "ads", "facebook", "google ads",
+                  "social media", "instagram", "tiktok", "email marketing",
+                  "ppc", "lead", "traffic"],
+}
+
+
+def classify_gig(description, item_label):
+    text = (description + " " + item_label).lower()
+    best, best_score = None, 0
+    for cat, keywords in CATEGORY_KEYWORDS.items():
+        score = sum(1 for kw in keywords if kw in text)
+        if score > best_score:
+            best, best_score = cat, score
+    return best   # None if nothing matched (gig dropped from rankings)
+
+
+# ---- quarter helpers -------------------------------------------------------
+def q_to_int(q):
+    """'2020Q3' -> 20203 (sortable/orderable integer)."""
+    y, qtr = q.split("Q")
+    return int(y) * 10 + int(qtr)
+
+
+def quarters(start, end):
+    out, cur = [], q_to_int(start)
+    end_i = q_to_int(end)
+    while cur <= end_i:
+        y, qq = divmod(cur, 10)
+        out.append(f"{y}Q{qq}")
+        qq += 1
+        cur = (y + 1) * 10 + 1 if qq > 4 else y * 10 + qq
+    return out
+
+
+def read_index_csv(path):
+    """Read a quarter-indexed per-category CSV -> {category: {quarter: value}}."""
+    out = defaultdict(dict)
+    with open(path) as f:
+        r = csv.DictReader(f)
+        for row in r:
+            q = row["quarter"]
+            for cat, val in row.items():
+                if cat == "quarter" or val in (None, ""):
+                    continue
+                out[cat][q] = float(val)
+    return out
+
+
+# ---- chained index ---------------------------------------------------------
+def chain_category(cat, hist, recent):
+    """Splice recent onto historical at LINK_Q, then re-base so START_Q = 100.
+    Returns {quarter: level} (only quarters with data)."""
+    h, r = hist.get(cat, {}), recent.get(cat, {})
+    chained = {}
+
+    # link at the EARLIEST quarter present in both panels, so we switch to the
+    # denser recent crawl as soon as it starts (historical goes sparse post-2024).
+    common = sorted((set(h) & set(r)), key=q_to_int)
+    common = [q for q in common if r.get(q)]
+    if common:
+        link = common[0]
+        link_level = h[link]
+        for q, v in h.items():
+            if q_to_int(q) < q_to_int(link):
+                chained[q] = v
+        for q, v in r.items():                       # includes the link quarter itself
+            chained[q] = link_level * v / r[link]
+    elif r:                                            # recent only (e.g. thin cats)
+        chained = dict(r)
+    elif h:                                            # historical only
+        chained = dict(h)
+    else:
+        return {}
+
+    # re-base to START_Q = 100 (or the first available quarter if START_Q missing)
+    base = chained.get(START_Q)
+    if base is None:
+        for q in sorted(chained, key=q_to_int):
+            base = chained[q]
+            break
+    if not base:
+        return {}
+    return {q: 100.0 * v / base for q, v in chained.items()}
+
+
+def composite(levels_by_cat, weights, q):
+    log_sum, w_sum = 0.0, 0.0
+    for cat, series in levels_by_cat.items():
+        v, w = series.get(q), weights.get(cat, 0.0)
+        if v and v > 0 and w > 0:
+            log_sum += w * math.log(v)
+            w_sum += w
+    return math.exp(log_sum / w_sum) if w_sum > 0 else None
+
+
+# ---- freelancer rankings ---------------------------------------------------
+def build_rankings():
+    """Per category: sellers ranked by number of distinct gigs/services offered
+    across the FULL 2020->2026 span. Two sources are unioned so a seller's gig
+    count spans the whole window, not just the recent crawl:
+
+      - recent manifest (gig_id = 'seller/slug', months 2024-2026), category given.
+      - historical pilot prices (2011->2026), filtered to observations in
+        START_YEAR or later; category derived from gig-items.csv via classify_gig.
+
+    A distinct gig = 'seller/slug'; unioning across both sources dedups gigs that
+    appear in both. Returns
+    {cat: {"top": [{seller, gigs}], "sellers": total_distinct_sellers}}."""
+    gigs = defaultdict(lambda: defaultdict(set))   # cat -> seller -> {gig_id}
+
+    # (1) recent-window manifest (already carries category; all months >= 2024)
+    with open(MANIFEST) as f:
+        for row in csv.DictReader(f, delimiter="\t"):
+            month = row.get("month", "")
+            if month[:4].isdigit() and int(month[:4]) < START_YEAR:
+                continue
+            cat, gid = row["category"], row["gig_id"]
+            if cat not in CATS:
+                continue
+            seller = gid.split("/", 1)[0]
+            if seller in RESERVED:
+                continue
+            gigs[cat][seller].add(gid)
+
+    # (2) historical pilot prices (2020+): classify each gig by its item text
+    item_map = {}
+    with open(HIST_ITEMS) as f:
+        for row in csv.DictReader(f):
+            item_map[(row["seller"], row["slug"])] = (row["item_label"],
+                                                      row["description"])
+    cat_cache = {}   # (seller, slug) -> category (classify once per gig)
+    with open(HIST_PRICES) as f:
+        for row in csv.DictReader(f):
+            try:
+                if int(row["year"]) < START_YEAR:
+                    continue
+            except (ValueError, TypeError):
+                continue
+            key = (row["seller"], row["slug"])
+            if key not in cat_cache:
+                item = item_map.get(key)
+                cat_cache[key] = classify_gig(item[1], item[0]) if item else None
+            cat = cat_cache[key]
+            if cat not in CATS or row["seller"] in RESERVED:
+                continue
+            gigs[cat][row["seller"]].add(f"{row['seller']}/{row['slug']}")
+
+    out = {}
+    for cat in CATS:
+        sellers = gigs.get(cat, {})
+        ranked = sorted(((s, len(g)) for s, g in sellers.items()),
+                        key=lambda x: (-x[1], x[0]))
+        out[cat] = {
+            "sellers": len(sellers),
+            "top": [{"seller": s, "gigs": n} for s, n in ranked[:TOP_N]],
+        }
+    return out
+
+
+# ---- assemble --------------------------------------------------------------
+def main():
+    hist = read_index_csv(HIST_CSV)
+    recent = read_index_csv(RECENT_CSV)
+
+    weights = {}
+    panel_gigs = {}
+    with open(WEIGHTS_CSV) as f:
+        for row in csv.DictReader(f):
+            weights[row["category"]] = float(row["weight"])
+            panel_gigs[row["category"]] = int(row["panel_gigs"])
+
+    # last quarter present anywhere in the recent panel = end of the axis
+    last_q = max((q for c in recent.values() for q in c), key=q_to_int)
+    qs = quarters(START_Q, last_q)
+
+    chained = {}
+    for cat in CATS:
+        s = chain_category(cat, hist, recent)
+        if s:
+            chained[cat] = s
+    cats = [c for c in CATS if c in chained]
+
+    # forward-fill within the display window so lines stay continuous across gaps
+    index = {}
+    for c in cats:
+        series, last = [], None
+        for q in qs:
+            if q in chained[c]:
+                last = round(chained[c][q], 2)
+            # None until the first observation, then forward-filled
+            first_seen = any(qq in chained[c] for qq in qs[:qs.index(q) + 1])
+            series.append(last if first_seen else None)
+        index[c] = series
+
+    comp = [composite({c: chained[c] for c in cats}, weights, q) for q in qs]
+    # forward-fill composite too (a quarter with no category coverage inherits prior)
+    filled, last = [], None
+    for v in comp:
+        if v is not None:
+            last = v
+        filled.append(round(last, 2) if last is not None else None)
+    comp = filled
+
+    def full_delta(series):
+        a = next((v for v in series if v is not None), None)
+        b = next((v for v in reversed(series) if v is not None), None)
+        return round((b / a - 1) * 100, 1) if a and b and a > 0 else None
+
+    delta = {c: full_delta(index[c]) for c in cats}
+    delta["composite"] = full_delta(comp)
+
+    data = {
+        "generated": date.today().isoformat(),
+        "cadence": "quarterly",
+        "base_period": START_Q,
+        "categories": cats,
+        "weights": {c: round(weights.get(c, 0.0), 6) for c in cats},
+        "panel_gigs": {c: panel_gigs.get(c) for c in cats},
+        "months": qs,                       # quarter labels (key kept for JS compat)
+        "index": index,
+        "composite_all": comp,
+        "delta12": {k: v for k, v in delta.items()},   # now full-period change
+        "labels": {c: LABELS[c] for c in cats},
+        "colors": {c: COLORS[c] for c in cats},
+        "rankings": build_rankings(),
+    }
+
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    with open(OUT, "w") as f:
+        json.dump(data, f, indent=2)
+
+    # ---- report ----
+    print(f"Wrote {OUT}  ({OUT.stat().st_size/1024:.1f} KB)")
+    print(f"Axis: {qs[0]} -> {qs[-1]} ({len(qs)} quarters), base {START_Q}=100, splice {LINK_Q}")
+    print(f"Categories ({len(cats)}): {', '.join(cats)}")
+    print("\nComposite (all categories):")
+    for q, v in zip(qs, comp):
+        bar = "#" * int((v or 0) / 8)
+        print(f"  {q:<7} {('%7.1f' % v) if v else '    n/a'}  {bar}")
+    print(f"\nFull-period change {qs[0]}->{qs[-1]}:  composite {delta['composite']:+.1f}%")
+    print("Per-category full-period change:")
+    for c in sorted(cats, key=lambda x: delta[x] if delta[x] is not None else 0):
+        d = delta[c]
+        print(f"  {c:<12} {d:+7.1f}%" if d is not None else f"  {c:<12}     n/a")
+    print("\nTop freelancer per category (by distinct gigs):")
+    for c in cats:
+        top = data["rankings"][c]["top"]
+        if top:
+            print(f"  {c:<12} {top[0]['seller']} ({top[0]['gigs']} gigs)  "
+                  f"[{data['rankings'][c]['sellers']} sellers total]")
+
+
+if __name__ == "__main__":
+    main()
