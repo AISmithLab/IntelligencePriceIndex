@@ -1,6 +1,13 @@
 # Progress Log
 
-## 2026-07-07 — Site: distinct per-category color palette [uncommitted]
+## 2026-07-07 — Site: smaller page gutters + mobile-scrollable FAQ tables [committed + pushed]
+
+- **User: "make the web margin smaller."** Widened `.wrap` (`max-width` 1280→1600px) and trimmed side padding (20→12px) on both `docs/index.html` and `docs/faq.html` so content uses more of a wide screen. (faq `max-width` 800→900px, kept readable.)
+- **Caught + fixed a pre-existing mobile bug while verifying:** the FAQ `.ftable` data tables (357px, nowrap Result column) overflowed a 375px phone viewport. Added `.ftable { display:block; overflow-x:auto }` inside the ≤560px media query so wide tables scroll in their own box instead of pushing the page sideways.
+- **Verified in headless Chromium** (Playwright, served `docs/`): index + faq at 1920/1280/375px — **no horizontal overflow, 0 console errors** on any. Re-check script in scratchpad.
+- **Status: COMMITTED + PUSHED** on `mockup` (`c9584b7`). Files: `docs/{index.html,faq.html}`.
+
+## 2026-07-07 — Site: distinct per-category color palette [committed + pushed]
 
 - **User: "add more distinct colors for each category."** The old category colors (`#2a6f47`, `#2a636f`, `#2a3c6f`, …) were all near-identical dark, low-chroma hues at the same lightness — the 7 overlapping trend lines were hard to tell apart.
 - **Replaced with a CVD-safe distinct categorical palette** (from the dataviz skill's validated reference set): design `#2a78d6` blue, coding `#008300` green, writing `#4a3aa7` violet, video `#e34948` red, audio `#1baf7a` aqua, marketing `#eda100` yellow, translation `#e87ba4` magenta. **Validated with `validate_palette.js` on the `#fcfcfb` light surface:** lightness band PASS, chroma floor PASS, **worst all-pairs CVD ΔE 12.9** (above the ≥12 target — all 7 lines overlap so every pair, not just adjacent, must separate). Contrast WARN on the three lightest hues (aqua/yellow/magenta <3:1) is covered by relief — the category table + legend/tooltips carry identity, so color is never the only channel. Dominant **design** line got the high-contrast blue; the three low-contrast hues sit on thinner categories.
