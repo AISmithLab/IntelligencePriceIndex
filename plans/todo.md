@@ -2,6 +2,7 @@
 
 ## Active
 
+- [ ] **Refresh paper numbers after the 2026-07-07 chaining-bug fix** — `code/12-panel-ipi.py` now chains gap-tolerantly, so `panel-ipi.csv`/`panel-elasticity.csv`/`panel-summary.md` changed: peak composite **311.6→325.8 (2024Q4)**, elasticity table now **8 categories (was 5)** (added translation, data_entry, data_analysis). Draft sections still cite the old figures (312 peak, 5 categories). Update abstract/findings/methods + relevant `tests/*.test.md`, or decide to restrict the paper's elasticity table to the original 5 basket categories.
 - [ ] **IPI website (deploy)** — Self-contained CSRankings-style frontend (`site/index.html`, `site/ipi.js`, inline-SVG charts, no external libs), committed on `mockup`. Data layer: `code/15-build-site-data.py` → `site/data.json`. **2026-06-30: repo made public; chose GitHub Actions deploy from `mockup`.** Added `.github/workflows/pages.yml` (uploads `site/`, deploys on push). **Blocked on one manual step:** user must set Settings → Pages → Build and deployment → Source = "GitHub Actions" (one-time). Then the workflow auto-publishes to https://aismithlab.github.io/IntelligencePriceIndex/.
 - [ ] **Validation & robustness checks** — compare IPI to GPTs-are-GPTs exposure scores, Anthropic index, BLS wage data. Sensitivity analysis with alternative benchmark choices.
 - [ ] **Forward-looking forecasts** — project IPI under AI scaling scenarios (smooth scaling, punctuated improvement, plateau).
@@ -38,6 +39,7 @@
 
 ## Change Log
 
+- 2026-07-07: Fixed a forward-chaining bug in step 12 that silently dropped translation's entire historical series (gap in 2019Q2–Q4 broke the chain). Fix is gap-tolerant + purely additive; translation now spans 2020Q1–2026Q1 on the site. Added a graph quarter-inspector (dropdown + click-to-pin → QoQ/YoY/vs-base readout). Added a to-do to refresh paper numbers (peak 311.6→325.8, elasticity 5→8 categories).
 - 2026-06-30: Rebuilt frontend committed on `mockup` (previously untracked). Now fully self-contained — inline-SVG charts, no Plotly/CDN. Validated (JS syntax, data contract, composite recompute = −2.1% headline). Website item narrowed to "deploy" (hosting is the only open step). Branch also carries `scripts/make_mock_ipi.py` (20-category synthetic mockup, separate exploration).
 - 2026-06-27: Website taken down (page wasn't working; user building own). Deleted `gh-pages` branch + frontend (`site/index.html`, `site/ipi.js`, `scripts/deploy-site.sh`). Kept `code/15-build-site-data.py` + `site/data.json` as the data layer for the user's own site.
 - 2026-06-27: CSRankings-style website built (`site/`, monthly + live recompute, validated). Only GitHub Pages deploy remains. Added `code/15-build-site-data.py`.

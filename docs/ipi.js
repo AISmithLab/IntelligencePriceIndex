@@ -3,6 +3,7 @@
 
 let DATA, checked, sortK = "delta", sortDir = 1;     // 1 = ascending (most deflationary first)
 const open = new Set();
+let pinned = null;                                    // quarter index the user is inspecting (or null)
 // Per-seller gig price histories live in a separate freelancers.json (a few hundred
 // KB) that is fetched once, lazily, the first time any category is expanded — so the
 // initial page load stays light. openSeller keys are `${cat}/${seller}` because one
@@ -59,6 +60,7 @@ fetch("data.json").then(r => r.json()).then(data => {
     `Composite = review-weighted geometric mean of the selected categories: ` +
     `<code>exp(Σ w·ln(index) / Σ w)</code>. Freelancer rankings from archived gig counts. Data generated ${DATA.generated}.`;
   wireControls();
+  initInspector();
   render();
 }).catch(e => {
   document.getElementById("chart").innerHTML =
@@ -283,11 +285,30 @@ function drawChart(cats, comp) {
     }
   }
 
+  // pinned-quarter marker: a solid vertical rule + composite dot at the quarter the
+  // user is inspecting, so the readout below always has a visible anchor on the chart.
+  if (pinned != null && pinned >= 0 && pinned < n) {
+    svg.appendChild(el("line", { _svg: 1, x1: X(pinned), x2: X(pinned), y1: m.t, y2: H - m.b,
+      stroke: "#2563eb", "stroke-width": 1.4, opacity: 0.9, "stroke-dasharray": "3 3" }));
+    const pv = cats.length ? comp[pinned] : null;
+    if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinned), cy: Y(pv), r: 4.5,
+      fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
+    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t - 4, "text-anchor": "middle",
+      "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinned]]));
+  }
+
   // hover guide
   const guide = el("line", { _svg: 1, y1: m.t, y2: H - m.b, stroke: "#bbb", "stroke-width": 1, opacity: 0 });
   svg.appendChild(guide);
-  const hit = el("rect", { _svg: 1, x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" });
+  const hit = el("rect", { _svg: 1, x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent", style: "cursor:pointer" });
   svg.appendChild(hit);
+  const idxAt = ev => {
+    const r = svg.getBoundingClientRect(), sx = W / r.width;
+    const px = (ev.clientX - r.left) * sx;
+    let i = Math.round((px - m.l) / ((W - m.l - m.r) / (n - 1)));
+    return Math.max(0, Math.min(n - 1, i));
+  };
+  hit.addEventListener("click", ev => { const i = idxAt(ev); pinQuarter(pinned === i ? null : i); });
   hit.addEventListener("mousemove", ev => {
     const r = svg.getBoundingClientRect(), sx = (W) / r.width;
     const px = (ev.clientX - r.left) * sx;
@@ -327,6 +348,51 @@ function renderMoveNotes(comp, cats) {
       `quarter-over-quarter — ${mv.why}.` }));
     ul.appendChild(li);
   }
+}
+// ---- quarter inspector: pick a specific quarter/year, read off the IPI change ----
+function pinQuarter(i) {
+  pinned = i;
+  const sel = document.getElementById("qpick");
+  if (sel) sel.value = i == null ? "" : String(i);
+  render();
+}
+// Populate the quarter dropdown once (grouped by year) and wire it.
+function initInspector() {
+  const sel = document.getElementById("qpick");
+  if (!sel) return;
+  sel.innerHTML = "";
+  sel.appendChild(el("option", { value: "" }, ["Inspect a quarter…"]));
+  let og = null, yr = null;
+  DATA.months.forEach((q, i) => {
+    const y = q.slice(0, 4);
+    if (y !== yr) { yr = y; og = el("optgroup", { label: y }); sel.appendChild(og); }
+    og.appendChild(el("option", { value: String(i) }, [q]));
+  });
+  sel.onchange = () => pinQuarter(sel.value === "" ? null : +sel.value);
+  document.getElementById("qclear").onclick = () => pinQuarter(null);
+}
+// Fill the readout with the composite level at the pinned quarter and its change
+// quarter-over-quarter, year-over-year (4 quarters), and versus the window base.
+function renderInspector(comp) {
+  const box = document.getElementById("qreadout");
+  const clr = document.getElementById("qclear");
+  if (!box) return;
+  if (pinned == null) { box.innerHTML = '<span class="muted">Click the chart or pick a quarter to read its IPI level and change.</span>';
+    clr.style.display = "none"; return; }
+  clr.style.display = "";
+  const q = DATA.months[pinned], v = comp[pinned];
+  if (v == null) { box.innerHTML = `<b>${q}</b> &middot; <span class="muted">no composite for the selected basket at this quarter</span>`; return; }
+  const chip = (label, cur, ref) => {
+    if (ref == null || cur == null) return `<span class="qm"><span class="ql">${label}</span><span class="qv muted">—</span></span>`;
+    const pct = (cur / ref - 1) * 100;
+    return `<span class="qm"><span class="ql">${label}</span><span class="qv ${cls(pct)}">${fmtPct(pct)}</span></span>`;
+  };
+  const base = comp.find(x => x != null);
+  box.innerHTML =
+    `<span class="qm"><span class="ql">${q} composite</span><span class="qv lvl">${v.toFixed(1)}</span></span>` +
+    chip("QoQ", v, comp[pinned - 1]) +
+    chip("YoY", v, comp[pinned - 4]) +
+    chip(`vs ${DATA.months[0]}`, v, base);
 }
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
@@ -469,6 +535,7 @@ function render() {
 
   drawChart(cats, comp);                 // every checked line; composite from main only
   renderMoveNotes(comp, mainChecked);
+  renderInspector(comp);                  // readout for the pinned quarter (if any)
 
   const tb = document.getElementById("rows"); tb.innerHTML = "";
   const order = sortedCats().filter(c => !isSub(c));

@@ -50,6 +50,19 @@
                       margin-right: 6px; vertical-align: 2px; }
     .chartnote .dash { display: inline-block; width: 18px; border-top: 2px dashed #8a90a0;
                        margin-right: 6px; vertical-align: 4px; }
+    /* quarter inspector -------------------------------------------------- */
+    .inspect { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+               margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line, #eef0f3); }
+    #qpick { font: inherit; font-size: 12.5px; color: var(--ink); padding: 5px 8px;
+             border: 1px solid #d6dae1; border-radius: 7px; background: #fff; cursor: pointer; }
+    .readout { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; flex: 1; }
+    .readout .muted { color: var(--faint); font-size: 12.5px; }
+    .qm { display: inline-flex; flex-direction: column; line-height: 1.25; }
+    .qm .ql { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--faint); }
+    .qm .qv { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+    .qm .qv.lvl { color: #2563eb; }
+    .readout .up { color: var(--up); } .readout .down { color: var(--down); }
+    .qclear { font-size: 11.5px; color: var(--mut); cursor: pointer; text-decoration: underline; }
     .movenotes { list-style: none; margin: 11px 0 2px; padding: 0; display: grid; gap: 6px;
                  font-size: 12.5px; color: var(--mut); }
     .movenotes li { display: flex; gap: 9px; align-items: baseline; line-height: 1.45; }
@@ -224,6 +237,11 @@
           <div class="sub">composite &mdash; all selected categories combined, full history <span id="hRange"></span></div>
         </div>
         <div id="chart"><div class="tip" id="tip"></div></div>
+        <div class="inspect">
+          <select id="qpick" aria-label="Inspect a specific quarter"></select>
+          <div id="qreadout" class="readout"></div>
+          <a id="qclear" class="qclear" style="display:none">clear</a>
+        </div>
         <div class="chartnote">
           <span>Highlighted = sharpest quarter-over-quarter moves in the composite:</span>
           <span><span class="dot" style="background:#15803d"></span>price rise</span>
