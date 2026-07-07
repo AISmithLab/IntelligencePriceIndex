@@ -1,5 +1,16 @@
 # Progress Log
 
+## 2026-07-07 — FAQ draft: synced to 2020Q1→2026Q1 quarterly chart + 6 new questions [committed + pushed, draft NOT applied to live]
+
+- **User: review live site (`aismithlab.com/IntelligencePriceIndex`) vs GitHub `drafts/sections/faq.md`; the chart now covers 2020 Q1 → 2026 Q1 (quarterly). Compare existing FAQ to the updated chart, benchmark against csrankings.org/faq.html, and audience-check for gaps. Then rewrite `faq.md`.**
+- **Review findings (3 lenses):**
+  - *Staleness:* live `faq.html` (10 Qs) and the draft both still described the **old Feb 2025→Feb 2026 monthly** window; the live chart is now **quarterly, base 2020 Q1, 25 quarters → 2026 Q1**, headline **Δ'20–'26** (full-period, not trailing-12mo), **7 categories** (audio/coding/design/marketing/translation/video/writing, design ~71%). Also: the draft's previously-proposed [NEW] Qs were never applied to live `faq.html`.
+  - *vs CSRankings:* IPI was thin on "how scope was chosen" (CSRankings spends ~5 Qs there) and "why not the obvious alternative data source."
+  - *Audience:* nothing explained the 2020 start, the ChatGPT/COVID period now on-screen, the freelancer/per-gig explorer feature, or update cadence.
+- **Rewrote `drafts/sections/faq.md`:** integrated single list of **21 questions in reading-flow order**. Fixed all quarterly/2020→2026 staleness in existing answers (headline Q3, formulas Q11, data-source Q8, weights Q13, limitations Q18, reproduce Q19 → `code/18-build-site-data-long.py`). Added **6 new `[NEW]`-tagged questions placed in-flow** (not appended): Q4 period/why-2020, Q5 ChatGPT/COVID visibility, Q7 category selection + "AI-exposed" criterion, Q9 why-not-surveys/wage-data, Q17 freelancer/gig explorer, Q20 update cadence. Per user: removed `[NEW]` tags from previously-new (now shipped) questions — only this revision's additions are tagged.
+- **Verified data facts against `docs/data.json`** (cadence=quarterly, base_period=2020Q1, 25 periods, 7 categories, weights).
+- **Status: COMMITTED + PUSHED** on `mockup`. Draft still says "do NOT apply to live HTML yet." File: `drafts/sections/faq.md`.
+
 ## 2026-07-07 — Site: centered header + removed rank (#) column from category table [committed + pushed]
 
 - **User: "center the title and subtitle, also remove the # column in the category dropdown."**
