@@ -3,6 +3,19 @@
 
 let DATA, checked, sortK = "delta", sortDir = 1;     // 1 = ascending (most deflationary first)
 const open = new Set();
+// Per-seller gig price histories live in a separate freelancers.json (a few hundred
+// KB) that is fetched once, lazily, the first time any category is expanded — so the
+// initial page load stays light. openSeller keys are `${cat}/${seller}` because one
+// seller can appear in several category lists.
+let FDATA = null, fdataPromise = null;
+const openSeller = new Set();
+function loadFreelancers() {
+  if (fdataPromise) return fdataPromise;
+  fdataPromise = fetch("freelancers.json").then(r => r.json())
+    .then(d => (FDATA = d))
+    .catch(() => (FDATA = {}));      // absent detail file → rankings still render
+  return fdataPromise;
+}
 
 const PALETTE = { design:"#2563eb", coding:"#0891b2", writing:"#7c3aed",
                   marketing:"#db2777", video:"#ea580c", audio:"#16a34a",
@@ -38,7 +51,8 @@ fetch("data.json").then(r => r.json()).then(data => {
     "change over the whole window. The series chains two matched-model panels — the historical " +
     "pilot (2020–2024) spliced at 2024Q3 onto the recent trailing-window crawl — so the level is " +
     "continuous through the join. Expand any category (▸) to see its top freelancers ranked by the " +
-    "number of distinct gigs/services they offer. Note the panel is a sample of archived sellers, " +
+    "number of distinct gigs/services they offer, then click a freelancer to see each gig and how its " +
+    "package prices (Basic/Standard/Premium) moved over time. Note the panel is a sample of archived sellers, " +
     "and the composite is design-heavy (design ≈ 71% of review weight), so it tracks design closely.";
   document.getElementById("src").innerHTML =
     `Source: Fiverr gig prices via the Wayback Machine, matched-model index (quarterly, ${DATA.base_period}=100). ` +
@@ -114,6 +128,93 @@ function spark(values, w = 110, h = 20, color = "#888") {
   svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: color, "stroke-width": 1.5 }));
   const last = values[n - 1];
   if (last != null) svg.appendChild(el("circle", { _svg: 1, cx: x(n - 1), cy: y(last), r: 2, fill: color }));
+  return svg;
+}
+
+// ---- per-gig price-over-time chart (freelancer drill-down) -----------------
+// The three package tiers are ORDERED (Basic < Standard < Premium), so they are
+// encoded as one hue at three lightness steps — a sequential ramp, not three
+// arbitrary categorical colors. Darker = higher tier = higher price.
+function mixWhite(hex, amt) {                    // amt 0→base, 1→white
+  const m = hex.replace("#", "");
+  const r = parseInt(m.slice(0, 2), 16), g = parseInt(m.slice(2, 4), 16), b = parseInt(m.slice(4, 6), 16);
+  const mix = (ch) => Math.round(ch + (255 - ch) * amt);
+  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+}
+const TIERS = [                                   // index into a series row [date,b,s,p]
+  { i: 1, name: "Basic",    light: 0.50 },
+  { i: 2, name: "Standard", light: 0.26 },
+  { i: 3, name: "Premium",  light: 0.0  },
+];
+const fmtDate = ymd => `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}`;
+const dayNum = ymd => Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8)) / 864e5;
+
+// Compact inline-SVG line chart for one gig. series = [[YYYYMMDD,b,s,p], ...].
+function gigChart(series, baseColor, w = 340, h = 96) {
+  const padL = 34, padR = 46, padT = 8, padB = 16;
+  const prices = [];
+  for (const row of series) for (const t of TIERS) if (row[t.i] != null) prices.push(row[t.i]);
+  let lo = Math.min(...prices), hi = Math.max(...prices);
+  if (!(lo < hi)) { lo = Math.max(0, lo - 1); hi = hi + 1; }            // flat series → give it height
+  const pad = (hi - lo) * 0.12; lo = Math.max(0, lo - pad); hi += pad;
+  const days = series.map(r => dayNum(r[0]));
+  const d0 = days[0], d1 = days[days.length - 1], span = d1 - d0 || 1;
+  const x = dn => padL + ((dn - d0) / span) * (w - padL - padR);
+  const y = v => h - padB - ((v - lo) / (hi - lo)) * (h - padT - padB);
+
+  const svg = el("svg", { _svg: 1, width: "100%", height: h, viewBox: `0 0 ${w} ${h}`,
+    class: "gigchart", preserveAspectRatio: "xMidYMid meet" });
+  // y gridlines at lo / hi with $ labels
+  [lo, hi].forEach(v => {
+    svg.appendChild(el("line", { _svg: 1, x1: padL, x2: w - padR, y1: y(v), y2: y(v),
+      stroke: "#eceef4", "stroke-width": 1 }));
+    svg.appendChild(el("text", { _svg: 1, x: padL - 5, y: y(v) + 3, "text-anchor": "end",
+      class: "gcax" }, ["$" + Math.round(v)]));
+  });
+  // one line per tier that has data, lightest→darkest; collect end-labels for a
+  // vertical de-collision pass (tiers with near-equal prices would otherwise overlap)
+  const labels = [];
+  TIERS.forEach(t => {
+    const pts = series.filter(r => r[t.i] != null);
+    if (!pts.length) return;
+    const col = mixWhite(baseColor, t.light);
+    if (pts.length > 1) {
+      let d = "";
+      pts.forEach((r, k) => { d += `${k ? "L" : "M"}${x(dayNum(r[0])).toFixed(1)} ${y(r[t.i]).toFixed(1)} `; });
+      svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: col,
+        "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    }
+    // observation markers carry a native hover tooltip (date + all tiers)
+    pts.forEach(r => {
+      const c = el("circle", { _svg: 1, cx: x(dayNum(r[0])), cy: y(r[t.i]),
+        r: pts.length > 1 ? 2.4 : 4, fill: col, stroke: "#fff", "stroke-width": 1 });
+      const tip = [`${fmtDate(r[0])}`,
+        r[1] != null ? `Basic $${r[1]}` : null,
+        r[2] != null ? `Standard $${r[2]}` : null,
+        r[3] != null ? `Premium $${r[3]}` : null].filter(Boolean).join("  ·  ");
+      c.appendChild(el("title", { _svg: 1 }, [tip]));
+      svg.appendChild(c);
+    });
+    const lastPt = pts[pts.length - 1];
+    labels.push({ x: x(dayNum(lastPt[0])) + 5, y: y(lastPt[t.i]), col,
+      text: `$${lastPt[t.i]} ${t.name[0]}` });
+  });
+  // de-collide the direct end-labels: keep a min vertical gap, then shift the stack
+  // back inside the plot if it ran past the bottom. (All tiers share the last date,
+  // so the labels form one vertical stack at the right edge.)
+  const GAP = 10.5;
+  labels.sort((a, b) => a.y - b.y);
+  for (let k = 1; k < labels.length; k++)
+    if (labels[k].y - labels[k - 1].y < GAP) labels[k].y = labels[k - 1].y + GAP;
+  const overshoot = labels.length ? labels[labels.length - 1].y - (h - padB) : 0;
+  if (overshoot > 0) for (const L of labels) L.y -= overshoot;
+  for (const L of labels) L.y = Math.max(padT + 4, L.y);
+  labels.forEach(L => svg.appendChild(el("text", { _svg: 1, x: L.x, y: L.y + 3,
+    class: "gcend", fill: L.col }, [L.text])));
+  // x date range
+  svg.appendChild(el("text", { _svg: 1, x: padL, y: h - 3, class: "gcax" }, [fmtDate(series[0][0])]));
+  svg.appendChild(el("text", { _svg: 1, x: w - padR, y: h - 3, "text-anchor": "end", class: "gcax" },
+    [fmtDate(series[series.length - 1][0])]));
   return svg;
 }
 
@@ -269,34 +370,88 @@ function catRow(c, rank, sub) {
   return tr;
 }
 
+// Clean a stored gig title ("Seller: I will do X for $5 on fiverr.com") down to
+// the service phrase; fall back to a prettified slug.
+function gigTitle(g) {
+  const m = (g.title || "").match(/I will (.+?)(?: for \$[\d,]+.*)?(?: on fiverr\.com)?\s*$/i);
+  const s = m ? m[1] : g.slug.replace(/-/g, " ");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// Drill-down panel for one seller: their gigs in category `c`, each with a
+// price-over-time chart. Rendered only when FDATA (freelancers.json) has loaded.
+function gigPanel(seller, c) {
+  const panel = el("li", { class: "gigpanel" });
+  if (!FDATA) { panel.appendChild(el("div", { class: "gigmut" }, ["Loading price histories…"])); return panel; }
+  const node = FDATA[seller];
+  const gigs = node ? node.gigs.filter(g => g.cat === c) : [];
+  if (!gigs.length) {
+    panel.appendChild(el("div", { class: "gigmut" },
+      ["No archived gig prices for this seller in " + labelOf(c) + "."]));
+    return panel;
+  }
+  // one legend for the whole panel (all charts share the tier ramp)
+  const legend = el("div", { class: "giglegend" });
+  legend.appendChild(el("span", { class: "glnote" }, ["Package tier:"]));
+  TIERS.forEach(t => {
+    const it = el("span", { class: "glitem" });
+    it.appendChild(el("span", { class: "glsw", style: `background:${mixWhite(colorOf(c), t.light)}` }));
+    it.appendChild(document.createTextNode(t.name));
+    legend.appendChild(it);
+  });
+  panel.appendChild(legend);
+  // richest series first so the most informative gigs read at the top
+  gigs.slice().sort((a, b) => b.series.length - a.series.length).forEach(g => {
+    const card = el("div", { class: "gigcard" });
+    const head = el("div", { class: "gighead" });
+    head.appendChild(el("a", { class: "gigtitle", href: g.url, target: "_blank",
+      rel: "noopener", title: "Open the archived gig page (Wayback Machine)" }, [gigTitle(g)]));
+    const n = g.series.length;
+    head.appendChild(el("span", { class: "gigmeta" }, [n > 1 ? `${n} price points` : "1 snapshot"]));
+    card.appendChild(head);
+    card.appendChild(gigChart(g.series, colorOf(c)));
+    panel.appendChild(card);
+  });
+  return panel;
+}
+
 // expanded detail row: top freelancers in this category, ranked by number of
-// distinct gigs/services they offer (from DATA.rankings, built in step 18).
+// distinct priced gigs they offer (DATA.rankings). Each freelancer expands to
+// their gigs + price-over-time charts (from the lazily-loaded freelancers.json).
 function rankingRow(c) {
   const rk = DATA.rankings && DATA.rankings[c];
   const inner = el("div", { class: "rankbox" });
   if (!rk || !rk.top || !rk.top.length) {
     inner.appendChild(el("div", { class: "rankhead" },
       ["No freelancer ranking available for " + labelOf(c) + "."]));
-  } else {
-    inner.appendChild(el("div", { class: "rankhead", html:
-      `Top freelancers in <b>${labelOf(c)}</b>, ranked by number of gigs offered ` +
-      `<span class="rankmut">— ${rk.sellers.toLocaleString()} archived sellers</span>` }));
-    const ol = el("ol", { class: "rank" });
-    const max = rk.top[0].gigs;
-    rk.top.forEach((s, i) => {
-      const li = el("li", {});
-      li.appendChild(el("span", { class: "rk" }, [String(i + 1)]));
-      li.appendChild(el("a", { class: "rs", href: `https://www.fiverr.com/${s.seller}`,
-        target: "_blank", rel: "noopener" }, [s.seller]));
-      const bar = el("span", { class: "rbar" });
-      bar.appendChild(el("span", { class: "rfill",
-        style: `width:${Math.max(6, (s.gigs / max) * 100)}%;background:${colorOf(c)}` }));
-      li.appendChild(bar);
-      li.appendChild(el("span", { class: "rg" }, [s.gigs + (s.gigs === 1 ? " gig" : " gigs")]));
-      ol.appendChild(li);
-    });
-    inner.appendChild(ol);
+    return el("tr", { class: "detail" }, [el("td", {}), el("td", {}), el("td", { colspan: 6 }, [inner])]);
   }
+  loadFreelancers();      // warm the detail cache so drill-down is instant
+  inner.appendChild(el("div", { class: "rankhead", html:
+    `Top freelancers in <b>${labelOf(c)}</b>, ranked by distinct gigs offered ` +
+    `<span class="rankmut">— ${rk.sellers.toLocaleString()} priced sellers · ` +
+    `click a name to see their gigs and how prices moved</span>` }));
+  const ol = el("ol", { class: "rank" });
+  const max = rk.top[0].gigs;
+  rk.top.forEach((s, i) => {
+    const key = `${c}/${s.seller}`, isOpen = openSeller.has(key);
+    const li = el("li", { class: "rankli" + (isOpen ? " open" : "") });
+    li.appendChild(el("span", { class: "caret" }, [isOpen ? "▾" : "▸"]));
+    li.appendChild(el("span", { class: "rk" }, [String(i + 1)]));
+    li.appendChild(el("span", { class: "rs" }, [s.seller]));
+    const bar = el("span", { class: "rbar" });
+    bar.appendChild(el("span", { class: "rfill",
+      style: `width:${Math.max(6, (s.gigs / max) * 100)}%;background:${colorOf(c)}` }));
+    li.appendChild(bar);
+    li.appendChild(el("span", { class: "rg" }, [s.gigs + (s.gigs === 1 ? " gig" : " gigs")]));
+    li.onclick = () => {
+      if (openSeller.has(key)) openSeller.delete(key); else openSeller.add(key);
+      loadFreelancers().then(render);
+    };
+    ol.appendChild(li);
+    if (isOpen) ol.appendChild(gigPanel(s.seller, c));
+  });
+  inner.appendChild(ol);
   return el("tr", { class: "detail" }, [
     el("td", {}), el("td", {}),
     el("td", { colspan: 6 }, [inner])]);

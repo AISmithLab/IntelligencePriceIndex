@@ -40,13 +40,15 @@ RECENT_CSV = PILOT / "recent-category-indices.csv"
 WEIGHTS_CSV = PILOT / "recent-category-weights.csv"
 MANIFEST = PILOT / "recent-manifest.tsv"
 HIST_PRICES = PILOT / "pilot-prices.csv"     # historical extracted prices (2011->2026)
+RECENT_PRICES = PILOT / "recent-prices.csv"  # recent-window extracted prices (2024->2026)
 HIST_ITEMS = PILOT / "gig-items.csv"         # (seller, slug) -> item_label/description
 OUT = BASE_DIR / "docs" / "data.json"
+FREELANCERS_OUT = BASE_DIR / "docs" / "freelancers.json"  # per-seller gig price series
 
 START_Q = "2020Q1"          # first displayed quarter
 START_YEAR = 2020           # rankings count gigs observed in this year or later
 LINK_Q = "2024Q3"           # shared quarter used to splice recent onto historical
-TOP_N = 12                  # freelancers listed per category ranking
+TOP_N = 25                  # freelancers listed per category ranking
 
 # Fiverr URL path segments that are NOT seller handles (landing/section pages).
 # gig_id is "seller/slug"; when the first segment is one of these it's not a gig.
@@ -181,68 +183,121 @@ def composite(levels_by_cat, weights, q):
     return math.exp(log_sum / w_sum) if w_sum > 0 else None
 
 
-# ---- freelancer rankings ---------------------------------------------------
+# ---- freelancer rankings + per-gig price series ----------------------------
+def _num(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _compress_series(points):
+    """points: list of (date, basic, standard, premium). Sort, dedupe consecutive
+    rows with identical (b, s, p) — most gigs are flat for long stretches — while
+    always keeping the first and last observation so the line spans the full range."""
+    pts = sorted(set(points))
+    out, prev = [], object()
+    for d, b, s, p in pts:
+        key = (b, s, p)
+        if key != prev:
+            out.append([d, b, s, p])
+            prev = key
+    if pts and out[-1][0] != pts[-1][0]:
+        d, b, s, p = pts[-1]
+        out.append([d, b, s, p])
+    return out
+
+
 def build_rankings():
-    """Per category: sellers ranked by number of distinct gigs/services offered
-    across the FULL 2020->2026 span. Two sources are unioned so a seller's gig
-    count spans the whole window, not just the recent crawl:
+    """Per category: sellers ranked by number of distinct PRICED gigs across the
+    2020->2026 span, plus the per-gig price-over-time series for the top sellers.
 
-      - recent manifest (gig_id = 'seller/slug', months 2024-2026), category given.
-      - historical pilot prices (2011->2026), filtered to observations in
-        START_YEAR or later; category derived from gig-items.csv via classify_gig.
+    Prices are the source of truth here (not the CDX manifest counts), so every
+    listed freelancer is expandable with a real chart. Category per gig comes from
+    the recent manifest (gig_id -> category) where available, else from classifying
+    the gig's item text (historical gigs), matching the price-index taxonomy.
 
-    A distinct gig = 'seller/slug'; unioning across both sources dedups gigs that
-    appear in both. Returns
-    {cat: {"top": [{seller, gigs}], "sellers": total_distinct_sellers}}."""
-    gigs = defaultdict(lambda: defaultdict(set))   # cat -> seller -> {gig_id}
-
-    # (1) recent-window manifest (already carries category; all months >= 2024)
+    Returns (summary, detail):
+      summary  {cat: {"sellers": total, "top": [{seller, gigs}]}}       -> data.json
+      detail   {seller: {"gigs": [{slug, cat, title, url, series}]}}    -> freelancers.json
+               (series = [[date, basic, standard, premium], ...], change-points only)
+    """
+    # gig_id ('seller/slug') -> category, from the recent manifest (authoritative
+    # for recent gigs; carries Fiverr's own category label).
+    manifest_cat = {}
     with open(MANIFEST) as f:
         for row in csv.DictReader(f, delimiter="\t"):
-            month = row.get("month", "")
-            if month[:4].isdigit() and int(month[:4]) < START_YEAR:
-                continue
-            cat, gid = row["category"], row["gig_id"]
-            if cat not in CATS:
-                continue
-            seller = gid.split("/", 1)[0]
-            if seller in RESERVED:
-                continue
-            gigs[cat][seller].add(gid)
+            manifest_cat[row["gig_id"]] = row["category"]
 
-    # (2) historical pilot prices (2020+): classify each gig by its item text
+    # (seller, slug) -> item text, for classifying historical gigs.
     item_map = {}
     with open(HIST_ITEMS) as f:
         for row in csv.DictReader(f):
             item_map[(row["seller"], row["slug"])] = (row["item_label"],
                                                       row["description"])
-    cat_cache = {}   # (seller, slug) -> category (classify once per gig)
-    with open(HIST_PRICES) as f:
-        for row in csv.DictReader(f):
-            try:
-                if int(row["year"]) < START_YEAR:
-                    continue
-            except (ValueError, TypeError):
-                continue
-            key = (row["seller"], row["slug"])
-            if key not in cat_cache:
-                item = item_map.get(key)
-                cat_cache[key] = classify_gig(item[1], item[0]) if item else None
-            cat = cat_cache[key]
-            if cat not in CATS or row["seller"] in RESERVED:
-                continue
-            gigs[cat][row["seller"]].add(f"{row['seller']}/{row['slug']}")
+    cat_cache = {}
 
-    out = {}
+    def cat_of(seller, slug):
+        gid = f"{seller}/{slug}"
+        if gid in manifest_cat:
+            return manifest_cat[gid]
+        key = (seller, slug)
+        if key not in cat_cache:
+            item = item_map.get(key)
+            cat_cache[key] = classify_gig(item[1], item[0]) if item else None
+        return cat_cache[key]
+
+    # cat -> seller -> slug -> {"title", "pts"}
+    series = defaultdict(lambda: defaultdict(lambda: defaultdict(
+        lambda: {"title": "", "pts": []})))
+    for price_file in (HIST_PRICES, RECENT_PRICES):
+        if not price_file.exists():
+            continue
+        with open(price_file) as f:
+            for row in csv.DictReader(f):
+                try:
+                    if int(row["year"]) < START_YEAR:
+                        continue
+                except (ValueError, TypeError):
+                    continue
+                seller, slug = row["seller"], row["slug"]
+                if seller in RESERVED:
+                    continue
+                cat = cat_of(seller, slug)
+                if cat not in CATS:
+                    continue
+                g = series[cat][seller][slug]
+                if row.get("title"):
+                    g["title"] = row["title"]
+                g["pts"].append((row["date"], _num(row["price_basic"]),
+                                 _num(row["price_standard"]),
+                                 _num(row["price_premium"])))
+
+    summary, detail = {}, {}
     for cat in CATS:
-        sellers = gigs.get(cat, {})
-        ranked = sorted(((s, len(g)) for s, g in sellers.items()),
-                        key=lambda x: (-x[1], x[0]))
-        out[cat] = {
+        sellers = series.get(cat, {})
+        ranked = sorted(((s, g) for s, g in sellers.items()),
+                        key=lambda x: (-len(x[1]), x[0]))
+        summary[cat] = {
             "sellers": len(sellers),
-            "top": [{"seller": s, "gigs": n} for s, n in ranked[:TOP_N]],
+            "top": [{"seller": s, "gigs": len(g)} for s, g in ranked[:TOP_N]],
         }
-    return out
+        for seller, gigs in ranked[:TOP_N]:
+            node = detail.setdefault(seller, {"gigs": []})
+            for slug, v in gigs.items():
+                ser = _compress_series(v["pts"])
+                if not ser:
+                    continue
+                last_date = ser[-1][0]
+                node["gigs"].append({
+                    "slug": slug,
+                    "cat": cat,
+                    "title": v["title"][:140],
+                    "url": (f"https://web.archive.org/web/{last_date}/"
+                            f"https://www.fiverr.com/{seller}/{slug}"),
+                    "series": ser,
+                })
+    return summary, detail
 
 
 # ---- assemble --------------------------------------------------------------
@@ -297,6 +352,8 @@ def main():
     delta = {c: full_delta(index[c]) for c in cats}
     delta["composite"] = full_delta(comp)
 
+    rankings, freelancers = build_rankings()
+
     data = {
         "generated": date.today().isoformat(),
         "cadence": "quarterly",
@@ -310,12 +367,15 @@ def main():
         "delta12": {k: v for k, v in delta.items()},   # now full-period change
         "labels": {c: LABELS[c] for c in cats},
         "colors": {c: COLORS[c] for c in cats},
-        "rankings": build_rankings(),
+        "rankings": rankings,
+        "has_freelancer_detail": True,   # tells the site freelancers.json exists
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with open(OUT, "w") as f:
         json.dump(data, f, indent=2)
+    with open(FREELANCERS_OUT, "w") as f:
+        json.dump(freelancers, f, separators=(",", ":"))
 
     # ---- report ----
     print(f"Wrote {OUT}  ({OUT.stat().st_size/1024:.1f} KB)")
@@ -330,12 +390,15 @@ def main():
     for c in sorted(cats, key=lambda x: delta[x] if delta[x] is not None else 0):
         d = delta[c]
         print(f"  {c:<12} {d:+7.1f}%" if d is not None else f"  {c:<12}     n/a")
-    print("\nTop freelancer per category (by distinct gigs):")
+    print("\nTop freelancer per category (by distinct priced gigs):")
     for c in cats:
         top = data["rankings"][c]["top"]
         if top:
             print(f"  {c:<12} {top[0]['seller']} ({top[0]['gigs']} gigs)  "
-                  f"[{data['rankings'][c]['sellers']} sellers total]")
+                  f"[{data['rankings'][c]['sellers']} priced sellers]")
+    n_gigs = sum(len(v["gigs"]) for v in freelancers.values())
+    print(f"\nWrote {FREELANCERS_OUT}  ({FREELANCERS_OUT.stat().st_size/1024:.0f} KB)"
+          f"  {len(freelancers)} sellers, {n_gigs} gigs with price series")
 
 
 if __name__ == "__main__":

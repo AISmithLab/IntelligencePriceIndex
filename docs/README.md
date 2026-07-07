@@ -73,6 +73,57 @@ penny — a good correctness check for your renderer.
 - **Window is display-only.** 2024 snapshots still exist on disk as matched-model
   anchor data; `data.json` intentionally exposes only the trailing window.
 
+## Freelancer rankings & drill-down (`rankings` + `freelancers.json`)
+
+> The live site is built by **`code/18-build-site-data-long.py`** (full-history
+> quarterly), which supersedes step 15 for the fields above and also emits the two
+> pieces below. Step 15's field names (`base_month`, `window_months`) are the older
+> trailing-12mo contract; step 18 uses `base_period` + quarterly `months`.
+
+`data.json` carries a `rankings` block and a `has_freelancer_detail: true` flag.
+Per-freelancer gig price histories live in a **separate `freelancers.json`** (a few
+hundred KB) that the site fetches **lazily**, the first time any category row is
+expanded — so the initial load stays tiny.
+
+```jsonc
+// data.json → rankings (the list shown when a category is expanded)
+"rankings": {
+  "coding": {
+    "sellers": 519,                       // total distinct PRICED sellers in the category
+    "top": [ { "seller": "matarrese8", "gigs": 14 }, ... ]   // top 25 by distinct gigs
+  }, ...
+}
+```
+
+```jsonc
+// freelancers.json → per-seller detail (keyed by seller handle)
+"matarrese8": {
+  "gigs": [
+    {
+      "slug": "fix-wordpress-errors-issues-and-customization",
+      "cat":  "coding",                   // filter a seller's gigs to the expanded category
+      "title": "Matarrese8: I will fix wordpress errors … for $50 on fiverr.com",
+      "url":  "https://web.archive.org/web/20231018/https://www.fiverr.com/matarrese8/fix-…",
+      "series": [ ["20190119", 50.0, null, null], ["20200212", 150.0, 800.0, 995.0], … ]
+      //          [ YYYYMMDD,   basic, standard, premium ]  — change-points only (flat runs collapsed)
+    }, …
+  ]
+}
+```
+
+Contract notes:
+- **Prices are the source of truth for rankings** — every listed seller has a real
+  price series, so the drill-down never opens empty. Ranked by distinct *priced*
+  gigs (not raw CDX gig counts).
+- **`series` is change-point compressed**: consecutive rows with identical
+  `(basic, standard, premium)` are dropped, keeping first and last. A tier may be
+  `null` (older gigs archived with only a base price).
+- **Links point to the Wayback snapshot**, not the live Fiverr profile — archived
+  sellers are frequently deleted/renamed, so live links rot; the archived URL always
+  resolves.
+- **Tiers are ordered** (Basic < Standard < Premium), so the chart encodes them as
+  one hue at three lightness steps (a sequential ramp), not three categorical colors.
+
 ## Changing what gets exported
 
 Edit `code/15-build-site-data.py`:

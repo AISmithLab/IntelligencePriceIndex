@@ -135,17 +135,49 @@
     .rankhead b { color: var(--ink); font-weight: 700; }
     .rankhead .rankmut { color: var(--faint); }
     ol.rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-    ol.rank li { display: grid; grid-template-columns: 20px minmax(90px,1.2fr) 1fr auto;
-                 align-items: center; gap: 10px; font-size: 12.5px; }
+    ol.rank li.rankli { display: grid;
+                 grid-template-columns: 14px 20px minmax(90px,1.1fr) 1fr auto;
+                 align-items: center; gap: 10px; font-size: 12.5px;
+                 cursor: pointer; border-radius: 6px; padding: 2px 4px;
+                 transition: background .1s; }
+    ol.rank li.rankli:hover { background: var(--hi); }
+    ol.rank li.rankli.open { background: var(--hi); }
+    ol.rank li.rankli .caret { font-size: 10px; }
     ol.rank .rk { color: var(--faint); text-align: right; font-variant-numeric: tabular-nums;
                   font-size: 11px; }
-    ol.rank .rs { color: var(--link); text-decoration: none; font-weight: 600;
+    ol.rank .rs { color: var(--link); font-weight: 600;
                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    ol.rank .rs:hover { text-decoration: underline; }
+    ol.rank li.rankli:hover .rs { text-decoration: underline; }
     ol.rank .rbar { height: 8px; background: #edeff5; border-radius: 4px; overflow: hidden; }
     ol.rank .rfill { display: block; height: 100%; border-radius: 4px; opacity: .78; }
     ol.rank .rg { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600;
                   white-space: nowrap; }
+
+    /* freelancer drill-down: gigs + price-over-time charts ------------------- */
+    li.gigpanel { grid-column: 1 / -1; display: grid; gap: 12px;
+                  margin: 4px 0 8px 20px; padding: 10px 12px;
+                  background: #fff; border: 1px solid var(--line);
+                  border-radius: 8px; }
+    .gigmut { color: var(--faint); font-size: 12px; font-style: italic; }
+    .giglegend { display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+                 font-size: 11px; color: var(--mut); }
+    .giglegend .glnote { color: var(--faint); text-transform: uppercase;
+                         letter-spacing: .04em; font-size: 10px; }
+    .giglegend .glitem { display: inline-flex; align-items: center; gap: 5px; }
+    .giglegend .glsw { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+    .gigcard { border-top: 1px solid var(--line-2); padding-top: 10px; }
+    .gighead { display: flex; align-items: baseline; justify-content: space-between;
+               gap: 12px; margin-bottom: 2px; }
+    .gigtitle { color: var(--ink); font-weight: 600; font-size: 13px;
+                text-decoration: none; }
+    .gigtitle:hover { color: var(--link); text-decoration: underline; }
+    .gigmeta { color: var(--faint); font-size: 11px; white-space: nowrap;
+               font-variant-numeric: tabular-nums; }
+    svg.gigchart { display: block; }
+    svg.gigchart .gcax { fill: var(--faint); font-size: 9px;
+                         font-variant-numeric: tabular-nums; }
+    svg.gigchart .gcend { font-size: 9.5px; font-weight: 600;
+                          font-variant-numeric: tabular-nums; }
     tfoot td { border-top: 2px solid var(--line); border-bottom: none;
                font-weight: 700; color: var(--ink); }
     input[type=checkbox] { cursor: pointer; vertical-align: -2px; accent-color: var(--accent); }
