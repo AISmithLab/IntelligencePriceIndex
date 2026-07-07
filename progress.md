@@ -1,5 +1,15 @@
 # Progress Log
 
+## 2026-07-07 — Live FAQ: applied all 21 questions to docs/faq.html [committed + pushed]
+
+- **User: "push all 21 questions into the live site FAQ; do not include the [NEW] tag; keep all the formulas."**
+- **Rewrote `docs/faq.html`** from the old **10-question** live version to the full **21-question** set from the reviewed draft (`drafts/sections/faq.md`), in the same reading-flow order. **No `[NEW]` tags** in the live HTML.
+- **Preserved all formulas** — the 4-step method math (price relatives, chained Jevons, Törnqvist composite, headline change) plus the weights formula render as before (5 `.math` blocks), updated for the current chart: quarterly cadence, base quarter **2020 Q1 = 100**, headline **Δ'20–'26** (was Δ12mo), category-quarter min-3-matches wording.
+- **Updated the TOC** to 21 entries with matching anchor ids (`#who #period #events #categories #whyrevealed #fiverr #inflation #distort #explorer #cadence #contribute` added); verified TOC anchors == section ids in order.
+- **Killed stale copy:** removed "trailing-12-month", "recent-window", "full monthly path", "monthly cadence"; data-source section now says full-history quarterly build 2020 Q1→2026 Q1; reproduce section points to `code/18-build-site-data-long.py` → `docs/data.json`.
+- **Verified:** 21 `<h3>`, 0 `[NEW]`, 5 math blocks, TOC↔ids match, 0 stale terms.
+- **Status: COMMITTED + PUSHED** on `mockup`. File: `docs/faq.html` (index.html links to it, unchanged).
+
 ## 2026-07-07 — FAQ draft: synced to 2020Q1→2026Q1 quarterly chart + 6 new questions [committed + pushed, draft NOT applied to live]
 
 - **User: review live site (`aismithlab.com/IntelligencePriceIndex`) vs GitHub `drafts/sections/faq.md`; the chart now covers 2020 Q1 → 2026 Q1 (quarterly). Compare existing FAQ to the updated chart, benchmark against csrankings.org/faq.html, and audience-check for gaps. Then rewrite `faq.md`.**
