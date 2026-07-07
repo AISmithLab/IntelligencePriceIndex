@@ -62,9 +62,13 @@ CATS = ["audio", "coding", "design", "marketing", "translation", "video", "writi
 LABELS = {"audio": "Audio", "coding": "Coding", "design": "Design",
           "marketing": "Marketing", "translation": "Translation",
           "video": "Video", "writing": "Writing"}
-COLORS = {"audio": "#2a6f47", "coding": "#2a636f", "design": "#2a3c6f",
-          "marketing": "#6f2a4d", "video": "#6f462a", "writing": "#472a6f",
-          "translation": "#6f6a2a"}
+# Distinct categorical palette (CVD-safe as a set: worst all-pairs ΔE 12.9;
+# validated via dataviz validate_palette.js on the #fcfcfb light surface).
+# Dominant design line gets the high-contrast blue; low-contrast hues
+# (aqua/yellow/magenta) sit on thinner categories.
+COLORS = {"design": "#2a78d6", "coding": "#008300", "writing": "#4a3aa7",
+          "video": "#e34948", "audio": "#1baf7a", "marketing": "#eda100",
+          "translation": "#e87ba4"}
 
 # Keyword classifier for HISTORICAL gigs (recent gigs already carry a category).
 # Kept identical to code/12-panel-ipi.py so historical rankings use the same

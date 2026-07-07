@@ -18,9 +18,9 @@ function loadFreelancers() {
   return fdataPromise;
 }
 
-const PALETTE = { design:"#2563eb", coding:"#0891b2", writing:"#7c3aed",
-                  marketing:"#db2777", video:"#ea580c", audio:"#16a34a",
-                  translation:"#ca8a04" };
+const PALETTE = { design:"#2a78d6", coding:"#008300", writing:"#4a3aa7",
+                  video:"#e34948", audio:"#1baf7a", marketing:"#eda100",
+                  translation:"#e87ba4" };
 const SVGNS = "http://www.w3.org/2000/svg";
 // data.json may carry per-category colors/labels (narrow subcategory mode);
 // fall back to the flat palette + capitalized id for the broad-category build.
