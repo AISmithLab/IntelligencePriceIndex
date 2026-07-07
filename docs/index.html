@@ -21,8 +21,8 @@
     a { color: var(--link); }
 
     /* header ---------------------------------------------------------------- */
-    header { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap;
-             padding: 30px 4px 20px; }
+    header { display: flex; flex-direction: column; align-items: center;
+             text-align: center; gap: 12px; padding: 30px 4px 20px; }
     .logo { width: 44px; height: 44px; border-radius: 11px; flex: none;
             background: linear-gradient(135deg, #6366f1, #4338ca);
             display: grid; place-items: center;
@@ -263,7 +263,6 @@
             <tr>
               <th class="l" style="width:18px"></th>
               <th class="l" style="width:18px"></th>
-              <th class="l" style="width:34px" data-k="rank">#</th>
               <th class="l" data-k="name">Category</th>
               <th class="l" style="width:110px">Trend</th>
               <th data-k="delta">&Delta;'20&ndash;'26</th>

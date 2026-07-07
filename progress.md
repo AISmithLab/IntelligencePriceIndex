@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-07 — Site: centered header + removed rank (#) column from category table [committed + pushed]
+
+- **User: "center the title and subtitle, also remove the # column in the category dropdown."**
+- **Centered header (`docs/index.html`):** `header` flex row → **column, `align-items:center`, `text-align:center`**; logo now stacks above the centered title + def paragraph + FAQ nav.
+- **Removed the `#` rank column** — dropped the `data-k="rank"` `<th>` (`index.html`) and the matching rank `<td>` in `catRow` (`docs/ipi.js`). Table is now **7 columns** (was 8). Fixed dependent colspans so alignment holds: `rankingRow` detail rows 6→**5**, composite footer 4→**3**. Default sort was already `delta`, so removing the (only) rank-sort header changes no ordering; the dead `rank` sort branch is harmless.
+- **Verified in headless Chromium** (Playwright, 1280px): header `align-items:center`/`flex-direction:column`, def `text-align:center`; thead has no `#`, body/detail/footer all reconcile to 7 columns; expand-a-category detail row spans full width; **no overflow, 0 console errors**.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/{index.html,ipi.js}`.
+
 ## 2026-07-07 — Site: smaller page gutters + mobile-scrollable FAQ tables [committed + pushed]
 
 - **User: "make the web margin smaller."** Widened `.wrap` (`max-width` 1280→1600px) and trimmed side padding (20→12px) on both `docs/index.html` and `docs/faq.html` so content uses more of a wide screen. (faq `max-width` 800→900px, kept readable.)

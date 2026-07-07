@@ -427,7 +427,6 @@ function catRow(c, rank, sub) {
   const sparkCell = el("td", {}); sparkCell.appendChild(spark(DATA.index[c], 110, 20, col));
   const wt = (DATA.weights[c] * 100).toFixed(1) + "%";
   tr.appendChild(caret); tr.appendChild(cbCell);
-  tr.appendChild(el("td", { class: "num faint" }, [sub ? "" : String(rank)]));
   tr.appendChild(nameCell); tr.appendChild(sparkCell);
   tr.appendChild(el("td", { class: "num d " + cls(d) }, [fmtPct(d)]));
   // subs show their gig-share in parens — informational, not part of the basket
@@ -490,7 +489,7 @@ function rankingRow(c) {
   if (!rk || !rk.top || !rk.top.length) {
     inner.appendChild(el("div", { class: "rankhead" },
       ["No freelancer ranking available for " + labelOf(c) + "."]));
-    return el("tr", { class: "detail" }, [el("td", {}), el("td", {}), el("td", { colspan: 6 }, [inner])]);
+    return el("tr", { class: "detail" }, [el("td", {}), el("td", {}), el("td", { colspan: 5 }, [inner])]);
   }
   loadFreelancers();      // warm the detail cache so drill-down is instant
   inner.appendChild(el("div", { class: "rankhead", html:
@@ -520,7 +519,7 @@ function rankingRow(c) {
   inner.appendChild(ol);
   return el("tr", { class: "detail" }, [
     el("td", {}), el("td", {}),
-    el("td", { colspan: 6 }, [inner])]);
+    el("td", { colspan: 5 }, [inner])]);
 }
 
 function render() {
@@ -554,7 +553,7 @@ function render() {
   const mainCount = DATA.categories.filter(c => !isSub(c)).length;
   if (mainChecked.length) {
     const ftr = el("tr", {});
-    ftr.appendChild(el("td", { colspan: 4, html: `Composite &middot; <span style="font-weight:400;color:#777">${mainChecked.length} of ${mainCount} categories</span>` }));
+    ftr.appendChild(el("td", { colspan: 3, html: `Composite &middot; <span style="font-weight:400;color:#777">${mainChecked.length} of ${mainCount} categories</span>` }));
     const sc = el("td", {}); sc.appendChild(spark(comp, 110, 20, "#111")); ftr.appendChild(sc);
     ftr.appendChild(el("td", { class: "num d " + cls(pc) }, [fmtPct(pc)]));
     ftr.appendChild(el("td", { class: "num" }, ["100%"]));
