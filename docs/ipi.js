@@ -44,7 +44,10 @@ const el = (t, a = {}, kids = []) => {
 
 fetch("data.json").then(r => r.json()).then(data => {
   DATA = data;
-  checked = new Set(DATA.categories);
+  // Start on a single individual category (not the full composite). Prefer the
+  // most data-rich domain (design) when present; otherwise the first category.
+  const startCat = DATA.categories.includes("design") ? "design" : DATA.categories[0];
+  checked = new Set([startCat]);
   document.getElementById("hRange").textContent =
     `(${DATA.months[0]} → ${DATA.months[DATA.months.length - 1]})`;
   document.getElementById("caveat").textContent =
@@ -225,13 +228,17 @@ function drawChart(cats, comp) {
   const box = document.getElementById("chart");
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
   const tip = document.getElementById("tip");
-  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 42 };
+  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 56 };
   const months = DATA.months, n = months.length;
 
-  const lineOp = cats.length > 10 ? 0.32 : 0.5;   // dial back when many narrow lines overlap
+  // The composite is only meaningful for a basket of 2+ categories; with a single
+  // category selected we show that individual series on its own (its composite would
+  // just duplicate it under a heavy black line).
+  const showComposite = cats.filter(c => !isSub(c)).length >= 2;
+  const lineOp = cats.length > 10 ? 0.32 : (showComposite ? 0.5 : 0.95);
   const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index[c], color: colorOf(c),
-                                  w: 1.3, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
-  if (cats.length) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1 });
+                                  w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
+  if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1 });
 
   const ys = series.flatMap(s => s.vals).filter(v => v != null);
   let lo = ys.length ? Math.min(...ys) : 95, hi = ys.length ? Math.max(...ys) : 105;
@@ -249,6 +256,12 @@ function drawChart(cats, comp) {
     svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(t) + 3, "text-anchor": "end",
       "font-size": 11, fill: "#999" }, [String(t)]));
   }
+  // y-axis unit title: IPI is an index (base_period = 100), so label the axis units.
+  const yMid = m.t + (H - m.t - m.b) / 2;
+  svg.appendChild(el("text", { _svg: 1, x: 14, y: yMid, "text-anchor": "middle",
+    "font-size": 11, "font-weight": 600, fill: "#6b7280",
+    transform: `rotate(-90 14 ${yMid.toFixed(1)})` },
+    [`IPI  (${DATA.base_period} = 100)`]));
   // x labels (~6)
   const step = Math.max(1, Math.round(n / 6));
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
@@ -264,12 +277,9 @@ function drawChart(cats, comp) {
       "stroke-width": s.w, opacity: s.op, "stroke-linejoin": "round",
       "stroke-dasharray": s.dash || "" }));
   }
-  // composite endpoint markers + label
-  if (cats.length) {
+  // composite endpoint markers + highlighted moves (only when a real basket is shown)
+  if (showComposite) {
     comp.forEach((v, i) => { if (v != null) svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v), r: 2.5, fill: "#111" })); });
-    const lastV = [...comp].reverse().find(v => v != null), lastI = comp.length - 1;
-    if (lastV != null) svg.appendChild(el("text", { _svg: 1, x: X(lastI) - 4, y: Y(lastV) - 8,
-      "text-anchor": "end", "font-size": 12, "font-weight": 700, fill: "#111" }, [lastV.toFixed(1)]));
 
     // highlight the sharpest quarter-over-quarter moves in the composite
     for (const mv of significantMoves(comp)) {
@@ -331,7 +341,7 @@ function drawChart(cats, comp) {
 function renderMoveNotes(comp, cats) {
   const ul = document.getElementById("movenotes");
   ul.innerHTML = "";
-  if (!cats.length) return;
+  if (cats.length < 2) return;   // move notes describe composite basket moves (2+ categories)
   const moves = significantMoves(comp), months = DATA.months;
   if (!moves.length) {
     ul.appendChild(el("li", {}, [
@@ -373,7 +383,7 @@ function initInspector() {
 }
 // Fill the readout with the composite level at the pinned quarter and its change
 // quarter-over-quarter, year-over-year (4 quarters), and versus the window base.
-function renderInspector(comp) {
+function renderInspector(comp, seriesLabel = "composite") {
   const box = document.getElementById("qreadout");
   const clr = document.getElementById("qclear");
   if (!box) return;
@@ -381,7 +391,7 @@ function renderInspector(comp) {
     clr.style.display = "none"; return; }
   clr.style.display = "";
   const q = DATA.months[pinned], v = comp[pinned];
-  if (v == null) { box.innerHTML = `<b>${q}</b> &middot; <span class="muted">no composite for the selected basket at this quarter</span>`; return; }
+  if (v == null) { box.innerHTML = `<b>${q}</b> &middot; <span class="muted">no ${seriesLabel} for the selected basket at this quarter</span>`; return; }
   const chip = (label, cur, ref) => {
     if (ref == null || cur == null) return `<span class="qm"><span class="ql">${label}</span><span class="qv muted">—</span></span>`;
     const pct = (cur / ref - 1) * 100;
@@ -389,7 +399,7 @@ function renderInspector(comp) {
   };
   const base = comp.find(x => x != null);
   box.innerHTML =
-    `<span class="qm"><span class="ql">${q} composite</span><span class="qv lvl">${v.toFixed(1)}</span></span>` +
+    `<span class="qm"><span class="ql">${q} ${seriesLabel}</span><span class="qv lvl">${v.toFixed(1)}</span></span>` +
     chip("QoQ", v, comp[pinned - 1]) +
     chip("YoY", v, comp[pinned - 4]) +
     chip(`vs ${DATA.months[0]}`, v, base);
@@ -527,14 +537,15 @@ function render() {
   const mainChecked = cats.filter(c => !isSub(c));                  // basket members only
   const comp = mainChecked.length ? compositeSeries(mainChecked) : DATA.months.map(() => null);
 
-  const num = document.getElementById("hNum");
   const pc = mainChecked.length ? pctChange(comp) : null;
-  num.textContent = mainChecked.length ? fmtPct(pc) : "—";
-  num.className = "num " + cls(pc);
+  const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
   renderMoveNotes(comp, mainChecked);
-  renderInspector(comp);                  // readout for the pinned quarter (if any)
+  renderInspector(comp, showComposite ? "composite" : (mainChecked.length ? labelOf(mainChecked[0]) : "series"));
+  // the highlighted-move legend only applies when composite highlights are drawn
+  const note = document.getElementById("chartnote");
+  if (note) note.style.display = showComposite ? "" : "none";
 
   const tb = document.getElementById("rows"); tb.innerHTML = "";
   const order = sortedCats().filter(c => !isSub(c));
