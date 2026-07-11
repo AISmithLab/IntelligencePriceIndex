@@ -261,7 +261,7 @@ function drawChart(cats, comp) {
   svg.appendChild(el("text", { _svg: 1, x: 14, y: yMid, "text-anchor": "middle",
     "font-size": 11, "font-weight": 600, fill: "#6b7280",
     transform: `rotate(-90 14 ${yMid.toFixed(1)})` },
-    [`IPI  (${DATA.base_period} = 100)`]));
+    [`IPI · index points (${DATA.base_period} = 100)`]));
   // x labels (~6)
   const step = Math.max(1, Math.round(n / 6));
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
@@ -327,7 +327,7 @@ function drawChart(cats, comp) {
     guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
     let rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
       `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b></div>`).join("");
-    tip.innerHTML = `<b>${months[i]}</b>${rows}`;
+    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· IPI (${DATA.base_period}=100)</span>${rows}`;
     tip.style.display = "block";
     const tx = X(i) / sx, left = Math.min(tx + 12, r.width - tip.offsetWidth - 6);
     tip.style.left = Math.max(0, left) + "px";
@@ -399,7 +399,7 @@ function renderInspector(comp, seriesLabel = "composite") {
   };
   const base = comp.find(x => x != null);
   box.innerHTML =
-    `<span class="qm"><span class="ql">${q} ${seriesLabel}</span><span class="qv lvl">${v.toFixed(1)}</span></span>` +
+    `<span class="qm"><span class="ql">${q} ${seriesLabel} · index</span><span class="qv lvl">${v.toFixed(1)}<span style="font-size:11px;font-weight:400;color:var(--faint)"> idx</span></span></span>` +
     chip("QoQ", v, comp[pinned - 1]) +
     chip("YoY", v, comp[pinned - 4]) +
     chip(`vs ${DATA.months[0]}`, v, base);
