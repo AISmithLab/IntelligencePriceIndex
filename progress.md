@@ -10,8 +10,8 @@
 - **Merged 21 → 15 questions** (kept first-of-pair ids so anchors stay stable): Q4+Q5 (window + ChatGPT/COVID → `#period`), Q6+Q7 (priced + categories → `#priced`), Q9+Q10 (why-revealed + why-Fiverr → `#whyrevealed`), Q14+Q15 (geometric means + distortion → `#geo`), Q16+Q17 (toggle + explorer → `#toggle`), Q19+Q20 (reproduce + cadence → `#repro`). Renumbered headings 1–15; rebuilt TOC to 15 entries.
 - **Preserved all 5 formula `.math` blocks verbatim**; only rewrote surrounding prose/legends and converted en-dash ranges to "to" (`0.1–10×`→`0.1 to 10×`, `2011–2026`→`2011 to 2026`, `2018–2020`→`2018 to 2020`). Kept the `Δ'20–'26` label (mirrors the index-page column header + appears inside the formula). Step separators `—`→`&middot;`. Title em dash → `&middot;`.
 - **Verified:** 15 `<h3>`, TOC anchors == section ids in order, 25/25 div balance, 5 math blocks, 7 step headers, clean `html.parser` parse, no em dashes and no stray en dashes outside the intended `Δ'20–'26` label.
-- **Follow-up (not done):** `drafts/sections/faq.md` is now behind live (older 21-question wording). Sync it in a later pass.
-- **Status: COMMITTED + PUSHED** on `mockup`. File: `docs/faq.html`.
+- **Draft synced:** rewrote `drafts/sections/faq.md` to mirror the shipped page — merged to 15 questions, dropped the now-obsolete `[NEW]` tags, updated status header to "applied to live", carried over the reframed reading question and the chain-drift caveat.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/faq.html`, `drafts/sections/faq.md`.
 
 ## 2026-07-07 — Pilot: unbalanced-panel index methods → possible chain drift in the headline IPI [uncommitted, runs/ only]
 

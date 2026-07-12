@@ -1,210 +1,252 @@
 # FAQ & Methodology — Draft Section
 
 **Target file:** `docs/faq.html`
-**Status:** draft for review (do NOT apply to the live HTML yet)
+**Status:** applied to live `docs/faq.html` (2026-07-12); this draft mirrors what is shipped
 **Audience:** freelancers and buyers active on **Fiverr and Upwork**, plus researchers interested in AI's effect on the price of knowledge work.
 
-This document holds the **full FAQ copy** for review before it goes into `docs/faq.html`.
-All questions are given **in final reading order**. Questions added or substantially rewritten
-**in this revision** are tagged **`[NEW]`** so the diff is obvious; previously-shipped questions carry no tag
-(their answers may still have been edited to match the current chart — see the two facts below).
+This document holds the **full FAQ copy** as it appears on the live page. All questions are given
+**in final reading order**. This revision **merged the earlier 21 questions into 15** (six overlapping
+pairs were combined), rewrote every answer for informativeness under the project's style rules, and
+corrected two stale points against current site state. `[NEW]` tags were dropped now that the whole
+set is shipped.
 
 Two facts that shape several answers below (per current site state):
 
 - **All prices are extracted with the Wayback Machine**, crawling archived Fiverr gig pages back to **~2011**.
-- **The chart now plots the full quarterly series from 2020 Q1 → 2026 Q1** — **25 quarters**, with the index
+- **The chart plots the full quarterly series from 2020 Q1 → 2026 Q1** — **25 quarters**, with the index
   fixed at `100` in **2020 Q1**. Seven categories are shown (design, writing, marketing, coding, video, audio,
   translation). The pre-2020 archive exists but is too thin to chart; categories may still expand.
+
+Two corrections applied in this revision:
+
+- The **composite headline number was dropped** from `index.html` and the chart defaults to a single
+  category, so the old "what does the headline number mean?" answer was reframed around the per-category
+  `Δ'20–'26` column and the composite shown when two or more categories are selected.
+- Current `docs/data.json` shows the composite at **317.7 (+217.7%)** with **every category up** (+109%
+  to +478%), so the earlier deflation-first framing was corrected to be direction-neutral. A **chain-drift**
+  caveat was added to the limitations (chained Jevons likely overstates the true rise by ~2.4× versus
+  drift-free GEKS/hedonic estimators).
 
 ---
 
 ## Questions (final reading order)
 
 ### 1. What is the Intelligence Price Index?
-The **Intelligence Price Index (IPI)** tracks the **revealed price of AI-exposed knowledge work** over time.
-It is a matched-model price index built from the posted prices of freelance "gigs" on Fiverr — tasks like
-logo design, copywriting, coding, voice-over, and video editing — that generative AI can increasingly perform.
-The motivating question: as AI gets better at cognitive tasks, what happens to the market price of doing those
-tasks? Rather than surveying experts, the IPI reads the answer directly off prices real sellers set and revise.
-Built like the CPI, but the "basket" is cognitive labor instead of groceries and rent.
+The **Intelligence Price Index (IPI)** measures the **revealed price of knowledge work that generative AI
+is increasingly able to perform**. It is a matched-model price index assembled from the posted prices of
+freelance "gigs" on Fiverr, covering tasks such as logo design, copywriting, software work, voiceover,
+translation, and video editing. The question behind it is what happens to the market price of a cognitive
+task as machines become better at doing it. Instead of asking experts to score exposure or forecast
+disruption, the IPI reads prices that sellers themselves set and adjust inside a competitive marketplace.
+Its construction follows the logic of the Consumer Price Index (CPI), with the basket redefined from
+household goods to units of cognitive labor.
 
 ### 2. Who is this for?
-The IPI is built for **people who work on or hire through freelance marketplaces — primarily Fiverr and Upwork —**
-and for researchers tracking how AI is repricing knowledge work. If you sell logo design, copywriting, coding,
-voice-over, translation, or video editing, the index is a read on where the *going rate* for your kind of task has
-been heading. If you buy that work, it's a read on what you should expect to pay. The numbers are drawn from one
-marketplace (Fiverr, see below), but the tasks priced are the same standardized gigs that dominate both platforms.
+Two audiences make use of the index. Freelancers who sell standardized services, together with the buyers
+who commission them, can see where the going rate for a given kind of task has moved. Researchers studying
+how AI reshapes the labor market gain a task-level price series that conventional statistics rarely
+provide. Someone who sells logo design, copywriting, coding, voiceover, translation, or video editing can
+treat the relevant category as a gauge of where prices for that work have trended. For a buyer
+commissioning the same tasks, the series indicates what a reasonable posted rate looks like at a given
+time. All prices come from a single marketplace (Fiverr, described below), though the offerings themselves
+are standard across both Fiverr and Upwork.
 
-### 3. What does the headline number mean?
-The big number is the **change in the composite index over the full charted period** — from the **2020 Q1** base
-to the latest quarter (labelled **Δ'20–'26** on the page). Each category and the composite are set to `100` at the
-base quarter, so a reading of, say, −5% means the selected basket of AI-exposed work is about 5% cheaper than at
-the start of 2020. **Negative = deflation** (work getting cheaper — AI substitution pushes this way); **positive =
-inflation** (general inflation, or AI complementing rather than replacing the worker). You can also read shorter
-movements straight off the chart between any two quarters.
+### 3. How do I read the index and the change column?
+Every series on the page is fixed to `100` in the base quarter, **2020 Q1**. A later reading of 130
+therefore places the posted price of that basket about 30% above its level at the start of 2020. The table
+reports this cumulative change for each category in the column marked **Δ'20–'26**, ordered so the largest
+movers appear first. The chart opens on a single category rather than the full basket, since a composite of
+one line carries no information. Selecting two or more categories rebuilds the composite from their weighted
+indices and draws it alongside them. A reading **above 100** indicates that nominal prices rose over the
+window, which can follow from general inflation or from AI *complementing* rather than displacing the
+worker. A reading **below 100** indicates the reverse, the pattern one would anticipate where automation
+substitutes for the task. In the current pilot every category sits above its 2020 base, so the notes on
+inflation and on index drift bear directly on how those levels should be read before any conclusion is
+drawn from a single number.
 
-### [NEW] 4. What time period does the chart cover, and why does it start in 2020?
-The chart plots the **full quarterly series from 2020 Q1 to 2026 Q1** — 25 quarters, with the index fixed at `100`
-in 2020 Q1. The underlying archive reaches back to ~2011, but the chart **opens in 2020** for two reasons: (1)
-coverage before 2020 is thin and uneven — too few matched gigs per quarter to draw a stable line; and (2) 2020
-gives a clean **pre-generative-AI baseline** (ChatGPT launched November 2022) while keeping the window dense enough
-to trust. Earlier history may be added as coverage improves. We show **quarters rather than months** because
-quarterly buckets contain more matched gigs each period, so the series is far less jumpy than a monthly one.
+### 4. What window does the chart cover, and can I see ChatGPT or COVID in it?
+The series runs quarterly from **2020 Q1 to 2026 Q1**, twenty-five quarters in all, indexed to `100` at the
+start. Archived prices reach back to roughly 2011, yet the chart begins in 2020 for two reasons. Coverage
+before that year is sparse and irregular, with too few matched gigs per quarter to trace a stable line.
+Opening in 2020 also fixes the baseline before generative AI came into wide use, since ChatGPT launched in
+**November 2022**, while keeping the sample dense enough to trust. Quarterly buckets replace months because
+each quarter pools more matched gigs, which steadies the series against the noise a monthly frequency would
+introduce. Earlier history may be added as coverage improves.
 
-### [NEW] 5. Is the effect of ChatGPT (or COVID) visible in the chart?
-The window is deliberately drawn so you can look. ChatGPT launched in **November 2022 (2022 Q4)**, so the quarters
-on either side of that line are the natural place to look for an AI-substitution signal in exposed categories like
-writing and design. The chart also **opens during the COVID shock (2020–2021)**, which moved freelance demand for
-its own reasons — so be careful reading the earliest quarters as an AI story. The IPI *shows* the price movement;
-it does not, by itself, *prove* what caused any given move. Separating the AI effect from COVID, macro inflation,
-and platform growth is exactly what the accompanying paper works on — see the limitations below.
+Because the window straddles November 2022, the quarters on either side of that date are the natural place
+to look for a substitution signal in exposed categories such as writing and design. Two confounders
+complicate that reading. The opening quarters coincide with the COVID shock of 2020 and 2021, which moved
+freelance demand for reasons unrelated to AI, so the earliest movements should not be taken as an AI story.
+General inflation and the platform's own growth also press on posted prices across the whole window. The
+index records how prices moved. It does not, on its own, establish why. Disentangling an AI effect from
+these other forces is the task of the accompanying paper, and the relevant limitations appear below.
 
-### 6. What exactly is being priced?
-The unit is a **gig**: a single, well-defined task offered at a posted price (e.g. "design a minimalist logo,"
-"translate 500 words EN→ES"), at the **Basic** price tier. Three properties make these prices index-friendly:
-**revealed not surveyed**, **standardized tasks**, and **matched over time** (a gig's price is only compared to
-its own earlier price).
+### 5. What is priced, and how are the categories chosen?
+The unit of observation is a **gig**, meaning a single well-defined task offered at a posted price, for
+instance "design a minimalist logo" or "translate 500 words from English to Spanish." Prices are read from
+the **Basic** tier. Three properties make such prices well suited to an index. They are revealed rather than
+reported: sellers set them in response to competition, not in answer to a survey. Because a gig denotes a
+standardized task, its price can be followed across periods much as a CPI item is. Each observation,
+finally, counts only against the same gig's own earlier price, which isolates genuine price movement from
+shifts in the mix of sellers.
 
-### [NEW] 7. How were the categories chosen, and what counts as "AI-exposed"?
-The index currently tracks **seven categories** — design, writing, marketing, coding, video, audio, and
-translation — chosen on two tests: the task is a **standardized, posted-price gig** that recurs across many
-sellers (so it can be matched over time), and it is **plausibly AI-exposed** (something generative AI can
-increasingly do or assist). Categories are assigned by classifying each gig from its archived page. Work that is
-mostly manual, in-person, or not cleanly priced as a fixed gig — data entry, virtual assistance, admin support,
-general "consulting" — is **not** tracked, because it either resists standardized pricing or isn't AI-exposed in
-the same way. The category set is meant to grow; it is not a claim that these seven are the only AI-exposed work.
+Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and translation.
+A category qualifies on two grounds. Its work must recur as a standardized posted-price gig across many
+sellers, so that individual gigs can be matched to their own histories. It must also be plausibly exposed
+to generative AI, meaning something these models can increasingly do or assist with. Each gig is assigned to
+a category from its archived page. Work that is largely manual, performed in person, or not cleanly packaged
+as a fixed-price gig, such as data entry, virtual assistance, or general consulting, falls outside the
+index, either because it resists standardized pricing or because its exposure to AI differs in kind. The set
+is expected to expand and makes no claim that these seven exhaust the AI-exposed portion of knowledge work.
 
-### 8. Where does the data come from?
-Every price is a **real, historical Fiverr list price** recovered from the Internet Archive's **Wayback Machine**,
-which has snapshotted Fiverr gig pages since ~2011. Nobody is surveyed and nothing is estimated. A multi-stage
-pipeline narrows ~60M archived URLs → 22.7M unique snapshots → 48,643 longitudinal sellers → a stratified pilot
-sample (500 sellers, 26,603 snapshots) → 22,632 downloaded pages → prices → a matched panel of gigs seen in ≥2
-periods. Price extraction uses a four-method cascade (`packageList` JSON 72.9%, old-style JSON 15.2%, dollar
-fallback 11.2%, HTML span 0.7%). This site uses the **full-history quarterly build** of that pipeline
-(2020 Q1 → 2026 Q1).
+### 6. Where does the data come from?
+Every price shown is an actual historical Fiverr list price, recovered from the Internet Archive's **Wayback
+Machine**, the public web archive that has snapshotted Fiverr gig pages since roughly 2011. Nothing is
+surveyed and nothing is imputed. The figures are simply those sellers posted, as preserved in archived
+copies of their pages, aligned over time. A multi-stage pipeline narrows ~60M archived URLs → 22.7M unique
+snapshots → 48,643 longitudinal sellers → a stratified pilot sample (500 sellers, 26,603 snapshots) →
+22,632 downloaded pages → prices → a matched panel of gigs seen in two or more periods. Price extraction
+uses a four-method cascade (`packageList` JSON 72.9%, old-style JSON 15.2%, dollar fallback 11.2%, HTML span
+0.7%). This site draws on the **full-history quarterly build** of that pipeline (2020 Q1 → 2026 Q1). Because
+the sample is pilot-scale, the limitations below should temper any strong reading of an individual category.
 
-### [NEW] 9. Why not just survey freelancers or use official wage data?
-Surveys ask people what they *think* prices are doing; the IPI reads what sellers actually **posted**. Revealed
-prices can't be colored by recall, sentiment, or who happened to answer. Official wage statistics (e.g. BLS series)
-are real too, but they are **aggregated, lagged, and not broken out** by the specific AI-exposed gigs we care about
-— you can't see the price of "a minimalist logo" or "500 words EN→ES" in them. Fiverr's posted, packaged prices
-give exactly that: a **task-level list price you can match to its own past**, quarter after quarter. The trade-off
-is coverage (one marketplace, posted not transacted), which we are upfront about in the limitations.
+### 7. Why revealed Fiverr prices rather than surveys, wage data, or Upwork?
+Three alternatives suggest themselves, and each falls short for this purpose. Surveys record what
+respondents *believe* prices are doing, a signal that recall, sentiment, and the composition of those who
+answer can all colour. Posted prices carry none of that mediation. Official wage statistics, such as the BLS
+series, are genuine measurements, but they arrive aggregated and lagged and do not resolve to the specific
+AI-exposed gigs of interest. One cannot locate the price of "a minimalist logo" or "500 words from English
+to Spanish" within them. Fiverr's packaged, posted prices supply exactly that: a **task-level list price
+that can be matched to its own past**, quarter after quarter.
 
-### 10. Why Fiverr — and what about Upwork?
-Two practical reasons. **(1) Posted, packaged prices.** Fiverr gigs carry explicit, fixed price tiers
-(Basic / Standard / Premium) that sellers set up front. That makes each gig a clean, comparable price point you can
-track quarter to quarter — exactly what a price index needs. Upwork work is mostly negotiated hourly or
-per-project, so there is no single posted "list price" to follow over time. **(2) A deep archive.** The **Wayback
-Machine** has been snapshotting Fiverr gig pages since ~2011, giving a pre-generative-AI baseline; comparable
-historical coverage of posted prices is much thinner elsewhere. We treat Fiverr as the *measuring instrument* for a
-price that buyers and sellers on both Fiverr and Upwork care about. Extending coverage to other platforms is
-future work.
+Fiverr is preferred over Upwork on two practical grounds. Its gigs carry explicit fixed tiers (Basic,
+Standard, Premium) that sellers set in advance, giving each gig a clean, comparable price point to follow
+from quarter to quarter. Upwork engagements are mostly negotiated by the hour or by the project, leaving no
+single posted list price to track. The Wayback Machine's archive of Fiverr pages is also unusually deep,
+reaching back before generative AI and offering a baseline that comparable coverage of posted prices
+elsewhere does not match. The index treats Fiverr as the measuring instrument for a price that participants
+on both platforms care about, and extending coverage to other marketplaces remains future work. The cost of
+this choice, one marketplace and list rather than transacted prices, is set out in the limitations.
 
-### 11. How is the index calculated? (the formulas)
-A **matched-model index** in three steps, recomputed live in the browser:
-1. **Price relatives** — for each gig in two consecutive quarters, `r = p_t / p_{t−1}` (median Basic price per
-   quarter; relatives outside `0.1–10×` dropped; ≥3 matched gigs needed per category-quarter).
-2. **Category index (Jevons, chained)** — geometric mean of that quarter's relatives, chained onto the prior level;
-   the base quarter (2020 Q1) is fixed at `100`.
+### 8. How is the index calculated? (the formulas)
+A **matched-model index** assembled in three steps, following the approach the BLS applies to CPI items that
+are difficult to quality-adjust; a fourth step turns the resulting level into the reported change. The
+composite is recomputed live in the browser whenever the basket changes.
+
+1. **Price relatives** — for each gig `i` seen in two consecutive quarters, take the ratio of its later
+   price to its earlier one, `r_{i,t} = p_{i,t} / p_{i,t−1}` (median Basic price when a gig has several
+   snapshots in a quarter; ratios outside `0.1 to 10×` are discarded as data errors; a category-quarter
+   enters only once at least 3 gigs are matched).
+2. **Category index (Jevons, chained)** — combine that quarter's price relatives through a Jevons index,
+   the geometric mean of the relatives, and chain it onto the previous quarter's level;
+   `I^c_t = I^c_{t−1} × (∏ r_{i,t})^{1/|S_{c,t}|}`, with the base quarter (2020 Q1) fixed at `100`.
 3. **Composite (Törnqvist-style weighted geometric mean)** — `IPI_t = exp(Σ w_c · ln I^c_t / Σ w_c)`; only
-   selected categories enter the sum.
-4. **Headline change** — `(IPI_T / IPI_0 − 1) × 100%`, over the charted quarters (2020 Q1 → 2026 Q1).
+   the categories currently selected enter the sum, which is why the composite responds as the basket is
+   toggled.
+4. **Reported change** — `(I_T / I_0 − 1) × 100%` for a category over the charted quarters, and the same
+   expression for the composite's `Δ'20–'26` figure.
 
-### 12. Are these prices adjusted for general inflation?
-**Not yet — the index is in nominal US dollars.** It tracks the actual posted price of a gig over time, with no
-deflation by CPI or any other inflation measure. So a *positive* IPI reading does **not** automatically mean the
-work got more expensive in real terms — part of any rise can simply be economy-wide inflation over the same window.
-For the AI-substitution story, what's most telling is when gig prices fall (or rise more slowly than general
-prices) *despite* a backdrop of broad inflation. A real (inflation-adjusted) version is a planned addition; until
-then, read the headline as a **nominal** change and keep the macro backdrop in mind.
+### 9. Are these prices adjusted for inflation?
+The index is stated in **nominal US dollars** and carries no inflation adjustment at present. It follows the
+actual posted price of a gig over time, without deflating by CPI or any other measure. A reading above `100`
+therefore does not by itself mean the work grew more expensive in real terms, since part of any increase
+reflects economy-wide inflation over the same span. What speaks more directly to substitution by AI is a
+fall in gig prices, or a rise slower than general prices, against an inflationary backdrop. A real,
+inflation-adjusted version is planned. Until it exists, the reported change is best read as a **nominal**
+figure, with the wider macroeconomic context kept in view.
 
-### 13. How are the category weights set?
-Like CPI expenditure weights, IPI weights reflect each category's share of economic activity. We proxy transaction
-volume with **review counts** (a gig accrues reviews roughly in proportion to sales): `w_c = R_c / Σ R_k`, where
-`R_c = Σ_{i∈c} max_t reviews_{i,t}`. In the current sample, **design dominates (~71%)**, with writing (~11%) next
-and marketing, coding, video, audio, and translation making up the rest.
+### 10. How are the category weights set?
+Weights are intended, in the manner of CPI expenditure weights, to reflect how much economic activity each
+category carries. Transaction volume is proxied by **review counts**, on the premise that a gig accumulates
+reviews roughly in proportion to its sales: `w_c = R_c / Σ R_k`, where `R_c = Σ_{i∈c} max_t reviews_{i,t}`.
+In the present sample **design carries most of the basket**, near 71%, with writing next at about 11% and
+marketing, coding, video, audio, and translation dividing the remainder.
 
-### 14. Why geometric means instead of plain averages?
-**Symmetry** — a price that doubles then halves nets to no change under a geometric (Jevons) mean; an arithmetic
-mean would show a spurious increase. And **it is the BLS standard** for elementary CPI aggregates, keeping the IPI
-comparable to how real inflation is measured.
+### 11. Why geometric means, and can a few sellers distort the index?
+The geometric mean is symmetric under reversal: a price that doubles and then halves returns to its starting
+point, where an arithmetic mean of the relatives would record a spurious net rise. The Bureau of Labor
+Statistics likewise uses it for elementary CPI aggregates, which keeps the IPI comparable with how headline
+inflation is actually measured. That same construction limits how far a handful of sellers can move the
+index. Since each gig is compared only with its own past, sellers entering or leaving the sample cannot by
+themselves shift a level. The geometric mean then damps extreme ratios far more heavily than an arithmetic
+mean would, and two guardrails discard relatives outside `0.1 to 10×` and require at least 3 matched gigs
+before a category-quarter counts. No individual seller's price change moves a category by much, and
+averaging across categories dilutes it further. The more serious threat is *thin coverage*, too few matched
+pairs in a given cell, rather than manipulation by any one participant, and it is flagged in the limitations
+below.
 
-### 15. Could a few sellers distort the index?
-The design is fairly resistant to a handful of outliers. Three guards do most of the work: we only use **matched
-pairs** (a gig's price vs. its own past, so new or vanishing sellers can't swing a level), we take a **geometric
-mean** (which damps extreme relatives far more than an arithmetic mean), and we **drop relatives outside `0.1–10×`**
-as data errors and require **≥3 matched gigs** before a category-quarter counts. No single seller's price change can
-move a category much, and the composite further averages across categories. The bigger risk is *thin coverage*
-(too few matches), which we flag in the limitations, not manipulation by any one seller.
+### 12. Can I toggle categories and inspect individual freelancers or gigs?
+The composite is rebuilt in the browser from the category indices and their weights each time the basket
+changes, applying the Step 3 formula above and renormalizing over whatever categories are selected. This
+makes it possible to ask what the index looks like for, say, design and writing alone, without relying on a
+server to recompute it. The checkboxes toggle categories, and the All / None links select or clear the set
+at once. The interface also opens up the material underneath the composite. Each category can be expanded to
+its **leading freelancers**, and an **individual gig** can be opened to show its own posted price across
+time. Because a matched gig is nothing more than one seller's price set against its earlier self, this
+per-gig view is the most direct check on what the index summarizes. It also shows plainly why thinly covered
+categories look flat: when few gigs are archived in a quarter, there are simply not many lines that can move.
 
-### 16. Why can I switch categories on and off?
-The composite is recomputed in your browser from the category indices and weights every time you change the basket,
-using exactly the Step 3 formula renormalized over selected categories — so you can ask "what does the index look
-like for just design and writing?" without trusting a server.
+### 13. What are the limitations and caveats?
+- **Pilot scale** — the figures rest on a sample of sellers rather than the whole marketplace, and are best
+  read as indicative rather than settled.
+- **Possible upward drift in the level** — the composite is chained from quarter-to-quarter geometric means.
+  When the panel of matched gigs turns over heavily between quarters, indices built this way can accumulate
+  drift, and diagnostic runs using drift-free multilateral (GEKS) and hedonic estimators place the true
+  cumulative rise well below the chained figure. The level is therefore better read as an upper bound, with
+  the *direction* of movement and the *ordering* across categories carrying more weight than the absolute
+  magnitude.
+- **Thin categories read flat** — sparse matched-pair coverage can hold a series at `100` for long
+  stretches, which reflects missing matches rather than genuine price stability; the earliest quarters and
+  the smallest categories (translation, audio) are most exposed to this.
+- **Design dominates** (~71% weight) — the composite largely tracks design; toggling it off reveals the rest
+  of the basket on its own.
+- **Posted, not transacted** — the prices observed are Basic-tier list prices, not the final amounts paid
+  after add-ons, discounts, or negotiation.
+- **Window opens in 2020** — the pre-2020 archive is too thin to chart, and the opening quarters overlap the
+  COVID shock.
+- **Survivorship and archiving gaps** — the Wayback Machine does not capture every page in every quarter,
+  and gigs that disappear drop out of the panel.
+- **Association, not established causation** — the index documents how prices moved; assigning those
+  movements to AI specifically requires the further analysis in the paper.
 
-### [NEW] 17. Can I look up individual freelancers or a specific gig?
-Yes. Beyond the composite chart, the site lets you drill into the **top freelancers within each category** and open
-an **individual gig** to see its own posted price over time. This is the raw material the index is built from — a
-matched gig is just one seller's price compared to its own earlier price — so the per-gig view is the most direct
-way to sanity-check what the index is summarizing. It is also the quickest way to see why thinly-covered categories
-can look flat: with few gigs archived per quarter, there simply aren't many lines to move.
+### 14. Can I reproduce this, and how often is it updated?
+The series can be regenerated from the project's analysis pipeline under `code/`. The full-history quarterly
+build is `code/18-build-site-data-long.py`, which writes `docs/data.json`; the page loads that file and
+recomputes the composite on the client. `README.md` and `GUIDE.md` alongside this page document the data
+contract and the build steps. Updates come from rebuilding against fresh Wayback Machine snapshots rather
+than from a live feed, so the index moves when the pipeline is re-run, not continuously. Each build stamps
+the page with a **generation date** and the quarters it covers, so the currency of the displayed series
+stays visible. The most recent quarter depends on pages that have actually been archived and matched, which
+means it can shift a little as further snapshots arrive and settles as that quarter fills in.
 
-### 18. What are the limitations and caveats?
-- **Pilot scale** — a sample of sellers, not the full marketplace; indicative, not definitive.
-- **Thin categories read flat** — sparse matched pairs can sit at `100` for stretches (missing matches, not real
-  stability); the **earliest quarters** and the **smallest categories** (translation, audio) are most affected.
-- **Design dominates** (~71% weight) — composite mostly follows design.
-- **Posted, not transacted** — Basic-tier list prices, not final amounts paid.
-- **Window starts 2020** — pre-2020 archive is too thin to chart, and the opening quarters overlap the COVID shock.
-- **Survivorship and archiving gaps** — Wayback doesn't snapshot every page every quarter; dead gigs leave the panel.
-- **Association, not proven causation** — attributing moves to AI specifically needs the paper's further analysis.
-
-### 19. Can I reproduce this?
-Yes. The series come from the panel/IPI build scripts in `code/` — the full-history quarterly build is
-`code/18-build-site-data-long.py`, which serializes to `docs/data.json`; the page reads that file and recomputes
-the composite client-side. Data contract and build steps are in `README.md` and `GUIDE.md`.
-
-### [NEW] 20. How often is the index updated?
-The series is **rebuilt from the archive rather than streamed live**, so it updates when we re-run the pipeline
-against fresh Wayback Machine snapshots — not continuously. Each build stamps the page with a **generation date**
-and the quarters it covers, so you can always see how current the shown series is. Because the newest quarter
-depends on pages that have actually been archived and matched, the most recent point can shift slightly as more
-snapshots land, and firms up as that quarter fills in.
-
-### 21. Found an error, or want to contribute?
+### 15. Found an error, or want to contribute?
 The project is open. Code, data-build scripts, and this page live at
-**https://github.com/AISmithLab/IntelligencePriceIndex**. If you spot a misread price, a misclassified gig, or a
-bug in the pipeline, please open an issue or a pull request there. Methodology suggestions are welcome too — the
-index is meant to be auditable, and corrections from people who actually price this work on Fiverr and Upwork make
-it better.
+**https://github.com/AISmithLab/IntelligencePriceIndex**. A misread price, a misclassified gig, or a bug in
+the pipeline can be reported as an issue or a pull request there. Suggestions on methodology are equally
+welcome, since the index is meant to be auditable, and corrections from people who price this kind of work
+on Fiverr and Upwork improve it.
 
 ---
 
-## Table-of-contents (final order, for whoever applies this to `faq.html`)
+## Table-of-contents (final order, mirrors `faq.html`)
 
 1. What is the Intelligence Price Index?
 2. Who is this for?
-3. What does the headline number mean?
-4. **`[NEW]`** What time period does the chart cover, and why does it start in 2020?
-5. **`[NEW]`** Is the effect of ChatGPT (or COVID) visible in the chart?
-6. What exactly is being priced?
-7. **`[NEW]`** How were the categories chosen, and what counts as "AI-exposed"?
-8. Where does the data come from?
-9. **`[NEW]`** Why not just survey freelancers or use official wage data?
-10. Why Fiverr — and what about Upwork?
-11. How is the index calculated? (the formulas)
-12. Are these prices adjusted for general inflation?
-13. How are the category weights set?
-14. Why geometric means instead of plain averages?
-15. Could a few sellers distort the index?
-16. Why can I switch categories on and off?
-17. **`[NEW]`** Can I look up individual freelancers or a specific gig?
-18. What are the limitations and caveats?
-19. Can I reproduce this?
-20. **`[NEW]`** How often is the index updated?
-21. Found an error, or want to contribute?
+3. How do I read the index and the change column?
+4. What window does the chart cover, and can I see ChatGPT or COVID in it?
+5. What is priced, and how are the categories chosen?
+6. Where does the data come from?
+7. Why revealed Fiverr prices rather than surveys, wage data, or Upwork?
+8. How is the index calculated? (the formulas)
+9. Are these prices adjusted for inflation?
+10. How are the category weights set?
+11. Why geometric means, and can a few sellers distort the index?
+12. Can I toggle categories and inspect individual freelancers or gigs?
+13. What are the limitations and caveats?
+14. Can I reproduce this, and how often is it updated?
+15. Found an error, or want to contribute?
 
-> The six `[NEW]` items are placed in reading-flow position (not appended at the end). Existing answers were also
-> edited to match the current chart — **quarterly**, **2020 Q1 → 2026 Q1**, seven categories — so the whole file is
-> consistent with the live `index.html` before it goes into `faq.html`.
+> The earlier 21 questions were merged into these 15: window + ChatGPT/COVID (4), priced + categories (5),
+> why-revealed + why-Fiverr (7), geometric means + distortion (11), toggle + explorer (12), and reproduce +
+> cadence (14). This draft is consistent with the shipped `faq.html` and with the live `index.html`
+> (quarterly, 2020 Q1 → 2026 Q1, seven categories).
