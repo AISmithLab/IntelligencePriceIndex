@@ -1,5 +1,18 @@
 # Progress Log
 
+## 2026-07-12 — Live FAQ: rewrote all answers, merged 21→15 questions, fixed stale framing [committed + pushed]
+
+- **User: "read the FAQ section, check updates needed for each question, combine questions where sensible, rewrite answers more informatively"** under 11 style rules (no dashes; sparing semicolons; no "it is worth noting / in conclusion / crucial"; no general-specific-general paragraphs; no symmetrical sentence structures; natural cautious academic prose; varied sentence structure; preserved rigor/terminology/formulas).
+- **Substantive updates (not just style):**
+  - *Q3 was stale.* It described "the big number at the top" (the composite headline), but commit `4c20173` **dropped the composite headline** and defaults the chart to a single category. Reframed around the per-category `Δ'20–'26` column and the composite-when-≥2-selected.
+  - *Fixed the deflation-first framing.* Old Q3 led with deflation/AI-substitution and used a `−5%` example. Real `docs/data.json` (generated 2026-07-07) shows the composite at **317.7 (+217.7%)** with **every category up** (+109% to +478%). Rewrote the reading guidance to be direction-neutral and to note that all categories currently sit above base.
+  - *Added a chain-drift caveat to the limitations* (new 2nd bullet). Reflects the 2026-07-07 pilot: chained Jevons likely overstates the true cumulative rise by ~2.4× vs drift-free GEKS/hedonic estimators. Framed cautiously ("upper bound"; weight direction + cross-category ordering over magnitude). Cross-linked from Q3.
+- **Merged 21 → 15 questions** (kept first-of-pair ids so anchors stay stable): Q4+Q5 (window + ChatGPT/COVID → `#period`), Q6+Q7 (priced + categories → `#priced`), Q9+Q10 (why-revealed + why-Fiverr → `#whyrevealed`), Q14+Q15 (geometric means + distortion → `#geo`), Q16+Q17 (toggle + explorer → `#toggle`), Q19+Q20 (reproduce + cadence → `#repro`). Renumbered headings 1–15; rebuilt TOC to 15 entries.
+- **Preserved all 5 formula `.math` blocks verbatim**; only rewrote surrounding prose/legends and converted en-dash ranges to "to" (`0.1–10×`→`0.1 to 10×`, `2011–2026`→`2011 to 2026`, `2018–2020`→`2018 to 2020`). Kept the `Δ'20–'26` label (mirrors the index-page column header + appears inside the formula). Step separators `—`→`&middot;`. Title em dash → `&middot;`.
+- **Verified:** 15 `<h3>`, TOC anchors == section ids in order, 25/25 div balance, 5 math blocks, 7 step headers, clean `html.parser` parse, no em dashes and no stray en dashes outside the intended `Δ'20–'26` label.
+- **Follow-up (not done):** `drafts/sections/faq.md` is now behind live (older 21-question wording). Sync it in a later pass.
+- **Status: COMMITTED + PUSHED** on `mockup`. File: `docs/faq.html`.
+
 ## 2026-07-07 — Pilot: unbalanced-panel index methods → possible chain drift in the headline IPI [uncommitted, runs/ only]
 
 - **User asked:** streams of price data have misaligned durations (some 2020–2023, some 2020–2021); what methods estimate a general price index over time. Recommended time-dummy hedonic / chained superlative / GEKS / state-space; then ran a pilot on the real pilot panel.
