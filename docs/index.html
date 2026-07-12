@@ -44,6 +44,8 @@
             box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18); }
     .hero { padding: 20px 22px 18px; }
     .hero .headline { margin-bottom: 12px; }
+    .headline .charttitle { font-size: 17px; font-weight: 800; color: var(--ink);
+      letter-spacing: -0.01em; margin: 0; }
     .chartnote { font-size: 11.5px; color: var(--mut); margin-top: 10px;
                  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
     .chartnote .dot { display: inline-block; width: 18px; height: 3px; border-radius: 2px;
@@ -126,8 +128,8 @@
     tbody tr.cat:hover { background: var(--hi); }
     tbody tr.cat td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
     tbody tr.cat td:last-child  { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-    .caret { color: var(--faint); cursor: pointer; width: 14px; display: inline-block;
-             transition: color .12s; } .caret:hover { color: var(--accent); }
+    .caret { color: var(--faint); cursor: pointer; width: 18px; display: inline-block;
+             font-size: 18px; line-height: 1; transition: color .12s; } .caret:hover { color: var(--accent); }
     .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block;
               vertical-align: -1px; margin-right: 8px; }
     .name { font-weight: 600; color: var(--ink); white-space: nowrap; }
@@ -233,6 +235,7 @@
     <div class="layout">
       <section class="card hero">
         <div class="headline">
+          <h2 class="charttitle">Intelligence Price Index</h2>
           <div class="sub" id="hCaption">Index level in index points (base 2020Q1 = 100) &middot; full history <span id="hRange"></span></div>
         </div>
         <div id="chart"><div class="tip" id="tip"></div></div>
