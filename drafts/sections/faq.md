@@ -1,4 +1,4 @@
-# FAQ & Methodology — Draft Section
+# FAQ & Methodology · Draft Section
 
 **Target file:** `docs/faq.html`
 **Status:** applied to live `docs/faq.html` (2026-07-12); this draft mirrors what is shipped
@@ -13,9 +13,9 @@ set is shipped.
 Two facts that shape several answers below (per current site state):
 
 - **All prices are extracted with the Wayback Machine**, crawling archived Fiverr gig pages back to **~2011**.
-- **The chart plots the full quarterly series from 2020 Q1 → 2026 Q1** — **25 quarters**, with the index
+- **The chart plots the full quarterly series from 2020 Q1 to 2026 Q1**, **25 quarters**, with the index
   fixed at `100` in **2020 Q1**. Seven categories are shown (design, writing, marketing, coding, video, audio,
-  translation). The pre-2020 archive exists but is too thin to chart; categories may still expand.
+  translation). The pre-2020 archive exists but is too thin to chart, and categories may still expand.
 
 Two corrections applied in this revision:
 
@@ -102,12 +102,36 @@ is expected to expand and makes no claim that these seven exhaust the AI-exposed
 Every price shown is an actual historical Fiverr list price, recovered from the Internet Archive's **Wayback
 Machine**, the public web archive that has snapshotted Fiverr gig pages since roughly 2011. Nothing is
 surveyed and nothing is imputed. The figures are simply those sellers posted, as preserved in archived
-copies of their pages, aligned over time. A multi-stage pipeline narrows ~60M archived URLs → 22.7M unique
-snapshots → 48,643 longitudinal sellers → a stratified pilot sample (500 sellers, 26,603 snapshots) →
-22,632 downloaded pages → prices → a matched panel of gigs seen in two or more periods. Price extraction
-uses a four-method cascade (`packageList` JSON 72.9%, old-style JSON 15.2%, dollar fallback 11.2%, HTML span
-0.7%). This site draws on the **full-history quarterly build** of that pipeline (2020 Q1 → 2026 Q1). Because
-the sample is pilot-scale, the limitations below should temper any strong reading of an individual category.
+copies of their pages, aligned over time.
+
+**From 60 million archived URLs to a clean price panel.** Reaching a usable series from the raw archive takes
+several stages, each narrowing a large pile of entries toward gigs whose prices can be followed reliably:
+
+| Stage | What happens | Result |
+|---|---|---|
+| CDX retrieval | Query the Wayback Machine's index for every archived `fiverr.com` gig URL. | 60M entries |
+| Dedup & classify | Collapse to unique (URL, month) snapshots; tag each gig with a service category. | 22.7M unique |
+| Longitudinal filter | Keep sellers with enough history (≥5 monthly snapshots spanning ≥2 years). | 48,643 sellers |
+| Stratified sample | Draw a representative pilot sample of sellers and list their snapshots to download. | 500 sellers · 26,603 snapshots |
+| Download | Fetch the archived HTML from the Wayback Machine (rate-limited, with retries). | 22,632 pages (85%) |
+| Price extraction | Parse the Basic price out of each page (see below). | prices 2011 to 2026 |
+| Matched panel | Keep only gigs seen in two or more periods, so each price change is measured against the same gig's own past. | matched gigs |
+
+**How a price is read off each page.** Fiverr redesigned its pages repeatedly over the years, so extraction
+proceeds through a cascade of four methods, attempting the most reliable first and falling back as needed:
+
+| Method | Era | How the price is found | Share |
+|---|---|---|---|
+| `packageList` JSON | 2020+ | Embedded JSON array, price in cents | 72.9% |
+| Old-style JSON | pre-2017 | JSON with price as a dollar string | 15.2% |
+| Dollar fallback | all eras | `$X` pattern in the page text | 11.2% |
+| HTML `<span>` | 2018 to 2020 | `class="price"` DOM element | 0.7% |
+
+**What this site shows specifically.** The full study spans 2011 to 2026. The figures on this page draw on the
+**full-history quarterly build** of that pipeline, aggregated into quarters and charted from 2020 Q1 to 2026
+Q1 (twenty-five quarters). The `Gigs` column on the index page reports how many matched gigs sit behind each
+category. Because the sample is pilot-scale, the limitations below should temper any strong reading of an
+individual category.
 
 ### 7. Why revealed Fiverr prices rather than surveys, wage data?
 Three alternatives suggest themselves, and each falls short for this purpose. Surveys record what
@@ -120,21 +144,50 @@ that can be matched to its own past**, quarter after quarter.
 
 ### 8. How is the index calculated?
 A **matched-model index** assembled in three steps, following the approach the BLS applies to CPI items that
-are difficult to quality-adjust; a fourth step turns the resulting level into the reported change. The
+are difficult to quality-adjust. A fourth step turns the resulting level into the reported change. The
 composite is recomputed live in the browser whenever the basket changes.
 
-1. **Price relatives** — for each gig `i` seen in two consecutive quarters, take the ratio of its later
-   price to its earlier one, `r_{i,t} = p_{i,t} / p_{i,t−1}` (median Basic price when a gig has several
-   snapshots in a quarter; ratios outside `0.1 to 10×` are discarded as data errors; a category-quarter
-   enters only once at least 3 gigs are matched).
-2. **Category index (Jevons, chained)** — combine that quarter's price relatives through a Jevons index,
-   the geometric mean of the relatives, and chain it onto the previous quarter's level;
-   `I^c_t = I^c_{t−1} × (∏ r_{i,t})^{1/|S_{c,t}|}`, with the base quarter (2020 Q1) fixed at `100`.
-3. **Composite (Törnqvist-style weighted geometric mean)** — `IPI_t = exp(Σ w_c · ln I^c_t / Σ w_c)`; only
-   the categories currently selected enter the sum, which is why the composite responds as the basket is
-   toggled.
-4. **Reported change** — `(I_T / I_0 − 1) × 100%` for a category over the charted quarters, and the same
-   expression for the composite's `Δ'20–'26` figure.
+**Step 1 · Price relatives (same gig, period to period).** For every gig *i* seen in two consecutive
+quarters, take the ratio of its later price to its earlier one:
+
+```
+r_{i,t} = p_{i,t} / p_{i,t−1}
+```
+
+Here p_{i,t} is the price of gig *i* in quarter *t*, taken as the median Basic price when a gig has several
+snapshots that quarter. Ratios falling outside the band 0.1 to 10× are treated as data errors and discarded,
+and a category-quarter enters only once at least 3 gigs are matched.
+
+**Step 2 · Category index (Jevons, chained).** Within a category, that quarter's price relatives are combined
+through a Jevons index, the geometric mean of the relatives, and chained onto the previous quarter's level:
+
+```
+I^c_t = I^c_{t−1} × ( ∏_{i ∈ S_{c,t}} r_{i,t} ) ^ ( 1 / |S_{c,t}| )
+```
+
+S_{c,t} denotes the set of gigs in category *c* matched between *t*−1 and *t*, and |S_{c,t}| its size.
+Multiplying the relatives and raising the product to the power 1/n returns their geometric mean. The base
+quarter (2020 Q1) is fixed at 100.
+
+**Step 3 · Composite IPI (weighted geometric mean).** The category indices are combined into a single figure
+by a Törnqvist-style weighted geometric mean:
+
+```
+IPI_t = exp( Σ_c w_c · ln I^c_t / Σ_c w_c )
+```
+
+Only the categories currently selected enter the sum, which is why the composite responds as the basket is
+toggled.
+
+**Step 4 · The reported change.** The change shown for a category is the percentage difference in its index
+from the base quarter (2020 Q1, period 0) to the latest quarter *T*:
+
+```
+Δ'20–'26 = ( IPI_T / IPI_0 − 1 ) × 100%
+```
+
+The same expression yields the composite's Δ'20–'26 figure when the composite index is substituted for a
+category's index.
 
 ### 9. Are these prices adjusted for inflation?
 The index is stated in **nominal US dollars** and carries no inflation adjustment at present. It follows the
@@ -177,26 +230,26 @@ per-gig view is the most direct check on what the index summarizes. It also show
 categories look flat: when few gigs are archived in a quarter, there are simply not many lines that can move.
 
 ### 13. What are the limitations and caveats?
-- **Pilot scale** — the figures rest on a sample of sellers rather than the whole marketplace, and are best
+- **Pilot scale.** The figures rest on a sample of sellers rather than the whole marketplace, and are best
   read as indicative rather than settled.
-- **Possible upward drift in the level** — the composite is chained from quarter-to-quarter geometric means.
+- **Possible upward drift in the level.** The composite is chained from quarter-to-quarter geometric means.
   When the panel of matched gigs turns over heavily between quarters, indices built this way can accumulate
   drift, and diagnostic runs using drift-free multilateral (GEKS) and hedonic estimators place the true
   cumulative rise well below the chained figure. The level is therefore better read as an upper bound, with
   the *direction* of movement and the *ordering* across categories carrying more weight than the absolute
   magnitude.
-- **Thin categories read flat** — sparse matched-pair coverage can hold a series at `100` for long
-  stretches, which reflects missing matches rather than genuine price stability; the earliest quarters and
+- **Thin categories read flat.** Sparse matched-pair coverage can hold a series at `100` for long
+  stretches, which reflects missing matches rather than genuine price stability. The earliest quarters and
   the smallest categories (translation, audio) are most exposed to this.
-- **Design dominates** (~71% weight) — the composite largely tracks design; toggling it off reveals the rest
-  of the basket on its own.
-- **Posted, not transacted** — the prices observed are Basic-tier list prices, not the final amounts paid
+- **Design dominates** (~71% weight). The composite largely tracks design, and toggling it off reveals the
+  rest of the basket on its own.
+- **Posted, not transacted.** The prices observed are Basic-tier list prices, not the final amounts paid
   after add-ons, discounts, or negotiation.
-- **Window opens in 2020** — the pre-2020 archive is too thin to chart, and the opening quarters overlap the
+- **Window opens in 2020.** The pre-2020 archive is too thin to chart, and the opening quarters overlap the
   COVID shock.
-- **Survivorship and archiving gaps** — the Wayback Machine does not capture every page in every quarter,
+- **Survivorship and archiving gaps.** The Wayback Machine does not capture every page in every quarter,
   and gigs that disappear drop out of the panel.
-- **Association, not established causation** — the index documents how prices moved; assigning those
+- **Association, not established causation.** The index documents how prices moved. Assigning those
   movements to AI specifically requires the further analysis in the paper.
 
 ### 14. Can I reproduce this, and how often is it updated?
