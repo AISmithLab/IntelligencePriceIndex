@@ -88,8 +88,9 @@ the **Basic** tier, the **Standard** tier, and the **Premium** tier. A gig denot
 price can be followed across periods much as a CPI item is. Each observation, finally, counts only against 
 the same gig's own earlier price, which isolates genuine price movement from shifts in the mix of sellers.
 
-Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and translation.
-A category qualifies on two grounds. Its work must recur as a standardized posted-price gig across many
+Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and translation. 
+Each individual freelancer's subcategory is also graphed to observe its own price change over the time.
+Seven categories qualify on two grounds. Its work must recur as a standardized posted-price gig across many
 sellers, so that individual gigs can be matched to their own histories. It must also be plausibly exposed
 to generative AI, meaning something these models can increasingly do or assist with. Each gig is assigned to
 a category from its archived page. Work that is largely manual, performed in person, or not cleanly packaged
@@ -117,7 +118,7 @@ AI-exposed gigs of interest. One cannot locate the price of "a minimalist logo" 
 to Spanish" within them. Fiverr's packaged, posted prices supply exactly that: a **task-level list price
 that can be matched to its own past**, quarter after quarter.
 
-### 8. How is the index calculated? (the formulas)
+### 8. How is the index calculated?
 A **matched-model index** assembled in three steps, following the approach the BLS applies to CPI items that
 are difficult to quality-adjust; a fourth step turns the resulting level into the reported change. The
 composite is recomputed live in the browser whenever the basket changes.
