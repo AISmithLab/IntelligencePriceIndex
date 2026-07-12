@@ -83,12 +83,10 @@ these other forces is the task of the accompanying paper, and the relevant limit
 
 ### 5. What is priced, and how are the categories chosen?
 The unit of observation is a **gig**, meaning a single well-defined task offered at a posted price, for
-instance "design a minimalist logo" or "translate 500 words from English to Spanish." Prices are read from
-the **Basic** tier. Three properties make such prices well suited to an index. They are revealed rather than
-reported: sellers set them in response to competition, not in answer to a survey. Because a gig denotes a
-standardized task, its price can be followed across periods much as a CPI item is. Each observation,
-finally, counts only against the same gig's own earlier price, which isolates genuine price movement from
-shifts in the mix of sellers.
+instance "design a minimalist logo" or "translate 500 words from English to Spanish." Prices include 
+the **Basic** tier, the **Standard** tier, and the **Premium** tier. A gig denotes a standardized task, its 
+price can be followed across periods much as a CPI item is. Each observation, finally, counts only against 
+the same gig's own earlier price, which isolates genuine price movement from shifts in the mix of sellers.
 
 Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and translation.
 A category qualifies on two grounds. Its work must recur as a standardized posted-price gig across many
@@ -110,7 +108,7 @@ uses a four-method cascade (`packageList` JSON 72.9%, old-style JSON 15.2%, doll
 0.7%). This site draws on the **full-history quarterly build** of that pipeline (2020 Q1 → 2026 Q1). Because
 the sample is pilot-scale, the limitations below should temper any strong reading of an individual category.
 
-### 7. Why revealed Fiverr prices rather than surveys, wage data, or Upwork?
+### 7. Why revealed Fiverr prices rather than surveys, wage data?
 Three alternatives suggest themselves, and each falls short for this purpose. Surveys record what
 respondents *believe* prices are doing, a signal that recall, sentiment, and the composition of those who
 answer can all colour. Posted prices carry none of that mediation. Official wage statistics, such as the BLS
@@ -118,15 +116,6 @@ series, are genuine measurements, but they arrive aggregated and lagged and do n
 AI-exposed gigs of interest. One cannot locate the price of "a minimalist logo" or "500 words from English
 to Spanish" within them. Fiverr's packaged, posted prices supply exactly that: a **task-level list price
 that can be matched to its own past**, quarter after quarter.
-
-Fiverr is preferred over Upwork on two practical grounds. Its gigs carry explicit fixed tiers (Basic,
-Standard, Premium) that sellers set in advance, giving each gig a clean, comparable price point to follow
-from quarter to quarter. Upwork engagements are mostly negotiated by the hour or by the project, leaving no
-single posted list price to track. The Wayback Machine's archive of Fiverr pages is also unusually deep,
-reaching back before generative AI and offering a baseline that comparable coverage of posted prices
-elsewhere does not match. The index treats Fiverr as the measuring instrument for a price that participants
-on both platforms care about, and extending coverage to other marketplaces remains future work. The cost of
-this choice, one marketplace and list rather than transacted prices, is set out in the limitations.
 
 ### 8. How is the index calculated? (the formulas)
 A **matched-model index** assembled in three steps, following the approach the BLS applies to CPI items that
