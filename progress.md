@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-13 — FAQ Q3: clarified the above/below-100 reading so it doesn't imply below-100 lines exist
+
+- **User confusion:** Q3 explained "above 100 / below 100" as if the reader would see it on the chart, but in the pilot every series starts at 100 and fans *upward* — nothing meaningful sits below 100 — so the framing read as disconnected from the actual line chart.
+- **Data check (`docs/data.json`):** all seven categories start at exactly 100 (base 2020Q1) and end far above it (translation 209 → marketing 578; composite 318). The *only* sub-100 reading anywhere is translation at **96.5 in 2020Q4**, which recovers immediately. The dashed 100 line the chart draws (`ipi.js:119-127,255`) is the baseline anchor; `Δ'20–'26` = index − 100.
+- **Edit:** Rewrote Q3 to (1) lead with "every series *starts* at 100" and name the dashed baseline explicitly, (2) keep the above/below-100 bullets but frame below-100 as the *general reading rule* rather than something on display, and (3) state plainly that the pilot fans upward with the lone translation dip as the only brush with sub-100. Still answers "how do I read the index and the change column."
+- **Files:** `docs/faq.html` (Q3 block), `drafts/sections/faq.md` (synced). Not yet committed.
+- **Status: EDITED, uncommitted** on `mockup`.
+
 ## 2026-07-13 — Live FAQ: ported draft's Q5/Q7/Q8 edits into docs/faq.html [committed + pushed]
 
 - **User: "push the faq.md questions and answers into the live faq.html."** Draft and live were identical except for a collaborator's draft-only edits (commits `f594f03`, `f13f63d`) to Q5/Q7/Q8; ported those three into `docs/faq.html` so the live page matches the draft.
