@@ -1,12 +1,13 @@
 # Progress Log
 
-## 2026-07-13 — Units on the chart y-axis ticks (closing the last bare IPI number)
+## 2026-07-13 — Units on the chart y-axis ticks (closing the last bare IPI number) [committed + pushed]
 
-- **User re-issued "add units wherever an IPI number appears."** The prior pass (below) had annotated the two dynamic readouts (tooltip, quarter inspector) and the FAQ prose but **deliberately left the chart y-axis ticks bare**, deferring the unit to the rotated axis title. The re-ask means the visible numeric scale should carry the unit too.
-- **`docs/ipi.js` (`drawChart` y-gridlines):** tagged the **top y-axis tick** with ` pts` (e.g. "500 pts") so the numeric scale itself reads as index points. Left the interior ticks bare — the top-tick unit + rotated axis title cover it, and repeating `pts` on every gridline is dataviz clutter.
-- **State now:** all three places an IPI *level* number renders carry a unit — y-axis top tick (`ipi.js:260`), hover tooltip series (`ipi.js:332`, "318.0 pts"), quarter inspector level (`ipi.js:405`, "265.6 pts"). FAQ Q3 numeric readings (130 / 90 / 96.5 / 100) already read "index points" from the prior pass; % change columns and $ gig prices already carried their own units.
-- **Verified:** `node --check docs/ipi.js` passes; the only three `pts` unit-renders are the level numbers above (the other `pts` matches are the unrelated `pts` points array in `gigChart`). No headless browser in this env; change is a literal suffix on an already-exercised render path.
-- **Status: EDITED, uncommitted** on `mockup`. Files: `docs/ipi.js`, `progress.md` (plus the prior pass's still-uncommitted `docs/faq.html`).
+- **User re-issued "add units wherever an IPI number appears," then reported "I still don't see the units."** Two causes: (1) the first attempt tagged only the **top** y-axis tick, too subtle to notice on load; (2) nothing had been **pushed** — commits sat on local `mockup` while the deployed Pages branch is `mockup` on origin.
+- **`docs/ipi.js` (`drawChart` y-gridlines):** now every y-axis tick carries ` pts` (e.g. default design view shows "100 pts / 200 pts / 300 pts"; all-categories "200…800 pts"). Widened the left margin **56 → 74** so the labels clear the rotated axis title (widest label "800 pts" left edge ≈ x25; title strip ends ≈ x19.5, verified against real `data.json` ranges).
+- **State now:** all IPI *level* renders carry a unit — every y-axis tick (`ipi.js:258`), hover tooltip series (`ipi.js` "318.0 pts"), quarter inspector level ("265.6 pts"). FAQ Q3 readings (130 / 90 / 96.5 / 100) read "index points" from the prior pass; % change columns and $ gig prices already carried their own units.
+- **Rebase note:** origin/mockup had a concurrent collaborator commit `35c3760 "Update FAQ on index reading and price changes"`; rebased my two commits on top — **clean, no conflict** (their FAQ edit touched different lines than the units work). FAQ still has 7 "index points" mentions post-rebase.
+- **Verified:** `node --check docs/ipi.js` passes; tick labels computed against real data. No headless browser in this env.
+- **Status: COMMITTED + PUSHED** on `mockup` (`fccefeb`). Files: `docs/ipi.js`, `progress.md`.
 
 ## 2026-07-13 — Units on every IPI number across the live site + FAQ
 
