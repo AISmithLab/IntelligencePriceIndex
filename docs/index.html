@@ -102,8 +102,15 @@
                        color: #fff; }
 
     /* chart ----------------------------------------------------------------- */
-    #chart { position: relative; width: 100%; margin-top: 4px; }
-    #chart svg { display: block; width: 100%; height: auto; }
+    #chart, #chart2 { position: relative; width: 100%; margin-top: 4px; }
+    #chart svg, #chart2 svg { display: block; width: 100%; height: auto; }
+    /* corrected-index chart, drawn directly under the main IPI chart */
+    .tpddivider { border-top: 1px solid var(--line); margin: 22px 0 14px; }
+    .tpdbadge { font-size: 11px; font-weight: 700; letter-spacing: .03em;
+      text-transform: uppercase; color: #2a78d6; background: #eaf2fc;
+      border: 1px solid #cfe0f6; padding: 2px 8px; border-radius: 20px;
+      vertical-align: middle; margin-left: 8px; }
+    .tpdbadge.down { color: #15803d; background: #e9f6ee; border-color: #c7e7d3; }
     .tip { position: absolute; pointer-events: none; background: #fff;
            border: 1px solid var(--line); box-shadow: 0 6px 20px -6px rgba(17,24,39,.28);
            font-size: 12px; padding: 8px 10px; border-radius: 8px; white-space: nowrap;
@@ -250,6 +257,15 @@
           <span><span class="dot" style="background:#dc2626"></span>price drop</span>
         </div>
         <ul class="movenotes" id="movenotes"></ul>
+
+        <div class="tpddivider"></div>
+        <div class="headline">
+          <h2 class="charttitle">Corrected index<span class="tpdbadge" id="tpdBadge">time-dummy</span></h2>
+          <div class="sub">Same prices and weights, timed correctly so a gig's change is spread across the
+            quarters it spanned instead of dumped into one. Composite <span id="tpdDelta"></span> here vs the
+            chained index above &middot; drift-free.</div>
+        </div>
+        <div id="chart2"><div class="tip" id="tip2"></div></div>
       </section>
 
       <section class="card tablewrap">

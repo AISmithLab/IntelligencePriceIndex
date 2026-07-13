@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-13 — Corrected (time-dummy) index shipped as a second chart under the main IPI chart
+
+- **User decision:** "right under the ipi chart create a new chart with the corrected index." Done — the live site now shows the drift-free time-dummy index directly beneath the main chained index, reacting to the same category selection.
+- **Build (`code/18-build-site-data-long.py`):** reads the TPD CSVs (`panel-/recent-category-indices-tpd.csv` from step 19), splices + re-bases them with the *same* `chain_category` logic as the Jevons pair (refactored the forward-fill/composite into reusable `aligned()` / `fill_composite()` helpers), and emits parallel `index_tpd`, `composite_tpd`, `delta_tpd` into `docs/data.json`.
+- **Site (`docs/index.html` + `docs/ipi.js`):** new `#chart2` inside the hero card under the main chart, titled "Corrected index" with a live per-basket Δ badge. New `drawChartTPD(cats)` mirrors `drawChart` visuals (pts gridlines, axis title, category lines + black composite, endpoint dots) but reads `DATA.index_tpd`, shares the global `pinned` quarter (click either chart to mark both), and has its own hover tooltip (`#tip2`). `compositeSeries(cats, src)` generalized to take a data source. Wired into `render()` so it redraws on selection/pin/resize.
+- **Verified:** `node --check` clean; `index.html` parses; client-side TPD composite recompute == build (`166.1`, `+66.1%`); resize handler (`ipi.js:696`) redraws both. No headless browser in this env, so not screenshotted — rendering code mirrors the proven `drawChart` path.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/index.html`, `docs/ipi.js`, `docs/data.json`, `code/18-build-site-data-long.py`, `progress.md`.
+
 ## 2026-07-13 — Time-dummy (TPD) index to fix misaligned-stream timing + per-quarter inspector redesign
 
 - **User goal:** the price streams per freelancer have different windows and sampling rates; they want the index to "correctly show when prices moved," and want the chart's per-quarter readout to list composite-on-top then categories A→Z.

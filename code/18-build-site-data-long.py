@@ -37,6 +37,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 PILOT = BASE_DIR / "data" / "pilot"
 HIST_CSV = PILOT / "panel-category-indices.csv"
 RECENT_CSV = PILOT / "recent-category-indices.csv"
+# Corrected (time-dummy / TPD) category indices from code/19-tpd-index.py.
+# Spliced + re-based identically to the Jevons pair; emitted as a parallel
+# `index_tpd` block so the site can draw the drift-free index under the main one.
+HIST_TPD_CSV = PILOT / "panel-category-indices-tpd.csv"
+RECENT_TPD_CSV = PILOT / "recent-category-indices-tpd.csv"
 WEIGHTS_CSV = PILOT / "recent-category-weights.csv"
 MANIFEST = PILOT / "recent-manifest.tsv"
 HIST_PRICES = PILOT / "pilot-prices.csv"     # historical extracted prices (2011->2026)
@@ -327,26 +332,44 @@ def main():
             chained[cat] = s
     cats = [c for c in CATS if c in chained]
 
-    # forward-fill within the display window so lines stay continuous across gaps
-    index = {}
-    for c in cats:
-        series, last = [], None
-        for q in qs:
-            if q in chained[c]:
-                last = round(chained[c][q], 2)
-            # None until the first observation, then forward-filled
-            first_seen = any(qq in chained[c] for qq in qs[:qs.index(q) + 1])
-            series.append(last if first_seen else None)
-        index[c] = series
+    def aligned(chained_by_cat):
+        """Forward-fill each category's chained level onto the display quarters qs
+        (None until first observed, then carried across gaps so lines stay whole)."""
+        out = {}
+        for c in cats:
+            ch = chained_by_cat.get(c, {})
+            series, last = [], None
+            for q in qs:
+                if q in ch:
+                    last = round(ch[q], 2)
+                first_seen = any(qq in ch for qq in qs[:qs.index(q) + 1])
+                series.append(last if first_seen else None)
+            out[c] = series
+        return out
 
-    comp = [composite({c: chained[c] for c in cats}, weights, q) for q in qs]
-    # forward-fill composite too (a quarter with no category coverage inherits prior)
-    filled, last = [], None
-    for v in comp:
-        if v is not None:
-            last = v
-        filled.append(round(last, 2) if last is not None else None)
-    comp = filled
+    def fill_composite(chained_by_cat):
+        comp = [composite({c: chained_by_cat[c] for c in chained_by_cat}, weights, q) for q in qs]
+        filled, last = [], None
+        for v in comp:
+            if v is not None:
+                last = v
+            filled.append(round(last, 2) if last is not None else None)
+        return filled
+
+    index = aligned(chained)
+    comp = fill_composite(chained)
+
+    # corrected (time-dummy / TPD) index — spliced + re-based the same way,
+    # aligned to the same quarters and category set for the second chart.
+    hist_tpd = read_index_csv(HIST_TPD_CSV)
+    recent_tpd = read_index_csv(RECENT_TPD_CSV)
+    chained_tpd = {}
+    for cat in cats:
+        s = chain_category(cat, hist_tpd, recent_tpd)
+        if s:
+            chained_tpd[cat] = s
+    index_tpd = aligned(chained_tpd)
+    comp_tpd = fill_composite(chained_tpd)
 
     def full_delta(series):
         a = next((v for v in series if v is not None), None)
@@ -355,6 +378,8 @@ def main():
 
     delta = {c: full_delta(index[c]) for c in cats}
     delta["composite"] = full_delta(comp)
+    delta_tpd = {c: full_delta(index_tpd[c]) for c in cats}
+    delta_tpd["composite"] = full_delta(comp_tpd)
 
     rankings, freelancers = build_rankings()
 
@@ -369,6 +394,9 @@ def main():
         "index": index,
         "composite_all": comp,
         "delta12": {k: v for k, v in delta.items()},   # now full-period change
+        "index_tpd": index_tpd,                        # corrected (time-dummy) index
+        "composite_tpd": comp_tpd,
+        "delta_tpd": delta_tpd,
         "labels": {c: LABELS[c] for c in cats},
         "colors": {c: COLORS[c] for c in cats},
         "rankings": rankings,

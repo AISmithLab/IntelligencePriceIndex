@@ -71,11 +71,11 @@ fetch("data.json").then(r => r.json()).then(data => {
 });
 
 // ---- math ------------------------------------------------------------------
-function compositeSeries(cats) {
+function compositeSeries(cats, src = DATA.index) {
   return DATA.months.map((_, i) => {
     let logSum = 0, wSum = 0;
     for (const c of cats) {
-      const v = DATA.index[c][i], w = DATA.weights[c];
+      const v = src[c] ? src[c][i] : null, w = DATA.weights[c];
       if (v && v > 0 && w > 0) { logSum += w * Math.log(v); wSum += w; }
     }
     return wSum > 0 ? Math.exp(logSum / wSum) : null;
@@ -338,6 +338,97 @@ function drawChart(cats, comp) {
 
   box.appendChild(svg);
 }
+
+// ---- corrected (time-dummy) index chart, drawn under the main IPI chart -----
+// Same categories/weights/quarters as the main chart, but reads DATA.index_tpd
+// (the drift-free, correctly-timed series). Shares the global pinned quarter.
+function drawChartTPD(cats) {
+  const box = document.getElementById("chart2");
+  if (!box || !DATA.index_tpd) return;
+  [...box.querySelectorAll("svg")].forEach(s => s.remove());
+  const tip = document.getElementById("tip2");
+  const W = box.clientWidth || 900, H = 300, m = { t: 16, r: 18, b: 30, l: 74 };
+  const months = DATA.months, n = months.length;
+  const mains = cats.filter(c => !isSub(c));
+  const showComposite = mains.length >= 2;
+  const comp = compositeSeries(mains, DATA.index_tpd);
+  const lineOp = cats.length > 10 ? 0.32 : (showComposite ? 0.5 : 0.95);
+  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index_tpd[c] || [], color: colorOf(c),
+                                  w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
+  if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1, dash: "" });
+
+  const ys = series.flatMap(s => s.vals).filter(v => v != null);
+  let lo = ys.length ? Math.min(...ys) : 95, hi = ys.length ? Math.max(...ys) : 105;
+  const pad = Math.max((hi - lo) * 0.15, 0.8); lo -= pad; hi += pad;
+  const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
+  const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
+
+  for (const t of niceTicks(lo, hi, 5)) {
+    svg.appendChild(el("line", { _svg: 1, x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t),
+      stroke: t === 100 ? "#cfcfcf" : "#eee", "stroke-width": 1, "stroke-dasharray": t === 100 ? "4 3" : "" }));
+    svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(t) + 3, "text-anchor": "end",
+      "font-size": 11, fill: "#999" }, [String(t) + " pts"]));
+  }
+  const yMid = m.t + (H - m.t - m.b) / 2;
+  svg.appendChild(el("text", { _svg: 1, x: 14, y: yMid, "text-anchor": "middle",
+    "font-size": 11, "font-weight": 600, fill: "#6b7280", transform: `rotate(-90 14 ${yMid.toFixed(1)})` },
+    [`Corrected IPI · index points (${DATA.base_period} = 100)`]));
+  const step = Math.max(1, Math.round(n / 6));
+  months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
+    svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
+      "font-size": 11, fill: "#999" }, [mo])); });
+
+  for (const s of series) {
+    let d = "", pen = false;
+    s.vals.forEach((v, i) => { if (v == null) { pen = false; return; }
+      d += `${pen ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)} `; pen = true; });
+    svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: s.color, "stroke-width": s.w,
+      opacity: s.op, "stroke-linejoin": "round", "stroke-dasharray": s.dash || "" }));
+  }
+  if (showComposite) comp.forEach((v, i) => { if (v != null) svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v), r: 2.5, fill: "#111" })); });
+
+  if (pinned != null && pinned >= 0 && pinned < n) {
+    svg.appendChild(el("line", { _svg: 1, x1: X(pinned), x2: X(pinned), y1: m.t, y2: H - m.b,
+      stroke: "#2563eb", "stroke-width": 1.4, opacity: 0.9, "stroke-dasharray": "3 3" }));
+    const pv = showComposite ? comp[pinned] : (mains.length ? (DATA.index_tpd[mains[0]] || [])[pinned] : null);
+    if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinned), cy: Y(pv), r: 4.5,
+      fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
+    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t - 4, "text-anchor": "middle",
+      "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinned]]));
+  }
+
+  const guide = el("line", { _svg: 1, y1: m.t, y2: H - m.b, stroke: "#bbb", "stroke-width": 1, opacity: 0 });
+  svg.appendChild(guide);
+  const hit = el("rect", { _svg: 1, x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent", style: "cursor:pointer" });
+  svg.appendChild(hit);
+  const idxAt = ev => { const r = svg.getBoundingClientRect(), sx = W / r.width;
+    let i = Math.round(((ev.clientX - r.left) * sx - m.l) / ((W - m.l - m.r) / (n - 1)));
+    return Math.max(0, Math.min(n - 1, i)); };
+  hit.addEventListener("click", ev => { const i = idxAt(ev); pinQuarter(pinned === i ? null : i); });
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect(), sx = W / r.width, i = idxAt(ev);
+    guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
+    const rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
+      `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
+    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· corrected (${DATA.base_period}=100)</span>${rows}`;
+    tip.style.display = "block";
+    const left = Math.min(X(i) / sx + 12, r.width - tip.offsetWidth - 6);
+    tip.style.left = Math.max(0, left) + "px";
+    tip.style.top = (ev.clientY - r.top + 12) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
+  box.appendChild(svg);
+
+  // headline delta for whatever basket is selected (composite, or the lone category)
+  const dl = document.getElementById("tpdDelta");
+  if (dl) {
+    const shown = showComposite ? comp : (mains.length ? (DATA.index_tpd[mains[0]] || []) : []);
+    const d = pctChange(shown);
+    dl.textContent = d == null ? "—" : (d > 0 ? "+" : "") + d.toFixed(1) + "%";
+    dl.className = d == null ? "" : (d < 0 ? "down" : "up");
+  }
+}
 // ---- highlighted-move descriptions (list under the chart) ------------------
 function renderMoveNotes(comp, cats) {
   const ul = document.getElementById("movenotes");
@@ -551,6 +642,7 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
+  drawChartTPD(cats);                    // corrected (time-dummy) index, drawn underneath
   renderMoveNotes(comp, mainChecked);
   renderInspector(comp, mainChecked, showComposite);
   // the highlighted-move legend only applies when composite highlights are drawn
