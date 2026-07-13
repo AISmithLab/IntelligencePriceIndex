@@ -17,6 +17,9 @@ runs/**/*.out
 # Large pilot manifests (small derived CSVs/summaries are kept)
 data/pilot/*-manifest*.tsv
 
+# Scratch / working artifacts (not deliverables)
+scratchpad/
+
 # === Python / OS cruft ===
 __pycache__/
 *.pyc

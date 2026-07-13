@@ -384,26 +384,35 @@ function initInspector() {
 }
 // Fill the readout with the composite level at the pinned quarter and its change
 // quarter-over-quarter, year-over-year (4 quarters), and versus the window base.
-function renderInspector(comp, seriesLabel = "composite") {
+function renderInspector(comp, cats = [], showComposite = false) {
   const box = document.getElementById("qreadout");
   const clr = document.getElementById("qclear");
   if (!box) return;
-  if (pinned == null) { box.innerHTML = '<span class="muted">Click the chart or pick a quarter to read its IPI level and change.</span>';
+  if (pinned == null) { box.innerHTML = '<span class="muted">Click the chart or pick a quarter to read its IPI level per category.</span>';
     clr.style.display = "none"; return; }
   clr.style.display = "";
-  const q = DATA.months[pinned], v = comp[pinned];
-  if (v == null) { box.innerHTML = `<b>${q}</b> &middot; <span class="muted">no ${seriesLabel} for the selected basket at this quarter</span>`; return; }
-  const chip = (label, cur, ref) => {
-    if (ref == null || cur == null) return `<span class="qm"><span class="ql">${label}</span><span class="qv muted">—</span></span>`;
-    const pct = (cur / ref - 1) * 100;
-    return `<span class="qm"><span class="ql">${label}</span><span class="qv ${cls(pct)}">${fmtPct(pct)}</span></span>`;
-  };
-  const base = comp.find(x => x != null);
-  box.innerHTML =
-    `<span class="qm"><span class="ql">${q} ${seriesLabel} · index</span><span class="qv lvl">${v.toFixed(1)}<span style="font-size:11px;font-weight:400;color:var(--faint)"> pts</span></span></span>` +
-    chip("QoQ", v, comp[pinned - 1]) +
-    chip("YoY", v, comp[pinned - 4]) +
-    chip(`vs ${DATA.months[0]}`, v, base);
+  const q = DATA.months[pinned];
+  const unit = '<span style="font-size:11px;font-weight:400;color:var(--faint)"> pts</span>';
+  // one readout chip: swatch + label above, index level (pts) below.
+  const chip = (label, val, color, lvl) =>
+    `<span class="qm"><span class="ql">` +
+      (color ? `<span class="swatch" style="background:${color};margin-right:4px"></span>` : "") +
+      `${label}</span><span class="qv ${lvl ? "lvl" : ""}">` +
+      (val == null ? "—" : val.toFixed(1) + unit) + `</span></span>`;
+  // Composite on top, then the selected categories in alphabetical order — each
+  // showing its own index level at the clicked quarter.
+  const ordered = [...cats].sort((a, b) => labelOf(a).localeCompare(labelOf(b)));
+  if (!showComposite && !ordered.length) {
+    box.innerHTML = `<b>${q}</b> &middot; <span class="muted">select a category to read its level at this quarter</span>`;
+    return;
+  }
+  let html = `<span class="qm"><span class="ql">Quarter</span><span class="qv" style="color:var(--ink)">${q}</span></span>`;
+  if (showComposite) html += chip("Composite", comp[pinned], "#111", true);
+  ordered.forEach(c => {
+    const s = DATA.index[c];
+    html += chip(labelOf(c), s ? s[pinned] : null, colorOf(c), false);
+  });
+  box.innerHTML = html;
 }
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
@@ -543,7 +552,7 @@ function render() {
 
   drawChart(cats, comp);                 // every checked line; composite from main only
   renderMoveNotes(comp, mainChecked);
-  renderInspector(comp, showComposite ? "composite" : (mainChecked.length ? labelOf(mainChecked[0]) : "series"));
+  renderInspector(comp, mainChecked, showComposite);
   // the highlighted-move legend only applies when composite highlights are drawn
   const note = document.getElementById("chartnote");
   if (note) note.style.display = showComposite ? "" : "none";

@@ -1,5 +1,17 @@
 # Progress Log
 
+## 2026-07-13 — Time-dummy (TPD) index to fix misaligned-stream timing + per-quarter inspector redesign
+
+- **User goal:** the price streams per freelancer have different windows and sampling rates; they want the index to "correctly show when prices moved," and want the chart's per-quarter readout to list composite-on-top then categories A→Z.
+- **Diagnostic first (`scratchpad/panel_loss.py`):** the current chained-Jevons panel (12/14) is already gap-tolerant (matches a gig to its *previous observed* quarter, not the calendar-adjacent one), so gappy gigs aren't dropped — but a multi-quarter change is attributed to the single quarter a gig reappears. Measured on real data: **26% of historical and 39% of recent price changes are such gap-spanning jumps**; 34% of historical gigs have only 1 quarter (unavoidably unusable for a *change*). So the real symptom is a **jumpy, mis-timed** index, not missing freelancers.
+- **Built the fix — `code/19-tpd-index.py` (Time-Product-Dummy regression):** per category, `ln price ~ gig fixed effect + quarter effect`, estimated by sparse least squares (scipy `lsqr`) on the **largest connected gig–quarter component** (so every quarter effect is identified vs the base). Reuses 12/14's exact panel construction (same category assignment, gig→quarter median price, ≥2-quarter filter, ≥3-gigs-per-quarter). Writes **new** CSVs (`panel-category-indices-tpd.csv`, `recent-category-indices-tpd.csv`) — the live Jevons CSVs are untouched. Splices + re-bases with 18-build's logic to compare.
+- **Result (spliced composite, 2020Q1=100):** cumulative rise **+217.7% (Jevons) → +66.1% (TPD)** — a **~3.3× overstatement**, consistent with the paper's own limitation note (chained overstates the true rise). Composite jumpiness (mean |QoQ log change|) **5.75 → 3.40 (−41%)** — the timing fix works. Caveat surfaced: thin cats (translation/audio/video) swing *more* under TPD (each quarter estimated freely, no chaining smoothness); translation even reads higher (282 vs 209) on ~26–61 gigs.
+- **Decision aid published (artifact):** overlay of the two composite lines with the drift band shaded, stat tiles, plain-language explainer, per-category landing table. https://claude.ai/code/artifact/2d4ba133-d43c-4e33-bf01-9f034efefb8e
+- **UI — per-quarter inspector (`docs/ipi.js` `renderInspector`):** rewrote so clicking a quarter now lists **Composite on top, then each selected category alphabetically**, each with its own index level (pts) at that quarter and a color swatch (was: single series with QoQ/YoY/vs-base chips). Call site passes `mainChecked`.
+- **NOT yet wired into the live site** — swapping the headline from +218% to +66% is a paper-level methodology decision; awaiting user direction on integration (replace / show both / robustness-check-only).
+- **Verified:** `node --check docs/ipi.js` passes; `19-tpd-index.py` runs clean, indices identified on connected components. `scratchpad/` added to `.gitignore`.
+- **Status:** inspector + TPD script **COMMITTED**; live index unchanged. Files: `docs/ipi.js`, `code/19-tpd-index.py`, `data/pilot/*-tpd.csv`, `.gitignore`, `progress.md`.
+
 ## 2026-07-13 — Sync new FAQ Q3 into live site + default category list to alphabetical
 
 - **Two-task request.** (1) Push the updated draft FAQ Q3 into the live `docs/faq.html`; (2) make the right-hand category selection list render in alphabetical order.
