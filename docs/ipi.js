@@ -85,32 +85,6 @@ const pctChange = s => {
   const a = s.find(v => v != null), b = [...s].reverse().find(v => v != null);
   return a && b ? (b / a - 1) * 100 : null;
 };
-// period-over-period moves worth calling out: anything past a threshold, plus the
-// single biggest rise and biggest drop so the chart always labels its extremes.
-// Threshold scales with cadence (quarterly steps are larger than monthly).
-function significantMoves(series, thresh = 4) {
-  const moves = [];
-  for (let i = 1; i < series.length; i++) {
-    if (series[i] == null || series[i - 1] == null) continue;
-    moves.push({ i, pct: (series[i] / series[i - 1] - 1) * 100 });
-  }
-  const ups = moves.filter(m => m.pct > 0), downs = moves.filter(m => m.pct < 0);
-  // threshold crossings first; the single biggest rise/drop override with a stronger label
-  const pick = new Map(moves.filter(m => Math.abs(m.pct) >= thresh)
-    .map(m => [m.i, { ...m, why: `crossed the ±${thresh}% quarter-over-quarter threshold` }]));
-  const extremes = new Set();
-  if (ups.length) { const m = ups.reduce((a, b) => b.pct > a.pct ? b : a); if (m.pct >= 0.05) { pick.set(m.i, { ...m, why: "sharpest single-quarter rise in the window" }); extremes.add(m.i); } }
-  if (downs.length) { const m = downs.reduce((a, b) => b.pct < a.pct ? b : a); if (m.pct <= -0.05) { pick.set(m.i, { ...m, why: "sharpest single-quarter drop in the window" }); extremes.add(m.i); } }
-  // over a multi-year window many quarters cross the threshold; keep only the most
-  // notable so the chart/list stay readable — always retaining the two extremes.
-  const MAX = 5;
-  let out = [...pick.values()];
-  if (out.length > MAX) {
-    out = out.sort((a, b) => (extremes.has(b.i) - extremes.has(a.i)) || (Math.abs(b.pct) - Math.abs(a.pct)))
-             .slice(0, MAX);
-  }
-  return out.sort((a, b) => a.i - b.i);
-}
 // ---- sparkline (tiny inline svg) ------------------------------------------
 function spark(values, w = 110, h = 20, color = "#888") {
   // per-series auto-scale (levels span 100→~580 across categories, so a shared
@@ -278,22 +252,9 @@ function drawChart(cats, comp) {
       "stroke-width": s.w, opacity: s.op, "stroke-linejoin": "round",
       "stroke-dasharray": s.dash || "" }));
   }
-  // composite endpoint markers + highlighted moves (only when a real basket is shown)
+  // composite endpoint markers (only when a real basket is shown)
   if (showComposite) {
     comp.forEach((v, i) => { if (v != null) svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v), r: 2.5, fill: "#111" })); });
-
-    // highlight the sharpest quarter-over-quarter moves in the composite
-    for (const mv of significantMoves(comp)) {
-      const up = mv.pct > 0, color = up ? "#15803d" : "#dc2626";
-      const x1 = X(mv.i - 1), y1 = Y(comp[mv.i - 1]), x2 = X(mv.i), y2 = Y(comp[mv.i]);
-      svg.appendChild(el("line", { _svg: 1, x1, y1, x2, y2, stroke: color,
-        "stroke-width": 4.5, "stroke-linecap": "round", opacity: 0.92 }));
-      svg.appendChild(el("circle", { _svg: 1, cx: x2, cy: y2, r: 3.6, fill: color }));
-      svg.appendChild(el("text", { _svg: 1, x: (x1 + x2) / 2, y: (y1 + y2) / 2 + (up ? -9 : 17),
-        "text-anchor": "middle", "font-size": 11, "font-weight": 700, fill: color,
-        "paint-order": "stroke", stroke: "#fff", "stroke-width": 3, "stroke-linejoin": "round" },
-        [(up ? "+" : "−") + Math.abs(mv.pct).toFixed(1) + "%"]));
-    }
   }
 
   // pinned-quarter marker: a solid vertical rule + composite dot at the quarter the
@@ -427,28 +388,6 @@ function drawChartTPD(cats) {
     const d = pctChange(shown);
     dl.textContent = d == null ? "—" : (d > 0 ? "+" : "") + d.toFixed(1) + "%";
     dl.className = d == null ? "" : (d < 0 ? "down" : "up");
-  }
-}
-// ---- highlighted-move descriptions (list under the chart) ------------------
-function renderMoveNotes(comp, cats) {
-  const ul = document.getElementById("movenotes");
-  ul.innerHTML = "";
-  if (cats.length < 2) return;   // move notes describe composite basket moves (2+ categories)
-  const moves = significantMoves(comp), months = DATA.months;
-  if (!moves.length) {
-    ul.appendChild(el("li", {}, [
-      "No single quarter moved the composite sharply over this window — changes were gradual."]));
-    return;
-  }
-  for (const mv of moves) {
-    const up = mv.pct > 0, dir = up ? "up" : "down", verb = up ? "rose +" : "fell −";
-    const li = el("li", {});
-    li.appendChild(el("span", { class: "mk", style: `background:${up ? "#15803d" : "#dc2626"}` }));
-    li.appendChild(el("span", { html:
-      `<b>${months[mv.i - 1]} → ${months[mv.i]}</b>: composite ` +
-      `<span class="${dir}">${verb}${Math.abs(mv.pct).toFixed(1)}%</span> ` +
-      `quarter-over-quarter — ${mv.why}.` }));
-    ul.appendChild(li);
   }
 }
 // ---- quarter inspector: pick a specific quarter/year, read off the IPI change ----
@@ -642,12 +581,8 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
-  drawChartTPD(cats);                    // corrected (fixed-effects) index, drawn underneath
-  renderMoveNotes(comp, mainChecked);
+  drawChartTPD(cats);                    // fixed-effects index, drawn in its own card below
   renderInspector(comp, mainChecked, showComposite);
-  // the highlighted-move legend only applies when composite highlights are drawn
-  const note = document.getElementById("chartnote");
-  if (note) note.style.display = showComposite ? "" : "none";
 
   const tb = document.getElementById("rows"); tb.innerHTML = "";
   const order = sortedCats().filter(c => !isSub(c));

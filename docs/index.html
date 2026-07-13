@@ -46,12 +46,6 @@
     .hero .headline { margin-bottom: 12px; }
     .headline .charttitle { font-size: 17px; font-weight: 800; color: var(--ink);
       letter-spacing: -0.01em; margin: 0; }
-    .chartnote { font-size: 11.5px; color: var(--mut); margin-top: 10px;
-                 display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .chartnote .dot { display: inline-block; width: 18px; height: 3px; border-radius: 2px;
-                      margin-right: 6px; vertical-align: 2px; }
-    .chartnote .dash { display: inline-block; width: 18px; border-top: 2px dashed #8a90a0;
-                       margin-right: 6px; vertical-align: 4px; }
     /* quarter inspector -------------------------------------------------- */
     .inspect { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
                margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line, #eef0f3); }
@@ -65,14 +59,6 @@
     .qm .qv.lvl { color: #2563eb; }
     .readout .up { color: var(--up); } .readout .down { color: var(--down); }
     .qclear { font-size: 11.5px; color: var(--mut); cursor: pointer; text-decoration: underline; }
-    .movenotes { list-style: none; margin: 11px 0 2px; padding: 0; display: grid; gap: 6px;
-                 font-size: 12.5px; color: var(--mut); }
-    .movenotes li { display: flex; gap: 9px; align-items: baseline; line-height: 1.45; }
-    .movenotes .mk { flex: none; width: 8px; height: 8px; border-radius: 50%;
-                     transform: translateY(1px); }
-    .movenotes b { color: var(--ink); font-weight: 700; }
-    .movenotes .up { color: var(--up); font-weight: 600; }
-    .movenotes .down { color: var(--down); font-weight: 600; }
 
     /* side-by-side layout: chart (left) + category selection (right) -------- */
     .layout { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr);
@@ -104,13 +90,9 @@
     /* chart ----------------------------------------------------------------- */
     #chart, #chart2 { position: relative; width: 100%; margin-top: 4px; }
     #chart svg, #chart2 svg { display: block; width: 100%; height: auto; }
-    /* corrected-index chart, drawn directly under the main IPI chart */
-    .tpddivider { border-top: 1px solid var(--line); margin: 22px 0 14px; }
-    .tpdbadge { font-size: 11px; font-weight: 700; letter-spacing: .03em;
-      text-transform: uppercase; color: #2a78d6; background: #eaf2fc;
-      border: 1px solid #cfe0f6; padding: 2px 8px; border-radius: 20px;
-      vertical-align: middle; margin-left: 8px; }
-    .tpdbadge.down { color: #15803d; background: #e9f6ee; border-color: #c7e7d3; }
+    /* fixed-effects index — its own full-width card, separate from the main chart */
+    .fxwrap { padding: 20px 22px 18px; margin-top: 18px; }
+    .fxwrap .headline { margin-bottom: 12px; }
     .tip { position: absolute; pointer-events: none; background: #fff;
            border: 1px solid var(--line); box-shadow: 0 6px 20px -6px rgba(17,24,39,.28);
            font-size: 12px; padding: 8px 10px; border-radius: 8px; white-space: nowrap;
@@ -251,21 +233,6 @@
           <div id="qreadout" class="readout"></div>
           <a id="qclear" class="qclear" style="display:none">clear</a>
         </div>
-        <div class="chartnote" id="chartnote">
-          <span>Highlighted = sharpest quarter-over-quarter moves in the composite:</span>
-          <span><span class="dot" style="background:#15803d"></span>price rise</span>
-          <span><span class="dot" style="background:#dc2626"></span>price drop</span>
-        </div>
-        <ul class="movenotes" id="movenotes"></ul>
-
-        <div class="tpddivider"></div>
-        <div class="headline">
-          <h2 class="charttitle">Corrected index<span class="tpdbadge" id="tpdBadge">fixed-effects</span></h2>
-          <div class="sub">Same prices and weights, timed correctly so a gig's change is spread across the
-            quarters it spanned instead of dumped into one. Composite <span id="tpdDelta"></span> here vs the
-            chained index above &middot; drift-free.</div>
-        </div>
-        <div id="chart2"><div class="tip" id="tip2"></div></div>
       </section>
 
       <section class="card tablewrap">
@@ -293,6 +260,17 @@
         </table>
       </section>
     </div>
+
+    <section class="card fxwrap">
+      <div class="headline">
+        <h2 class="charttitle">Intelligence Price Index (Fixed Effects)</h2>
+        <div class="sub">Same prices and weights as the index above, but timed correctly — each gig's price
+          change is spread across the quarters it actually spanned instead of dumped into the one quarter it
+          reappears, removing accumulated chain drift. Composite change over the window:
+          <span id="tpdDelta"></span>. Reacts to the same category selection.</div>
+      </div>
+      <div id="chart2"><div class="tip" id="tip2"></div></div>
+    </section>
 
     <p class="notes" id="caveat"></p>
     <footer id="src"></footer>

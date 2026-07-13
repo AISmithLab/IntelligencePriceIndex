@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-13 — Clean the charts: separate the fixed-effects chart, drop the quarter-move legend
+
+- **User (chart cleanup):** (1) fully separate the fixed-effects chart from the main IPI chart; (2) title it "Intelligence Price Index (Fixed Effects)"; (3) delete the quarter legend under the main chart, keep only category legends. Maps to the professor's "clean the chart" item.
+- **Separated the fixed-effects chart:** moved `#chart2` out of the hero card into its **own full-width `.card` (`.fxwrap`)** below the whole `layout` grid (was nested under the main chart inside one card). Retitled **"Intelligence Price Index (Fixed Effects)"** (dropped the `fixed-effects` badge — redundant with the title). Now full-width so it renders wider/cleaner. `#chart2`/`#tip2`/`#tpdDelta` IDs preserved so JS is unchanged in behavior.
+- **Removed the quarter-move highlighting feature from the main chart** (that was the "quarter legend"): deleted the `#chartnote` green/red rise/drop legend, the on-chart green/red QoQ move segments+labels in `drawChart`, and the `#movenotes` narrative list. The **category identification (per-quarter readout with swatches + the selection table) stays** — that's the category legend the user wanted kept. Removed now-dead JS (`significantMoves`, `renderMoveNotes`) and orphaned CSS (`.chartnote`, `.movenotes`, `.tpdbadge`, `.tpddivider`).
+- **Verified:** `node --check` clean; `index.html` parses; no dangling refs to any removed id/class/function; required IDs present.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/index.html`, `docs/ipi.js`, `progress.md`.
+
 ## 2026-07-13 — Corrected (time-dummy) index shipped as a second chart under the main IPI chart
 
 - **User decision:** "right under the ipi chart create a new chart with the corrected index." Done — the live site now shows the drift-free time-dummy index directly beneath the main chained index, reacting to the same category selection.
