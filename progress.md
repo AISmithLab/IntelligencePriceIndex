@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-13 — Revert over-deletion: restore main-chart content; fixed-effects chart same size as main
+
+- **Correction:** the prior "clean the charts" pass over-deleted — I removed the on-chart quarter-move highlights AND the `#movenotes` narrative list under the main IPI chart, but the user only meant to remove the *legend*, not the lines. Restored `docs/index.html` + `docs/ipi.js` from commit `705c3ae` (brings back `chartnote`, `movenotes`, `significantMoves`, `renderMoveNotes`, and the on-chart highlight markers), then re-applied only the wanted changes on top.
+- **Fixed-effects chart = separate card, same size as main:** wrapped the main-chart card and the fixed-effects card in a `.leftcol` flex column (both 1.45fr → equal width); the category table is the right column. Retitled the bottom chart **"Intelligence Price Index (Fixed Effects)"** (badge dropped). Set `drawChartTPD` height `300 → 420` to match the main chart. Removed the now-unused `.tpddivider`/`.tpdbadge` CSS.
+- **Left the main chart fully intact** — quarter-move highlights, the rise/drop legend, and the move-notes list are all back. Did NOT re-remove the "quarter legend" this round; need the user to point at exactly which element they meant.
+- **Verified:** `node --check` clean; `index.html` parses; no dangling `tpdBadge`/`tpddivider` refs; `chartnote`/`movenotes` present; `#chart2`/`#tpdDelta`/`leftcol` present.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/index.html`, `docs/ipi.js`, `progress.md`.
+
 ## 2026-07-13 — Clean the charts: separate the fixed-effects chart, drop the quarter-move legend
 
 - **User (chart cleanup):** (1) fully separate the fixed-effects chart from the main IPI chart; (2) title it "Intelligence Price Index (Fixed Effects)"; (3) delete the quarter legend under the main chart, keep only category legends. Maps to the professor's "clean the chart" item.
