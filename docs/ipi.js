@@ -250,11 +250,14 @@ function drawChart(cats, comp) {
 
   // y gridlines + labels
   const ticks = niceTicks(lo, hi, 5);
+  // tag the top tick with the unit so the numeric scale itself reads as index
+  // points (the rotated axis title repeats it; every gridline would be clutter).
+  const topTick = ticks.length ? Math.max(...ticks) : null;
   for (const t of ticks) {
     svg.appendChild(el("line", { _svg: 1, x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t),
       stroke: t === 100 ? "#cfcfcf" : "#eee", "stroke-width": 1, "stroke-dasharray": t === 100 ? "4 3" : "" }));
     svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(t) + 3, "text-anchor": "end",
-      "font-size": 11, fill: "#999" }, [String(t)]));
+      "font-size": 11, fill: "#999" }, [t === topTick ? String(t) + " pts" : String(t)]));
   }
   // y-axis unit title: IPI is an index (base_period = 100), so label the axis units.
   const yMid = m.t + (H - m.t - m.b) / 2;
@@ -326,7 +329,7 @@ function drawChart(cats, comp) {
     i = Math.max(0, Math.min(n - 1, i));
     guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
     let rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
-      `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b></div>`).join("");
+      `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
     tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· IPI (${DATA.base_period}=100)</span>${rows}`;
     tip.style.display = "block";
     const tx = X(i) / sx, left = Math.min(tx + 12, r.width - tip.offsetWidth - 6);
@@ -399,7 +402,7 @@ function renderInspector(comp, seriesLabel = "composite") {
   };
   const base = comp.find(x => x != null);
   box.innerHTML =
-    `<span class="qm"><span class="ql">${q} ${seriesLabel} · index</span><span class="qv lvl">${v.toFixed(1)}<span style="font-size:11px;font-weight:400;color:var(--faint)"> idx</span></span></span>` +
+    `<span class="qm"><span class="ql">${q} ${seriesLabel} · index</span><span class="qv lvl">${v.toFixed(1)}<span style="font-size:11px;font-weight:400;color:var(--faint)"> pts</span></span></span>` +
     chip("QoQ", v, comp[pinned - 1]) +
     chip("YoY", v, comp[pinned - 4]) +
     chip(`vs ${DATA.months[0]}`, v, base);

@@ -1,5 +1,25 @@
 # Progress Log
 
+## 2026-07-13 — Units on the chart y-axis ticks (closing the last bare IPI number)
+
+- **User re-issued "add units wherever an IPI number appears."** The prior pass (below) had annotated the two dynamic readouts (tooltip, quarter inspector) and the FAQ prose but **deliberately left the chart y-axis ticks bare**, deferring the unit to the rotated axis title. The re-ask means the visible numeric scale should carry the unit too.
+- **`docs/ipi.js` (`drawChart` y-gridlines):** tagged the **top y-axis tick** with ` pts` (e.g. "500 pts") so the numeric scale itself reads as index points. Left the interior ticks bare — the top-tick unit + rotated axis title cover it, and repeating `pts` on every gridline is dataviz clutter.
+- **State now:** all three places an IPI *level* number renders carry a unit — y-axis top tick (`ipi.js:260`), hover tooltip series (`ipi.js:332`, "318.0 pts"), quarter inspector level (`ipi.js:405`, "265.6 pts"). FAQ Q3 numeric readings (130 / 90 / 96.5 / 100) already read "index points" from the prior pass; % change columns and $ gig prices already carried their own units.
+- **Verified:** `node --check docs/ipi.js` passes; the only three `pts` unit-renders are the level numbers above (the other `pts` matches are the unrelated `pts` points array in `gigChart`). No headless browser in this env; change is a literal suffix on an already-exercised render path.
+- **Status: EDITED, uncommitted** on `mockup`. Files: `docs/ipi.js`, `progress.md` (plus the prior pass's still-uncommitted `docs/faq.html`).
+
+## 2026-07-13 — Units on every IPI number across the live site + FAQ
+
+- **User: "add units to wherever an ipi number appears."** An IPI value is a dimensionless index (base 2020Q1 = 100), so the unit is **index points** (abbreviated **pts** on inline numbers). Some spots already carried a unit (y-axis title "IPI · index points", caption "Index level in index points", inspector "idx"); this pass covers the bare numbers and unifies the abbreviation.
+- **`docs/ipi.js`:**
+  - *Chart hover tooltip* (`drawChart`) — each per-series value was bare (e.g. "Design: 318.0"); now suffixed `pts` ("Design: 318.0 pts"). The tooltip header already noted "· IPI (base=100)".
+  - *Quarter inspector level* (`renderInspector`) — unified the unit token from **idx → pts** so every inline index number reads the same way. (Level readout now "265.6 pts".)
+  - Left the **y-axis tick labels bare on purpose** — the rotated axis title "IPI · index points (2020Q1 = 100)" carries the unit; repeating it on every tick is clutter (dataviz convention). SVG path coordinates and the `%`/weight figures were already correct.
+- **`docs/faq.html` (Q3, Q8 Step 2, Q9, Q18 caveats):** added **"index points"** to the bare index readings in prose — the 130 / 90 example readings and the 96.5 translation dip in Q3, the "base quarter fixed at 100" definition (Step 2), "a reading above 100" (Q9), and the thin-category "held at 100" caveat (Q18). Baseline `100` mentions that a reader might land on directly (via FAQ anchors) each got the unit once.
+- **Scope:** live site (`docs/index.html`, `docs/ipi.js`) + `docs/faq.html`. Did **not** touch the academic paper draft (`drafts/`), where index figures follow a different prose convention — extendable on request.
+- **Verified:** `node --check docs/ipi.js` passes; `docs/faq.html` parses clean (`html.parser`); swept all `toFixed(1)` renders — the only two displayed index-level numbers (tooltip series, inspector level) now carry `pts`, everything else is coordinates or already-`%` figures. No headless browser in this env, so not screenshotted; changes are literal text appended to already-exercised render paths.
+- **Status: EDITED, uncommitted** on `mockup`. Files: `docs/ipi.js`, `docs/faq.html`, `progress.md`.
+
 ## 2026-07-13 — FAQ Q3: clarified the above/below-100 reading so it doesn't imply below-100 lines exist
 
 - **User confusion:** Q3 explained "above 100 / below 100" as if the reader would see it on the chart, but in the pilot every series starts at 100 and fans *upward* — nothing meaningful sits below 100 — so the framing read as disconnected from the actual line chart.
