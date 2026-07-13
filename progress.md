@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-13 — Sync new FAQ Q3 into live site + default category list to alphabetical
+
+- **Two-task request.** (1) Push the updated draft FAQ Q3 into the live `docs/faq.html`; (2) make the right-hand category selection list render in alphabetical order.
+- **Q3 sync (`docs/faq.html`):** commit `35c3760 "Update FAQ on index reading and price changes"` had rewritten `drafts/sections/faq.md` Q3 into a tighter two-paragraph version (drops the above/below-100 bullet list; leads with "a level records the cumulative percentage change… rather than a dollar amount," then a second paragraph on reading the *ordering* not the height). The live page still carried the older bullet version. Replaced the live Q3 with the draft text, keeping the site's conventions: `index points` unit on the 130 reading, and the `#inflation` / `#caveats` anchor links (draft's "inflation" and "limitations" mentions).
+- **Alphabetical categories (`docs/ipi.js`):** default sort was `sortK = "delta"` (largest movers first). Changed the default to `sortK = "name"` so the list opens A→Z (audio, coding, design, marketing, translation, video, writing); the clickable column headers still let a user re-sort by Δ / weight / gigs. Also switched the nested subcategory detail lines from delta-order to `labelOf().localeCompare()` so drill-downs are alphabetical too (no subs in the current broad-category `data.json`, but correct for narrow builds).
+- **Verified:** `node --check docs/ipi.js` passes; `data.json` categories are all main-level and already stored alphabetically, so the A→Z render is confirmed by inspection. No headless browser in this env.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/faq.html`, `docs/ipi.js`, `progress.md`.
+
 ## 2026-07-13 — Units on the chart y-axis ticks (closing the last bare IPI number) [committed + pushed]
 
 - **User re-issued "add units wherever an IPI number appears," then reported "I still don't see the units."** Two causes: (1) the first attempt tagged only the **top** y-axis tick, too subtle to notice on load; (2) nothing had been **pushed** — commits sat on local `mockup` while the deployed Pages branch is `mockup` on origin.

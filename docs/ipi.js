@@ -1,7 +1,7 @@
 // Intelligence Price Index — CSRankings-style, self-contained (no external libs).
 // Data contract: see site/README.md. Composite math mirrors composite() in code/14-recent-ipi.py.
 
-let DATA, checked, sortK = "delta", sortDir = 1;     // 1 = ascending (most deflationary first)
+let DATA, checked, sortK = "name", sortDir = 1;      // default: categories A→Z
 const open = new Set();
 let pinned = null;                                    // quarter index the user is inspecting (or null)
 // Per-seller gig price histories live in a separate freelancers.json (a few hundred
@@ -556,7 +556,7 @@ function render() {
     if (open.has(c)) tb.appendChild(rankingRow(c));
 
     // nested subcategory detail lines under this domain
-    subsOf(c).sort((a, b) => (DATA.delta12[a] ?? 0) - (DATA.delta12[b] ?? 0))
+    subsOf(c).sort((a, b) => labelOf(a).localeCompare(labelOf(b)))
       .forEach(sc => tb.appendChild(catRow(sc, null, true)));
   });
 
