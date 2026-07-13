@@ -135,8 +135,8 @@
         <li><a href="#period">What window does the chart cover, and can I see ChatGPT or COVID in it?</a></li>
         <li><a href="#priced">What is priced, and how are the categories chosen?</a></li>
         <li><a href="#data">Where does the data come from?</a></li>
-        <li><a href="#whyrevealed">Why revealed Fiverr prices rather than surveys, wage data, or Upwork?</a></li>
-        <li><a href="#formulas">How is the index calculated? (the formulas)</a></li>
+        <li><a href="#whyrevealed">Why revealed Fiverr prices rather than surveys or wage data?</a></li>
+        <li><a href="#formulas">How is the index calculated?</a></li>
         <li><a href="#inflation">Are these prices adjusted for inflation?</a></li>
         <li><a href="#weights">How are the category weights set?</a></li>
         <li><a href="#geo">Why geometric means, and can a few sellers distort the index?</a></li>
@@ -227,20 +227,20 @@
       <h3>5. What is priced, and how are the categories chosen?</h3>
       <p>The unit of observation is a <b>gig</b>, meaning a single well-defined task offered at a posted
       price, for instance "design a minimalist logo" or "translate 500 words from English to Spanish."
-      Prices are read from the <b>Basic</b> tier. Three properties make such prices well suited to an
-      index. They are revealed rather than reported: sellers set them in response to competition, not in
-      answer to a survey. Because a gig denotes a standardized task, its price can be followed across
-      periods much as a CPI item is. Each observation, finally, counts only against the same gig's own
-      earlier price, which isolates genuine price movement from shifts in the mix of sellers.</p>
+      Prices include the <b>Basic</b> tier, the <b>Standard</b> tier, and the <b>Premium</b> tier. Because
+      a gig denotes a standardized task, its price can be followed across periods much as a CPI item is.
+      Each observation, finally, counts only against the same gig's own earlier price, which isolates
+      genuine price movement from shifts in the mix of sellers.</p>
       <p>Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and
-      translation. A category qualifies on two grounds. Its work must recur as a standardized posted-price
-      gig across many sellers, so that individual gigs can be matched to their own histories. It must also
-      be plausibly exposed to generative AI, meaning something these models can increasingly do or assist
-      with. Each gig is assigned to a category from its archived page. Work that is largely manual,
-      performed in person, or not cleanly packaged as a fixed-price gig, such as data entry, virtual
-      assistance, or general consulting, falls outside the index, either because it resists standardized
-      pricing or because its exposure to AI differs in kind. The set is expected to expand and makes no
-      claim that these seven exhaust the AI-exposed portion of knowledge work.</p>
+      translation. Each individual freelancer's subcategory is also graphed so its own price change can be
+      observed over time. A category qualifies on two grounds. Its work must recur as a standardized
+      posted-price gig across many sellers, so that individual gigs can be matched to their own histories.
+      It must also be plausibly exposed to generative AI, meaning something these models can increasingly
+      do or assist with. Each gig is assigned to a category from its archived page. Work that is largely
+      manual, performed in person, or not cleanly packaged as a fixed-price gig, such as data entry,
+      virtual assistance, or general consulting, falls outside the index, either because it resists
+      standardized pricing or because its exposure to AI differs in kind. The set is expected to expand and
+      makes no claim that these seven exhaust the AI-exposed portion of knowledge work.</p>
     </div>
 
     <!-- 6 -->
@@ -298,7 +298,7 @@
 
     <!-- 7 -->
     <div class="q" id="whyrevealed">
-      <h3>7. Why revealed Fiverr prices rather than surveys, wage data, or Upwork?</h3>
+      <h3>7. Why revealed Fiverr prices rather than surveys or wage data?</h3>
       <p>Three alternatives suggest themselves, and each falls short for this purpose. Surveys record what
       respondents <i>believe</i> prices are doing, a signal that recall, sentiment, and the composition of
       those who answer can all colour. Posted prices carry none of that mediation. Official wage
@@ -307,20 +307,11 @@
       "a minimalist logo" or "500 words from English to Spanish" within them. Fiverr's packaged, posted
       prices supply exactly that: a <b>task-level list price that can be matched to its own past</b>,
       quarter after quarter.</p>
-      <p>Fiverr is preferred over Upwork on two practical grounds. Its gigs carry explicit fixed tiers
-      (Basic, Standard, Premium) that sellers set in advance, giving each gig a clean, comparable price
-      point to follow from quarter to quarter. Upwork engagements are mostly negotiated by the hour or by
-      the project, leaving no single posted list price to track. The Wayback Machine's archive of Fiverr
-      pages is also unusually deep, reaching back before generative AI and offering a baseline that
-      comparable coverage of posted prices elsewhere does not match. The index treats Fiverr as the
-      measuring instrument for a price that participants on both platforms care about, and extending
-      coverage to other marketplaces remains future work. The cost of this choice, one marketplace and
-      list rather than transacted prices, is set out in the <a href="#caveats">limitations</a>.</p>
     </div>
 
     <!-- 11 -->
     <div class="q" id="formulas">
-      <h3>8. How is the index calculated? (the formulas)</h3>
+      <h3>8. How is the index calculated?</h3>
       <p>The IPI is a <b>matched-model index</b> assembled in three steps, following the approach the BLS
       applies to CPI items that are difficult to quality-adjust. A fourth step turns the resulting level
       into the reported change. The composite is recomputed <i>live</i> in the browser whenever the basket

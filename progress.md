@@ -1,5 +1,16 @@
 # Progress Log
 
+## 2026-07-13 — Live FAQ: ported draft's Q5/Q7/Q8 edits into docs/faq.html [committed + pushed]
+
+- **User: "push the faq.md questions and answers into the live faq.html."** Draft and live were identical except for a collaborator's draft-only edits (commits `f594f03`, `f13f63d`) to Q5/Q7/Q8; ported those three into `docs/faq.html` so the live page matches the draft.
+  - **Q5:** now states prices "include the Basic, Standard, and Premium tier" (was Basic-only); added the "each individual freelancer's subcategory is also graphed" sentence. Light copyedit of mechanical slips (comma splice, "over the time"→"over time", subject agreement); synced the same wording back into the draft.
+  - **Q7:** dropped "or Upwork" from the heading and removed the Fiverr-vs-Upwork paragraph (kept the surveys/wage-data content).
+  - **Q8:** heading now "How is the index calculated?" (dropped "(the formulas)"). Updated both matching TOC entries in the HTML and the draft's TOC.
+- **Verified:** 15 `<h3>`, clean `html.parser` parse, 5 math blocks + 2 Q6 tables intact, TOC anchors == section ids in order.
+- **⚠ Known inconsistency (flagged to user):** Q5's new tier claim contradicts Q6/Q8, which still describe extracting/using the **Basic** price (matches the actual pipeline and `data.json`). Left Q6/Q8 as-is pending user direction on whether the index truly now uses all three tiers.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/faq.html`, `drafts/sections/faq.md`.
+
+
 ## 2026-07-12 — Live FAQ: rewrote all answers, merged 21→15 questions, fixed stale framing [committed + pushed]
 
 - **User: "read the FAQ section, check updates needed for each question, combine questions where sensible, rewrite answers more informatively"** under 11 style rules (no dashes; sparing semicolons; no "it is worth noting / in conclusion / crucial"; no general-specific-general paragraphs; no symmetrical sentence structures; natural cautious academic prose; varied sentence structure; preserved rigor/terminology/formulas).

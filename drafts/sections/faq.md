@@ -83,14 +83,15 @@ these other forces is the task of the accompanying paper, and the relevant limit
 
 ### 5. What is priced, and how are the categories chosen?
 The unit of observation is a **gig**, meaning a single well-defined task offered at a posted price, for
-instance "design a minimalist logo" or "translate 500 words from English to Spanish." Prices include 
-the **Basic** tier, the **Standard** tier, and the **Premium** tier. A gig denotes a standardized task, its 
-price can be followed across periods much as a CPI item is. Each observation, finally, counts only against 
-the same gig's own earlier price, which isolates genuine price movement from shifts in the mix of sellers.
+instance "design a minimalist logo" or "translate 500 words from English to Spanish." Prices include the
+**Basic** tier, the **Standard** tier, and the **Premium** tier. Because a gig denotes a standardized task,
+its price can be followed across periods much as a CPI item is. Each observation, finally, counts only
+against the same gig's own earlier price, which isolates genuine price movement from shifts in the mix of
+sellers.
 
-Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and translation. 
-Each individual freelancer's subcategory is also graphed to observe its own price change over the time.
-Seven categories qualify on two grounds. Its work must recur as a standardized posted-price gig across many
+Seven categories are tracked at present: design, writing, marketing, coding, video, audio, and translation.
+Each individual freelancer's subcategory is also graphed so its own price change can be observed over time.
+A category qualifies on two grounds. Its work must recur as a standardized posted-price gig across many
 sellers, so that individual gigs can be matched to their own histories. It must also be plausibly exposed
 to generative AI, meaning something these models can increasingly do or assist with. Each gig is assigned to
 a category from its archived page. Work that is largely manual, performed in person, or not cleanly packaged
@@ -133,7 +134,7 @@ Q1 (twenty-five quarters). The `Gigs` column on the index page reports how many 
 category. Because the sample is pilot-scale, the limitations below should temper any strong reading of an
 individual category.
 
-### 7. Why revealed Fiverr prices rather than surveys, wage data?
+### 7. Why revealed Fiverr prices rather than surveys or wage data?
 Three alternatives suggest themselves, and each falls short for this purpose. Surveys record what
 respondents *believe* prices are doing, a signal that recall, sentiment, and the composition of those who
 answer can all colour. Posted prices carry none of that mediation. Official wage statistics, such as the BLS
@@ -279,8 +280,8 @@ on Fiverr and Upwork improve it.
 4. What window does the chart cover, and can I see ChatGPT or COVID in it?
 5. What is priced, and how are the categories chosen?
 6. Where does the data come from?
-7. Why revealed Fiverr prices rather than surveys, wage data, or Upwork?
-8. How is the index calculated? (the formulas)
+7. Why revealed Fiverr prices rather than surveys or wage data?
+8. How is the index calculated?
 9. Are these prices adjusted for inflation?
 10. How are the category weights set?
 11. Why geometric means, and can a few sellers distort the index?
