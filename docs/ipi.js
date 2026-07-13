@@ -339,7 +339,7 @@ function drawChart(cats, comp) {
   box.appendChild(svg);
 }
 
-// ---- corrected (time-dummy) index chart, drawn under the main IPI chart -----
+// ---- corrected (fixed-effects) index chart, drawn under the main IPI chart -----
 // Same categories/weights/quarters as the main chart, but reads DATA.index_tpd
 // (the drift-free, correctly-timed series). Shares the global pinned quarter.
 function drawChartTPD(cats) {
@@ -642,7 +642,7 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
-  drawChartTPD(cats);                    // corrected (time-dummy) index, drawn underneath
+  drawChartTPD(cats);                    // corrected (fixed-effects) index, drawn underneath
   renderMoveNotes(comp, mainChecked);
   renderInspector(comp, mainChecked, showComposite);
   // the highlighted-move legend only applies when composite highlights are drawn
