@@ -228,7 +228,7 @@ function drawChart(cats, comp) {
   const box = document.getElementById("chart");
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
   const tip = document.getElementById("tip");
-  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 56 };
+  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 74 };
   const months = DATA.months, n = months.length;
 
   // The composite is only meaningful for a basket of 2+ categories; with a single
@@ -248,16 +248,14 @@ function drawChart(cats, comp) {
 
   const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
 
-  // y gridlines + labels
+  // y gridlines + labels — every tick carries the "pts" unit so the numeric scale
+  // reads as index points at a glance (the rotated axis title spells it out in full).
   const ticks = niceTicks(lo, hi, 5);
-  // tag the top tick with the unit so the numeric scale itself reads as index
-  // points (the rotated axis title repeats it; every gridline would be clutter).
-  const topTick = ticks.length ? Math.max(...ticks) : null;
   for (const t of ticks) {
     svg.appendChild(el("line", { _svg: 1, x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t),
       stroke: t === 100 ? "#cfcfcf" : "#eee", "stroke-width": 1, "stroke-dasharray": t === 100 ? "4 3" : "" }));
     svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(t) + 3, "text-anchor": "end",
-      "font-size": 11, fill: "#999" }, [t === topTick ? String(t) + " pts" : String(t)]));
+      "font-size": 11, fill: "#999" }, [String(t) + " pts"]));
   }
   // y-axis unit title: IPI is an index (base_period = 100), so label the axis units.
   const yMid = m.t + (H - m.t - m.b) / 2;
