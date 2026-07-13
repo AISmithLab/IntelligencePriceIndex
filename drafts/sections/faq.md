@@ -52,24 +52,8 @@ time. All prices come from a single marketplace (Fiverr, described below), thoug
 are standard across both Fiverr and Upwork.
 
 ### 3. How do I read the index and the change column?
-Every series starts at exactly `100` in the base quarter, **2020 Q1**, so the chart is read relative to that
-common starting point rather than as an absolute price. The dashed line at `100` marks that baseline; each
-series is above or below it by however much the posted price of its basket has changed since the start of
-2020. A reading of 130, for instance, sits 30% above the baseline, and one of 90 sits 10% below it. The
-table restates each series' latest level as a cumulative change in the column marked **Δ'20–'26**, ordered
-so the largest movers appear first. The chart opens on a single category rather than the full basket, since a
-composite of one line carries no information. Selecting two or more categories rebuilds the composite from
-their weighted indices and draws it alongside them.
-
-The baseline is what gives the level its meaning. A series **above 100** means nominal prices rose since
-2020, which can follow from general inflation or from AI *complementing* rather than displacing the worker. A
-series **below 100** means the reverse, the pattern one would anticipate where automation substitutes for the
-task. Because every series is pinned to 100 at the left edge, the categories all begin together and then fan
-apart, and in this pilot they fan *upward* — every category ends well above its 2020 baseline, some several
-times over. So the below-100 case is the general reading rule rather than something the current chart puts on
-display; the one brush with it is translation dipping to 96.5 for a single quarter in late 2020 before
-recovering. Prices being up across the board is exactly why the notes on inflation and on index drift bear
-directly on how these levels should be read before any conclusion is drawn from a single number.
+Every series is set to 100 in the base quarter, **2020 Q1**, so a level records the cumulative percentage change in a category's posted prices since then rather than a dollar amount. A reading of 130 places current list prices 30% above their 2020 level, and the **Δ'20–'26** column reports that figure for the latest quarter, largest movers first. The chart opens on a single category, since a composite of one line is uninformative; selecting further categories rebuilds the weighted composite and draws it alongside them.
+What the levels track is the price of work that generative AI performs with increasing competence. In this pilot every category has risen, several to three or four times their 2020 level, so an AI effect is to be sought in the ordering rather than in the height of any one line. Translation, writing, and coding, the tasks language models address most directly, occupy the bottom of the change column, while audio, video, and marketing occupy the top. A category rising more slowly than its neighbours, or more slowly than prices in general, is where substitution is most plausible; a steep rise is more consistent with AI complementing the seller. The figures are nominal and the levels are chained, so consult inflation and limitations before drawing a conclusion from a single number.
 
 ### 4. What window does the chart cover, and can I see ChatGPT or COVID in it?
 The series runs quarterly from **2020 Q1 to 2026 Q1**, twenty-five quarters in all, indexed to `100` at the
