@@ -53,7 +53,7 @@ FREELANCERS_OUT = BASE_DIR / "docs" / "freelancers.json"  # per-seller gig price
 START_Q = "2020Q1"          # first displayed quarter
 START_YEAR = 2020           # rankings count gigs observed in this year or later
 LINK_Q = "2024Q3"           # shared quarter used to splice recent onto historical
-TOP_N = 25                  # freelancers listed per category ranking
+TOP_N = 100                 # freelancers listed per category ranking
 
 # Fiverr URL path segments that are NOT seller handles (landing/section pages).
 # gig_id is "seller/slug"; when the first segment is one of these it's not a gig.

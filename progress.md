@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-14 — Quarter readout = composite + 7 categories; push pending changes live
+
+- **Quarter-click readout redesign (`docs/ipi.js`):** after the user clarified, `renderInspector` now lists **Composite first, then all 7 categories in alphabetical order**, each with its index level (pts) at the clicked quarter; the repeated quarter block is gone (the dropdown already shows it). Composite = full 7-category composite (selection-independent snapshot). (Note: earlier this session I reverted the readout to the original QoQ/YoY/vs-base percentages at the user's request, then they clarified they wanted the composite+categories layout — this is the reconciled final form.)
+- **"Push to the actual website":** confirmed the live site is **https://aismithlab.com/IntelligencePriceIndex/** (custom domain) and **deploys from `mockup`** — it already served the Fixed-Effects chart / `leftcol` / `chart2`, so all earlier pushes were already live. Committed + pushed the remaining pending work.
+- **Pending work shipped:** (1) `docs/index.html` — a "How to read the units" explainer paragraph in the header (index points vs dollars, base 2020Q1=100, levels-in-points/changes-in-percent) + its `.units` CSS. (2) `code/18-build-site-data-long.py` — `TOP_N` 25 → 100 (more freelancers per category ranking; addresses the professor's "cover more freelancer" item). (3) Rebuilt `docs/data.json` + `docs/freelancers.json` (now 592 sellers; rankings up to 100/category — audio 89, translation 50 are capped by their smaller pools; `index_tpd` intact).
+- **Verified:** `data.json`/`freelancers.json` valid JSON; `index.html` parses; readout output simulated against real data (Composite 317.7 pts + 7 categories A→Z at 2026Q1). No headless browser here.
+- **Status: COMMITTED + PUSHED** on `mockup` (live). Files: `docs/ipi.js`, `docs/index.html`, `code/18-build-site-data-long.py`, `docs/data.json`, `docs/freelancers.json`, `progress.md`.
+
 ## 2026-07-13 — Revert over-deletion: restore main-chart content; fixed-effects chart same size as main
 
 - **Correction:** the prior "clean the charts" pass over-deleted — I removed the on-chart quarter-move highlights AND the `#movenotes` narrative list under the main IPI chart, but the user only meant to remove the *legend*, not the lines. Restored `docs/index.html` + `docs/ipi.js` from commit `705c3ae` (brings back `chartnote`, `movenotes`, `significantMoves`, `renderMoveNotes`, and the on-chart highlight markers), then re-applied only the wanted changes on top.

@@ -33,6 +33,14 @@
     header p { margin: 0; color: var(--mut); font-size: 13.5px; max-width: 62ch; }
     header p.def { font-size: 14px; line-height: 1.55; color: #4b515e; max-width: 70ch; }
     header p.def b { color: var(--ink); font-weight: 700; }
+    header p.mission { font-size: 14.5px; line-height: 1.6; color: var(--ink); max-width: 72ch;
+                       margin: 2px 0 4px; }
+    header p.mission b { color: var(--accent-d); font-weight: 700; }
+    header p.units { font-size: 13px; line-height: 1.6; color: #4b515e; max-width: 70ch;
+                     text-align: left; margin: 4px 0 0; padding: 11px 14px;
+                     background: var(--hi); border: 1px solid var(--line);
+                     border-radius: 10px; }
+    header p.units b { color: var(--ink); font-weight: 700; }
     header nav { margin-top: 9px; font-size: 13px; }
     header nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
     header nav a:hover { text-decoration: underline; }
@@ -229,10 +237,22 @@
       </div>
       <div class="htext">
         <h1>Intelligence Price Index</h1>
+        <p class="mission">We use the Internet Archive&rsquo;s <b>Wayback Machine</b> to recover
+        historical snapshots of freelance &ldquo;intelligence&rdquo; jobs &mdash; design, writing,
+        coding, video, audio &mdash; and reconstruct <b>how their prices have moved over time</b>. The
+        goal is to separate two forces pulling in opposite directions: the upward pull of <b>inflation</b>
+        and the downward push of <b>AI productivity gains</b> as models automate more of the work.</p>
         <p class="def">The <b>Intelligence Price Index (IPI)</b> measures how the market price of
         AI-exposed knowledge work &mdash; freelance tasks like design, writing, coding, video, and
         audio &mdash; is changing over time. It is a CPI-style price index built from real, posted
         Fiverr gig prices, shown here quarterly from 2020 to today.</p>
+        <p class="units"><b>How to read the units.</b> The IPI is measured in <b>index points</b>, not
+        dollars &mdash; the base quarter <b>2020Q1 is set to 100</b>, and every other quarter is scaled
+        relative to it. A level of <b>142 pts</b> means AI-exposed work costs <b>42% more</b> than in
+        2020Q1; <b>80 pts</b> means 20% less. Read <b>levels in points</b> and <b>changes in percent</b>
+        (quarter-over-quarter, year-over-year, or versus the 2020Q1 base). Points are used instead of
+        dollars because a $5 logo and a $500 web app can&rsquo;t be averaged in dollars &mdash; but their
+        <b>percentage price moves</b> can.</p>
         <nav><a href="faq.html">Full FAQ &amp; methodology &rarr;</a></nav>
       </div>
     </header>
