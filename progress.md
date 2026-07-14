@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-07-14 — Condense header: three paragraphs → two side-by-side boxes
+
+- **User: "too much text at the top."** Replaced the three stacked header paragraphs (`.mission` / `.def` / `.units`) with a two-column `.introgrid` of `.ibox` cards: **"What this is"** (Wayback Machine → track intelligence-work prices since 2020 → separate inflation from AI productivity gains; folds in the IPI definition) and **"How to read it"** (index points, 2020Q1=100, worked examples, levels-in-points/changes-in-percent). Text trimmed for concision; boxes stack to one column under 640px.
+- Removed the now-dead `p.mission`/`p.def`/`p.units` CSS; added `.introgrid`/`.ibox`/`.ibox-h` rules.
+- **Verified:** `index.html` parses; zero leftover references to the old classes.
+- **Status: COMMITTED + PUSHED** on `mockup`. Files: `docs/index.html`, `progress.md`.
+
 ## 2026-07-14 — Quarter readout = composite + 7 categories; push pending changes live
 
 - **Quarter-click readout redesign (`docs/ipi.js`):** after the user clarified, `renderInspector` now lists **Composite first, then all 7 categories in alphabetical order**, each with its index level (pts) at the clicked quarter; the repeated quarter block is gone (the dropdown already shows it). Composite = full 7-category composite (selection-independent snapshot). (Note: earlier this session I reverted the readout to the original QoQ/YoY/vs-base percentages at the user's request, then they clarified they wanted the composite+categories layout — this is the reconciled final form.)
