@@ -4,6 +4,7 @@
 let DATA, checked, sortK = "name", sortDir = 1;      // default: categories A→Z
 const open = new Set();
 let pinned = null;                                    // quarter index the user is inspecting (or null)
+let pinnedFx = null;                                  // same, for the fixed-effects chart's own dropdown
 // Per-seller gig price histories live in a separate freelancers.json (a few hundred
 // KB) that is fetched once, lazily, the first time any category is expanded — so the
 // initial page load stays light. openSeller keys are `${cat}/${seller}` because one
@@ -394,7 +395,7 @@ function drawChartTPD(cats) {
   const yMid = m.t + (H - m.t - m.b) / 2;
   svg.appendChild(el("text", { _svg: 1, x: 14, y: yMid, "text-anchor": "middle",
     "font-size": 11, "font-weight": 600, fill: "#6b7280", transform: `rotate(-90 14 ${yMid.toFixed(1)})` },
-    [`Corrected IPI · index points (${DATA.base_period} = 100)`]));
+    [`IPI · index points (${DATA.base_period} = 100)`]));
   const step = Math.max(1, Math.round(n / 6));
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
     svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
@@ -418,14 +419,14 @@ function drawChartTPD(cats) {
   }
   if (showComposite) comp.forEach((v, i) => { if (v != null) svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v), r: 2.5, fill: "#111" })); });
 
-  if (pinned != null && pinned >= 0 && pinned < n) {
-    svg.appendChild(el("line", { _svg: 1, x1: X(pinned), x2: X(pinned), y1: m.t, y2: H - m.b,
+  if (pinnedFx != null && pinnedFx >= 0 && pinnedFx < n) {
+    svg.appendChild(el("line", { _svg: 1, x1: X(pinnedFx), x2: X(pinnedFx), y1: m.t, y2: H - m.b,
       stroke: "#2563eb", "stroke-width": 1.4, opacity: 0.9, "stroke-dasharray": "3 3" }));
-    const pv = showComposite ? comp[pinned] : (mains.length ? (DATA.index_tpd[mains[0]] || [])[pinned] : null);
-    if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinned), cy: Y(pv), r: 4.5,
+    const pv = showComposite ? comp[pinnedFx] : (mains.length ? (DATA.index_tpd[mains[0]] || [])[pinnedFx] : null);
+    if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinnedFx), cy: Y(pv), r: 4.5,
       fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
-    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t - 4, "text-anchor": "middle",
-      "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinned]]));
+    svg.appendChild(el("text", { _svg: 1, x: X(pinnedFx), y: m.t - 4, "text-anchor": "middle",
+      "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinnedFx]]));
   }
 
   const guide = el("line", { _svg: 1, y1: m.t, y2: H - m.b, stroke: "#bbb", "stroke-width": 1, opacity: 0 });
@@ -435,13 +436,13 @@ function drawChartTPD(cats) {
   const idxAt = ev => { const r = svg.getBoundingClientRect(), sx = W / r.width;
     let i = Math.round(((ev.clientX - r.left) * sx - m.l) / ((W - m.l - m.r) / (n - 1)));
     return Math.max(0, Math.min(n - 1, i)); };
-  hit.addEventListener("click", ev => { const i = idxAt(ev); pinQuarter(pinned === i ? null : i); });
+  hit.addEventListener("click", ev => { const i = idxAt(ev); pinQuarterFx(pinnedFx === i ? null : i); });
   hit.addEventListener("mousemove", ev => {
     const r = svg.getBoundingClientRect(), sx = W / r.width, i = idxAt(ev);
     guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
     const rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
       `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
-    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· corrected (${DATA.base_period}=100)</span>${rows}`;
+    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· fixed-effects (${DATA.base_period}=100)</span>${rows}`;
     tip.style.display = "block";
     const left = Math.min(X(i) / sx + 12, r.width - tip.offsetWidth - 6);
     tip.style.left = Math.max(0, left) + "px";
@@ -488,9 +489,15 @@ function pinQuarter(i) {
   if (sel) sel.value = i == null ? "" : String(i);
   render();
 }
-// Populate the quarter dropdown once (grouped by year) and wire it.
-function initInspector() {
-  const sel = document.getElementById("qpick");
+function pinQuarterFx(i) {
+  pinnedFx = i;
+  const sel = document.getElementById("qpick2");
+  if (sel) sel.value = i == null ? "" : String(i);
+  render();
+}
+// Populate a quarter dropdown (grouped by year) and wire its onchange.
+function fillQuarterPicker(id, onpick) {
+  const sel = document.getElementById(id);
   if (!sel) return;
   sel.innerHTML = "";
   sel.appendChild(el("option", { value: "" }, ["Inspect a quarter…"]));
@@ -500,18 +507,24 @@ function initInspector() {
     if (y !== yr) { yr = y; og = el("optgroup", { label: y }); sel.appendChild(og); }
     og.appendChild(el("option", { value: String(i) }, [q]));
   });
-  sel.onchange = () => pinQuarter(sel.value === "" ? null : +sel.value);
-  document.getElementById("qclear").onclick = () => pinQuarter(null);
+  sel.onchange = () => onpick(sel.value === "" ? null : +sel.value);
 }
-// Fill the readout with the composite level at the pinned quarter and its change
-// quarter-over-quarter, year-over-year (4 quarters), and versus the window base.
-function renderInspector() {
-  const box = document.getElementById("qreadout");
-  const clr = document.getElementById("qclear");
+function initInspector() {
+  fillQuarterPicker("qpick", pinQuarter);
+  fillQuarterPicker("qpick2", pinQuarterFx);
+  const c1 = document.getElementById("qclear"); if (c1) c1.onclick = () => pinQuarter(null);
+  const c2 = document.getElementById("qclear2"); if (c2) c2.onclick = () => pinQuarterFx(null);
+}
+// Fill a readout with the composite level first, then all 7 categories in
+// alphabetical order, each at the pinned quarter. Reused by the main chart
+// (DATA.index) and the fixed-effects chart (DATA.index_tpd).
+function renderInspectorInto(boxId, clrId, pinnedVal, indexSrc) {
+  const box = document.getElementById(boxId);
+  const clr = document.getElementById(clrId);
   if (!box) return;
-  if (pinned == null) { box.innerHTML = '<span class="muted">Click the chart or pick a quarter to read the composite and category levels.</span>';
-    clr.style.display = "none"; return; }
-  clr.style.display = "";
+  if (pinnedVal == null) { box.innerHTML = '<span class="muted">Click the chart or pick a quarter to read the composite and category levels.</span>';
+    if (clr) clr.style.display = "none"; return; }
+  if (clr) clr.style.display = "";
   const unit = '<span style="font-size:11px;font-weight:400;color:var(--faint)"> pts</span>';
   // one readout chip: swatch + label above, index level (pts) below.
   const chip = (label, val, color, lvl) =>
@@ -519,17 +532,17 @@ function renderInspector() {
       (color ? `<span class="swatch" style="background:${color};margin-right:4px"></span>` : "") +
       `${label}</span><span class="qv ${lvl ? "lvl" : ""}">` +
       (val == null ? "—" : val.toFixed(1) + unit) + `</span></span>`;
-  // Composite first, then all 7 categories in alphabetical order — each showing its
-  // own index level at the clicked quarter. The quarter itself is in the dropdown.
   const mains = DATA.categories.filter(c => !isSub(c)).sort((a, b) => labelOf(a).localeCompare(labelOf(b)));
-  const comp = compositeSeries(mains);   // composite of all categories
-  let html = chip("Composite", comp[pinned], "#111", true);
+  const comp = compositeSeries(mains, indexSrc);   // composite of all categories
+  let html = chip("Composite", comp[pinnedVal], "#111", true);
   mains.forEach(c => {
-    const s = DATA.index[c];
-    html += chip(labelOf(c), s ? s[pinned] : null, colorOf(c), false);
+    const s = indexSrc[c];
+    html += chip(labelOf(c), s ? s[pinnedVal] : null, colorOf(c), false);
   });
   box.innerHTML = html;
 }
+function renderInspector()   { renderInspectorInto("qreadout",  "qclear",  pinned,   DATA.index); }
+function renderInspectorFx() { renderInspectorInto("qreadout2", "qclear2", pinnedFx, DATA.index_tpd); }
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => s >= raw) || mag;
@@ -670,6 +683,7 @@ function render() {
   drawChartTPD(cats);                    // corrected (fixed-effects) index, drawn underneath
   renderMoveNotes(comp, mainChecked);
   renderInspector();
+  renderInspectorFx();
   // the highlighted-move legend only applies when composite highlights are drawn
   const note = document.getElementById("chartnote");
   if (note) note.style.display = showComposite ? "" : "none";
