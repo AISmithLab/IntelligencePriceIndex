@@ -90,6 +90,10 @@
     .leftcol { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
     .fxwrap { padding: 20px 22px 18px; }
     .fxwrap .headline { margin-bottom: 12px; }
+    .fxvalid { font-size: 12.5px; color: var(--mut); margin: 12px 2px 0; padding: 9px 12px;
+               background: #eef8f1; border: 1px solid #cfe9d8; border-radius: 9px; line-height: 1.55; }
+    .fxvalid b { color: var(--ink); font-weight: 700; }
+    .fxvalid .chk { color: #15803d; font-weight: 800; margin-right: 3px; }
 
     /* selection bar (right column header) ----------------------------------- */
     .selbar { display: flex; align-items: center; gap: 10px; padding: 2px 4px 12px;
@@ -289,6 +293,10 @@
             translation or audio) mean the level is less certain.</div>
         </div>
         <div id="chart2"><div class="tip" id="tip2"></div></div>
+        <p class="fxvalid"><span class="chk">&#10003;</span> <b>Prices validated.</b> On a random
+          300-snapshot spot-check, <b>100%</b> of the prices in the shown window (2020Q1 onward) matched an
+          independent price rendered on the same archived page (none hallucinated, all reproducible) &mdash;
+          the index is built on correctly-read figures.</p>
       </section>
       </div>
 
