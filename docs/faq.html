@@ -387,6 +387,32 @@
       </div>
       <p class="legend">The same expression yields the composite's <code>Δ'20–'26</code> figure when the
       composite index is substituted for a category's index.</p>
+
+      <p class="step">Step 5 &middot; Correcting for irregular sampling (the fixed-effects index)</p>
+      <p>Steps 1&ndash;4 compare each gig only between the quarters we actually caught it in. But Wayback
+      snapshots are irregular &mdash; some gigs are captured often, others only once every year or two &mdash;
+      so when a gig disappears for several quarters and returns at a new price, the chained index is forced to
+      dump that whole change into the single quarter it reappears, creating spikes that mislocate <i>when</i>
+      prices really moved. The second chart on the home page corrects this with a <b>fixed-effects
+      (time-dummy) index</b>. The intuition: the gigs we captured frequently reveal the true <i>shape</i> of
+      the price path, and the method uses them to spread each rarely-captured gig's change across the correct
+      quarters instead of piling it into one. For example, if one logo gig is seen every year rising steadily
+      while another is seen only in 2020 and 2023, the +30% gap on the second gig is distributed across
+      2021&ndash;2023 &mdash; matching the steady path the first gig reveals &mdash; rather than dropped
+      entirely on 2023. Formally, for each category we fit one regression on log prices:</p>
+      <div class="math">
+        ln <i>p</i><sub><i>i,t</i></sub> &nbsp;=&nbsp; &alpha;<sub><i>i</i></sub> &nbsp;+&nbsp;
+        &delta;<sub><i>t</i></sub> &nbsp;+&nbsp; &epsilon;<sub><i>i,t</i></sub>
+      </div>
+      <p class="legend">The <b>gig effect &alpha;<sub><i>i</i></sub></b> absorbs each service&rsquo;s own
+      price level (so a $5 gig and a $500 gig can be pooled &mdash; only their percentage moves count), and
+      the <b>quarter effect &delta;<sub><i>t</i></sub></b> is the common price level in quarter <i>t</i>,
+      estimated jointly from every gig at once; the index is <code>100 &times;
+      exp(&delta;<sub><i>t</i></sub>)</code>. A quarter is included only if it is connected to the base period
+      through overlapping gigs (otherwise its timing is unknowable, and we leave it out rather than guess),
+      and each quarter carries a confidence band that widens where it rests on fewer observations. Roughly a
+      quarter of historical and 40% of recent price changes span such sampling gaps &mdash; a measure of how
+      much timing the naive chain was getting wrong.</p>
     </div>
 
     <!-- 12 -->
