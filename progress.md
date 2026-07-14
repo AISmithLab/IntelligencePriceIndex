@@ -1,5 +1,23 @@
 # Progress Log
 
+## 2026-07-14 — Gallery page: per-category highlight reel (index trend + featured gig)
+
+- **User: "add a gallery feature/page highlighting some of the graphs of each category, 1–2 for each."** New standalone `docs/gallery.html` + `docs/gallery.js` (self-contained, same vanilla-JS + inline-SVG approach as `ipi.js`; no shared state so it can't break the index page).
+- **Each of the 7 categories gets a card with two graphs:** (1) its **price-index trend** — the drift-free fixed-effects series (`DATA.index_tpd`) with a shaded **95% CI band** from `index_tpd_se`, base 2020Q1=100; (2) a **featured real gig's package-price history** (Basic/Standard/Premium ramp) pulled from `freelancers.json`, with a Wayback link to the archived gig. Cards ordered by size of the category's '20–'26 move; each header carries a Δ badge.
+- **Featured-gig picker (`featuredGig`)**: the raw gig category tags are noisy (richest gig for a domain is sometimes cross-tagged — e.g. a music-*law* service tagged `audio`). Added a soft **relevance signal** (`CAT_KW` per-category keyword list): on-topic gig wins, then richest price history (most snapshots) with a small bonus for gigs whose price actually moved; falls back to pure richness if nothing matches. Fixed audio→voice/DJ gig, coding→shopify-speed, writing→book-layout, etc.
+- **Discoverability:** added a **Gallery** link to the header nav on `docs/index.html` and `docs/faq.html`.
+- **Verified:** both files parse; `node --check` clean; ran `gallery.js`'s build path under a DOM shim → **7 cards / 14 SVG charts** with no runtime errors; featured-gig selection validated against real `data.json` + `freelancers.json` (all 7 categories resolve a TPD index + SE and an on-topic multi-point gig). No headless browser in-env, so the visual render is verified structurally/numerically only.
+- **Status: edits made, NOT yet committed.** Files: `docs/gallery.html`, `docs/gallery.js`, `docs/index.html`, `docs/faq.html`, `progress.md`.
+
+## 2026-07-14 — Document the fixed-effects (time-dummy) index: how irregular sampling is handled
+
+- **Prompted by the professor's concern** about aggregating freelancers sampled at different rates / covering different time ranges. The time-product-dummy (TPD / two-way fixed-effects) method was already implemented (`code/19-tpd-index.py`) and shown as the site's second chart, but was undocumented in the paper and FAQ.
+- **Paper (`drafts/sections/method.md` §3.4):** added a "Robustness to irregular sampling: a time-product-dummy index" paragraph — `ln p_{i,t} = α_i + δ_t + ε_{i,t}`, gig FE absorbs level, quarter FE estimated jointly, `I=100·exp(δ_t)`, largest-connected-component identification, ≥3 gigs/quarter + ≥2 obs/gig, within-quarter medians, per-δ SEs; notes ~26% hist / ~39% recent changes are gap-spanning.
+- **FAQ (`docs/faq.html` §8 "How is the index calculated?"):** added plain-language **Step 5** with the A/B logo-gig example (frequently-captured gigs reveal the path shape; each rarely-captured gig's change is spread across the correct quarters instead of piled into the reappearance quarter).
+- **Re-rendered** the draft → `drafts/draft-2026-07-14.html`. Both `method.md` and `faq.html` parse/render cleanly.
+- **Tests:** `tests/method.test.md` R1 (irregular-sampling critique) → PASS; U1 (user requirement to explain the aggregation) → PASS.
+- **Status: edits made, NOT yet committed** (paper drafts + FAQ). Files: `drafts/sections/method.md`, `docs/faq.html`, `drafts/draft-2026-07-14.html`, `tests/method.test.md`, `progress.md`.
+
 ## 2026-07-14 — Programmatic data validation: extraction spot-check + fixed-effects confidence bands
 
 Two data-validation deliverables for the fixed-effects chart (professor's "improve data quality programmatically").
