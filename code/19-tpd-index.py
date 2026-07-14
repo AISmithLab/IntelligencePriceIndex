@@ -38,7 +38,7 @@ from pathlib import Path
 
 import numpy as np
 from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import lsqr
+from scipy.sparse.linalg import lsqr, splu
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PILOT = BASE_DIR / "data" / "pilot"
@@ -238,27 +238,54 @@ def tpd_index(panel_cat):
         if q != base:
             rows.append(r); cols.append(qcol[q]); vals.append(1.0)
         y.append(lp)
+    yv = np.asarray(y)
     A = csr_matrix((vals, (rows, cols)), shape=(len(obs), len(gigs) + len(qcol)))
-    sol = lsqr(A, np.asarray(y), atol=1e-10, btol=1e-10)[0]
+    sol = lsqr(A, yv, atol=1e-10, btol=1e-10)[0]
 
     idx = {base: 100.0}
     for q, c in qcol.items():
         idx[q] = 100.0 * math.exp(sol[c])
-    return dict(sorted(idx.items(), key=lambda kv: q_to_int(kv[0])))
+
+    # standard error of each quarter effect (log scale), for confidence bands.
+    # Var(beta) = sigma^2 * (X'X)^-1 ; sigma^2 = RSS / (n_obs - n_params).
+    # Factorize X'X once, then read the diagonal for each quarter-dummy column.
+    se = {base: 0.0}
+    resid = A.dot(sol) - yv
+    dof = max(1, len(yv) - A.shape[1])
+    sigma2 = float(resid.dot(resid)) / dof
+    try:
+        lu = splu((A.T @ A).tocsc())
+        for q, c in qcol.items():
+            e = np.zeros(A.shape[1]); e[c] = 1.0
+            var = sigma2 * float(lu.solve(e)[c])
+            se[q] = math.sqrt(var) if var > 0 else 0.0
+    except Exception:
+        se = {}   # singular design -> no bands rather than wrong bands
+    order = sorted(idx, key=q_to_int)
+    return ({q: idx[q] for q in order},
+            {q: se.get(q, 0.0) for q in order} if se else {})
 
 
 def build_tpd(panel_by_cat):
-    return {cat: tpd_index(panel_by_cat[cat]) for cat in CATS if panel_by_cat.get(cat)}
+    idx, se = {}, {}
+    for cat in CATS:
+        if panel_by_cat.get(cat):
+            i, s = tpd_index(panel_by_cat[cat])
+            if i:
+                idx[cat] = i
+                if s:
+                    se[cat] = s
+    return idx, se
 
 
 # ---- CSV I/O + splice/composite (splice logic mirrors 18-build) ------------
-def write_index_csv(path, cat_index):
+def write_index_csv(path, cat_index, fmt="{:.2f}"):
     quarters = sorted({q for s in cat_index.values() for q in s}, key=q_to_int)
     with open(path, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["quarter"] + CATS)
         for q in quarters:
-            w.writerow([q] + [f"{cat_index[c][q]:.2f}" if c in cat_index and q in cat_index[c]
+            w.writerow([q] + [fmt.format(cat_index[c][q]) if c in cat_index and q in cat_index[c]
                               else "" for c in CATS])
 
 
@@ -333,11 +360,13 @@ def main():
     for tag, panel in (("historical", hist_panel), ("recent", recent_panel)):
         print(f"  {tag}: " + ", ".join(f"{c}={len(panel.get(c, {}))}" for c in CATS) + " panel gigs")
 
-    hist_tpd = build_tpd(hist_panel)
-    recent_tpd = build_tpd(recent_panel)
+    hist_tpd, hist_se = build_tpd(hist_panel)
+    recent_tpd, recent_se = build_tpd(recent_panel)
     write_index_csv(HIST_OUT, hist_tpd)
     write_index_csv(RECENT_OUT, recent_tpd)
-    print(f"\nWrote {HIST_OUT.name} and {RECENT_OUT.name}")
+    write_index_csv(HIST_OUT.with_name("panel-category-indices-tpd-se.csv"), hist_se, fmt="{:.5f}")
+    write_index_csv(RECENT_OUT.with_name("recent-category-indices-tpd-se.csv"), recent_se, fmt="{:.5f}")
+    print(f"\nWrote {HIST_OUT.name} and {RECENT_OUT.name} (+ *-se.csv standard errors)")
 
     weights = {}
     with open(WEIGHTS_CSV) as f:

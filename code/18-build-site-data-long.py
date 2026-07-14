@@ -42,6 +42,9 @@ RECENT_CSV = PILOT / "recent-category-indices.csv"
 # `index_tpd` block so the site can draw the drift-free index under the main one.
 HIST_TPD_CSV = PILOT / "panel-category-indices-tpd.csv"
 RECENT_TPD_CSV = PILOT / "recent-category-indices-tpd.csv"
+# per-quarter regression standard errors (log scale) for the fixed-effects bands
+HIST_TPD_SE_CSV = PILOT / "panel-category-indices-tpd-se.csv"
+RECENT_TPD_SE_CSV = PILOT / "recent-category-indices-tpd-se.csv"
 WEIGHTS_CSV = PILOT / "recent-category-weights.csv"
 MANIFEST = PILOT / "recent-manifest.tsv"
 HIST_PRICES = PILOT / "pilot-prices.csv"     # historical extracted prices (2011->2026)
@@ -371,6 +374,31 @@ def main():
     index_tpd = aligned(chained_tpd)
     comp_tpd = fill_composite(chained_tpd)
 
+    # fixed-effects standard errors (log scale) -> 95% confidence bands.
+    # Per display quarter use the SE from the panel that supplies that quarter's
+    # level (recent for the spliced-in window, else historical); forward-fill.
+    hist_se = read_index_csv(HIST_TPD_SE_CSV) if HIST_TPD_SE_CSV.exists() else {}
+    recent_se = read_index_csv(RECENT_TPD_SE_CSV) if RECENT_TPD_SE_CSV.exists() else {}
+    se_tpd = {}
+    for c in cats:
+        hs, rs = hist_se.get(c, {}), recent_se.get(c, {})
+        series, last = [], None
+        for q in qs:
+            v = rs.get(q, hs.get(q))          # recent takes precedence on overlap
+            if v is not None:
+                last = round(v, 5)
+            series.append(last)
+        se_tpd[c] = series
+    # composite band: Var(ln comp) = Σ (w_c/Σw)^2 · se_c^2 over categories present
+    comp_tpd_se = []
+    for i, q in enumerate(qs):
+        num, wsum = 0.0, 0.0
+        for c in cats:
+            v, w, se = index_tpd[c][i], weights.get(c, 0.0), se_tpd[c][i]
+            if v and w > 0 and se is not None:
+                num += (w * se) ** 2; wsum += w
+        comp_tpd_se.append(round(math.sqrt(num) / wsum, 5) if wsum > 0 else None)
+
     def full_delta(series):
         a = next((v for v in series if v is not None), None)
         b = next((v for v in reversed(series) if v is not None), None)
@@ -397,6 +425,8 @@ def main():
         "index_tpd": index_tpd,                        # corrected (time-dummy) index
         "composite_tpd": comp_tpd,
         "delta_tpd": delta_tpd,
+        "index_tpd_se": se_tpd,                        # log-scale SE per category/quarter
+        "composite_tpd_se": comp_tpd_se,               # log-scale SE of the composite
         "labels": {c: LABELS[c] for c in cats},
         "colors": {c: COLORS[c] for c in cats},
         "rankings": rankings,

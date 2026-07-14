@@ -357,7 +357,28 @@ function drawChartTPD(cats) {
                                   w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
   if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1, dash: "" });
 
-  const ys = series.flatMap(s => s.vals).filter(v => v != null);
+  // 95% confidence band for the emphasised line (composite when 2+ categories,
+  // else the single category). se is the log-scale regression standard error;
+  // band = level·exp(±1.96·se). Wide bands = thin categories = less trustworthy.
+  const emph = showComposite ? comp : (mains.length ? (DATA.index_tpd[mains[0]] || []) : []);
+  const seAt = i => {
+    if (!DATA.index_tpd_se) return null;
+    if (showComposite) {                        // composite SE from weighted category SEs
+      let num = 0, wsum = 0;
+      for (const c of mains) {
+        const v = (DATA.index_tpd[c] || [])[i], w = DATA.weights[c], se = (DATA.index_tpd_se[c] || [])[i];
+        if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
+      }
+      return wsum > 0 ? Math.sqrt(num) / wsum : null;
+    }
+    const se = mains.length ? (DATA.index_tpd_se[mains[0]] || [])[i] : null;
+    return se == null ? null : se;
+  };
+  const band = emph.map((v, i) => { const se = seAt(i);
+    return (v == null || se == null) ? null : [v * Math.exp(-1.96 * se), v * Math.exp(1.96 * se)]; });
+
+  const ys = series.flatMap(s => s.vals).filter(v => v != null)
+    .concat(band.filter(Boolean).flatMap(b => b));   // keep the band inside the frame
   let lo = ys.length ? Math.min(...ys) : 95, hi = ys.length ? Math.max(...ys) : 105;
   const pad = Math.max((hi - lo) * 0.15, 0.8); lo -= pad; hi += pad;
   const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
@@ -378,6 +399,15 @@ function drawChartTPD(cats) {
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
     svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
       "font-size": 11, fill: "#999" }, [mo])); });
+
+  // shaded 95% confidence band under the emphasised line (drawn first, lines on top)
+  const bpts = band.map((b, i) => b ? { i, lo: b[0], hi: b[1] } : null).filter(Boolean);
+  if (bpts.length > 1) {
+    let d = bpts.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
+    for (let k = bpts.length - 1; k >= 0; k--) d += ` L${X(bpts[k].i).toFixed(1)} ${Y(bpts[k].lo).toFixed(1)}`;
+    svg.appendChild(el("path", { _svg: 1, d: d + " Z",
+      fill: showComposite ? "#111" : colorOf(mains[0]), opacity: 0.11, stroke: "none" }));
+  }
 
   for (const s of series) {
     let d = "", pen = false;

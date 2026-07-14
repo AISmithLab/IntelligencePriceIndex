@@ -1,5 +1,15 @@
 # Progress Log
 
+## 2026-07-14 — Programmatic data validation: extraction spot-check + fixed-effects confidence bands
+
+Two data-validation deliverables for the fixed-effects chart (professor's "improve data quality programmatically").
+
+- **(A) Price-extraction spot-check — `code/20-validate-extraction.py`:** audits parsed prices with checks *independent* of the pipeline's own `packageList` parser. (1) **Title cross-check** — Fiverr renders the starting price into `og:title` ("…for $15…") separately from the JSON → agreement = independent confirmation. (2) **Presence** — parsed price must appear literally in the HTML. (3) **Reproducibility** — re-run `09-extract-prices.py` on the saved HTML.
+  - **Result (n=300, seed=7):** presence **100%**, reproducibility **100%**, title-agreement **88%** overall — but **`packageList` 99.5%** and **the displayed window (2020Q1+) is 100% (202/202)**. All failures are the pre-2017 `old_json` era (9%), which the chart doesn't show → **data behind both charts is clean; noise is confined to a pre-2020 era we don't display.** Flagged rows → `data/pilot/extraction-validation-mismatches.tsv` with Wayback URLs.
+- **(B) Fixed-effects confidence bands:** `19-tpd-index.py` computes per-quarter regression **SE** (`Var(β)=σ²(XᵀX)⁻¹` via sparse `splu`) → `*-tpd-se.csv`. `18-build` aligns/splices them → `index_tpd_se` + `composite_tpd_se` in `data.json`. `ipi.js` `drawChartTPD` draws a **shaded 95% band** (`level·exp(±1.96·se)`) around the emphasised line (composite SE recomputed client-side from weighted category SEs). Makes the thin-category caveat visible: composite **±3.2%**, design **±4.1%** vs translation **±34%**, audio **±26%**.
+- **Verified:** `node --check` + HTML parse clean; `data.json` has SE fields. **Bands are a visible chart change not renderable in-env (no browser) — verified numerically only.**
+- **Status: COMMITTED + PUSHED** on `mockup` (live). Files: `code/20-validate-extraction.py`, `code/19-tpd-index.py`, `code/18-build-site-data-long.py`, `docs/ipi.js`, `docs/index.html`, `docs/data.json`, `data/pilot/*-tpd-se.csv`, `data/pilot/extraction-validation-mismatches.tsv`, `progress.md`.
+
 ## 2026-07-14 — Condense header: three paragraphs → two side-by-side boxes
 
 - **User: "too much text at the top."** Replaced the three stacked header paragraphs (`.mission` / `.def` / `.units`) with a two-column `.introgrid` of `.ibox` cards: **"What this is"** (Wayback Machine → track intelligence-work prices since 2020 → separate inflation from AI productivity gains; folds in the IPI definition) and **"How to read it"** (index points, 2020Q1=100, worked examples, levels-in-points/changes-in-percent). Text trimmed for concision; boxes stack to one column under 640px.
