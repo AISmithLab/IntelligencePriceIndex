@@ -1,6 +1,6 @@
 // Intelligence Price Index — Gallery. Self-contained (no external libs), reuses
 // the same data contract as ipi.js. For each category it renders two graphs:
-//   1. the category's fixed-effects price-index trend, with a 95% confidence band
+//   1. the category's GEKS-Jevons price-index trend, with a 95% confidence band
 //   2. a featured real gig's package-price history (from freelancers.json)
 // so the reader sees both the macro index and a concrete micro example per domain.
 
@@ -32,12 +32,12 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- category index trend, with 95% confidence band -----------------------
-// Prefers the drift-free fixed-effects series (DATA.index_tpd); band from its
-// log-scale standard error: level·exp(±1.96·se).
+// Prefers the drift-free GEKS-Jevons series (DATA.index_geks); band from its
+// bootstrap log-scale standard error: level·exp(±1.96·se).
 function drawIndexMini(cat) {
-  const useTpd = DATA.index_tpd && DATA.index_tpd[cat];
-  const vals = (useTpd ? DATA.index_tpd[cat] : DATA.index[cat]) || [];
-  const se   = useTpd && DATA.index_tpd_se ? (DATA.index_tpd_se[cat] || []) : [];
+  const useGeks = DATA.index_geks && DATA.index_geks[cat];
+  const vals = (useGeks ? DATA.index_geks[cat] : DATA.index[cat]) || [];
+  const se   = useGeks && DATA.index_geks_se ? (DATA.index_geks_se[cat] || []) : [];
   const months = DATA.months, n = months.length, color = colorOf(cat);
   const W = 440, H = 232, m = { t: 14, r: 16, b: 26, l: 46 };
 
@@ -64,11 +64,20 @@ function drawIndexMini(cat) {
     svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
       "font-size": 10, fill: "#9aa1ad" }, [mo])); });
 
-  // shaded 95% band (drawn under the line)
-  const bpts = band.map((b, i) => b ? { i, lo: b[0], hi: b[1] } : null).filter(Boolean);
-  if (bpts.length > 1) {
-    let d = bpts.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
-    for (let k = bpts.length - 1; k >= 0; k--) d += ` L${X(bpts[k].i).toFixed(1)} ${Y(bpts[k].lo).toFixed(1)}`;
+  // shaded 95% band (drawn under the line) — one polygon per CONTIGUOUS run of
+  // estimated quarters, so the band breaks at gaps instead of bridging quarters
+  // that were never measured.
+  const bandRuns = [];
+  band.forEach((b, i) => {
+    if (!b) return;
+    const cur = bandRuns[bandRuns.length - 1];
+    if (cur && cur[cur.length - 1].i === i - 1) cur.push({ i, lo: b[0], hi: b[1] });
+    else bandRuns.push([{ i, lo: b[0], hi: b[1] }]);
+  });
+  for (const run of bandRuns) {
+    if (run.length < 2) continue;
+    let d = run.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
+    for (let k = run.length - 1; k >= 0; k--) d += ` L${X(run[k].i).toFixed(1)} ${Y(run[k].lo).toFixed(1)}`;
     svg.appendChild(el("path", { _svg: 1, d: d + " Z", fill: color, opacity: 0.12, stroke: "none" }));
   }
   // the index line
@@ -96,6 +105,31 @@ const TIERS = [ { i: 1, name: "Basic", light: 0.50 }, { i: 2, name: "Standard", 
 const fmtDate = ymd => `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}`;
 const dayNum = ymd => Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8)) / 864e5;
 
+// Every gig chart shares one x scale — the index window (DATA.months), the same
+// window the trend chart above it spans — instead of self-scaling to its own
+// first/last snapshot. Otherwise a gig priced only in 2024 fills the panel exactly
+// like one spanning 2020–2026, and no two cards can be read against each other.
+// Handles quarterly ("2020Q1") and monthly ("2020-01") period labels.
+const periodStart = p => {
+  const q = p.match(/^(\d{4})Q([1-4])$/);
+  return (q ? Date.UTC(+q[1], (+q[2] - 1) * 3, 1) : Date.UTC(+p.slice(0, 4), +p.slice(5, 7) - 1, 1)) / 864e5;
+};
+const periodEnd = p => {                                   // last day of the period
+  const q = p.match(/^(\d{4})Q([1-4])$/);
+  return (q ? Date.UTC(+q[1], +q[2] * 3, 1) : Date.UTC(+p.slice(0, 4), +p.slice(5, 7), 1)) / 864e5 - 1;
+};
+const xDomain = () => [periodStart(DATA.months[0]), periodEnd(DATA.months[DATA.months.length - 1])];
+// Year boundaries inside the domain: with a fixed window a short gig sits in a
+// small slice of the chart, so it needs reference marks to be locatable.
+function yearTicks(d0, d1) {
+  const out = [];
+  for (let y = new Date(d0 * 864e5).getUTCFullYear(); y <= new Date(d1 * 864e5).getUTCFullYear(); y++) {
+    const dn = Date.UTC(y, 0, 1) / 864e5;
+    if (dn >= d0 && dn <= d1) out.push({ dn, label: "’" + String(y).slice(2) });
+  }
+  return out;
+}
+
 function gigChart(series, baseColor, W = 440, H = 210) {
   const padL = 40, padR = 52, padT = 10, padB = 20;
   const prices = [];
@@ -103,9 +137,8 @@ function gigChart(series, baseColor, W = 440, H = 210) {
   let lo = Math.min(...prices), hi = Math.max(...prices);
   if (!(lo < hi)) { lo = Math.max(0, lo - 1); hi = hi + 1; }
   const pad = (hi - lo) * 0.14; lo = Math.max(0, lo - pad); hi += pad;
-  const days = series.map(r => dayNum(r[0]));
-  const d0 = days[0], d1 = days[days.length - 1], span = d1 - d0 || 1;
-  const x = dn => padL + ((dn - d0) / span) * (W - padL - padR);
+  const [d0, d1] = xDomain(), span = d1 - d0 || 1;
+  const x = dn => padL + ((Math.min(Math.max(dn, d0), d1) - d0) / span) * (W - padL - padR);
   const y = v => H - padB - ((v - lo) / (hi - lo)) * (H - padT - padB);
 
   const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: "100%", height: "auto",
@@ -116,14 +149,29 @@ function gigChart(series, baseColor, W = 440, H = 210) {
     svg.appendChild(el("text", { _svg: 1, x: padL - 6, y: y(v) + 3, "text-anchor": "end",
       "font-size": 10, fill: "#9aa1ad" }, ["$" + Math.round(v)]));
   });
+  // x gridlines + labels at year boundaries of the shared window
+  for (const t of yearTicks(d0, d1)) {
+    svg.appendChild(el("line", { _svg: 1, x1: x(t.dn), x2: x(t.dn), y1: padT, y2: H - padB,
+      stroke: "#f1f2f6", "stroke-width": 1 }));
+    svg.appendChild(el("text", { _svg: 1, x: x(t.dn), y: H - 6, "text-anchor": "middle",
+      "font-size": 10, fill: "#9aa1ad" }, [t.label]));
+  }
+  const isGap = r => r[1] == null && r[2] == null && r[3] == null;   // coverage-gap sentinel
   const labels = [];
   TIERS.forEach(t => {
-    const pts = series.filter(r => r[t.i] != null);
+    const pts = series.filter(r => !isGap(r) && r[t.i] != null);      // real observations only
     if (!pts.length) return;
     const col = mixWhite(baseColor, t.light);
-    if (pts.length > 1) {
-      let d = "";
-      pts.forEach((r, k) => { d += `${k ? "L" : "M"}${x(dayNum(r[0])).toFixed(1)} ${y(r[t.i]).toFixed(1)} `; });
+    // lift the pen across coverage gaps — never draw a line through a stretch with
+    // no captures, since a straight bridge there would invent prices.
+    let d = "", pen = false, drawn = 0;
+    series.forEach(r => {
+      if (isGap(r)) { pen = false; return; }         // no captures here -> break the line
+      if (r[t.i] == null) return;                    // this tier missing at a real capture -> skip
+      d += `${pen ? "L" : "M"}${x(dayNum(r[0])).toFixed(1)} ${y(r[t.i]).toFixed(1)} `;
+      pen = true; drawn++;
+    });
+    if (drawn > 1) {
       svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: col, "stroke-width": 2.2,
         "stroke-linejoin": "round", "stroke-linecap": "round" }));
     }
@@ -149,10 +197,6 @@ function gigChart(series, baseColor, W = 440, H = 210) {
   for (const L of labels) L.y = Math.max(padT + 4, L.y);
   labels.forEach(L => svg.appendChild(el("text", { _svg: 1, x: L.x, y: L.y + 3,
     "font-size": 10.5, "font-weight": 600, fill: L.col }, [L.text])));
-  svg.appendChild(el("text", { _svg: 1, x: padL, y: H - 4, "font-size": 10, fill: "#9aa1ad" },
-    [fmtDate(series[0][0])]));
-  svg.appendChild(el("text", { _svg: 1, x: W - padR, y: H - 4, "text-anchor": "end",
-    "font-size": 10, fill: "#9aa1ad" }, [fmtDate(series[series.length - 1][0])]));
   return svg;
 }
 
@@ -216,28 +260,34 @@ function featuredGig(cat) {
 function buildGallery() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-  // order categories by the size of their move over the window (most dramatic first)
+  // order categories by the size of their move over the window (most dramatic first).
+  // Use the drift-free GEKS-Jevons delta (delta_geks) to match the charts below —
+  // the naive chained delta (delta12) overstates thin/volatile panels via chain drift.
+  const moveOf = c => Math.abs((DATA.delta_geks && DATA.delta_geks[c] != null ? DATA.delta_geks[c] : DATA.delta12[c]) ?? 0);
   const cats = [...DATA.categories].filter(c => !(DATA.level && DATA.level[c] === "sub"))
-    .sort((a, b) => Math.abs(DATA.delta12[b] ?? 0) - Math.abs(DATA.delta12[a] ?? 0));
+    .sort((a, b) => moveOf(b) - moveOf(a));
 
   for (const cat of cats) {
     const color = colorOf(cat);
     const card = el("section", { class: "gcard" });
 
-    // header: swatch + name + Δ badge
-    const d = DATA.delta12[cat];
+    // header: swatch + name + Δ badge. The badge reports the drift-free
+    // GEKS-Jevons change (delta_geks) so it agrees with the trend chart below;
+    // the naive chained delta12 overstates thin/volatile panels (e.g. marketing).
+    const d = DATA.delta_geks && DATA.delta_geks[cat] != null ? DATA.delta_geks[cat] : DATA.delta12[cat];
     const head = el("div", { class: "ghead" });
     head.appendChild(el("span", { class: "gsw", style: `background:${color}` }));
     head.appendChild(el("span", { class: "gname" }, [labelOf(cat)]));
     const badge = el("span", { class: "gbadge " + (d > 0 ? "up" : d < 0 ? "down" : "") },
       [fmtPct(d) + " ’20–’26"]);
+    badge.setAttribute("title", "Change over 2020Q1→present, GEKS-Jevons (drift-free) estimate");
     head.appendChild(badge);
     card.appendChild(head);
 
     // graph 1: price-index trend
     const g1 = el("figure", { class: "gfig" });
     g1.appendChild(el("figcaption", { class: "gcap" },
-      ["Price index · fixed-effects, base " + DATA.base_period + " = 100 · shaded = 95% CI"]));
+      ["Price index · GEKS-Jevons, base " + DATA.base_period + " = 100 · shaded = 95% CI"]));
     g1.appendChild(drawIndexMini(cat));
     card.appendChild(g1);
 
@@ -251,6 +301,8 @@ function buildGallery() {
         title: "Open the archived gig page (Wayback Machine)" },
         [gigTitle(feat.g)]));
       cap2.appendChild(el("span", { class: "gseller" }, [" — " + feat.seller]));
+      cap2.appendChild(el("span", { class: "gseller" },
+        [" · same time axis as above, " + DATA.months[0] + "–" + DATA.months[DATA.months.length - 1]]));
       g2.appendChild(cap2);
       g2.appendChild(gigChart(feat.g.series, color));
       // tier legend

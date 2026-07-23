@@ -4,7 +4,7 @@
 let DATA, checked, sortK = "name", sortDir = 1;      // default: categories A→Z
 const open = new Set();
 let pinned = null;                                    // quarter index the user is inspecting (or null)
-let pinnedFx = null;                                  // same, for the fixed-effects chart's own dropdown
+let pinnedFx = null;                                  // same, for the GEKS chart's own dropdown
 // Per-seller gig price histories live in a separate freelancers.json (a few hundred
 // KB) that is fetched once, lazily, the first time any category is expanded — so the
 // initial page load stays light. openSeller keys are `${cat}/${seller}` because one
@@ -155,6 +155,31 @@ const TIERS = [                                   // index into a series row [da
 const fmtDate = ymd => `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}`;
 const dayNum = ymd => Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8)) / 864e5;
 
+// Every gig chart shares one x scale — the index window (DATA.months) — instead of
+// self-scaling to its own first/last snapshot. Otherwise a seller priced only in
+// 2024 fills the panel exactly like one spanning 2020–2026, and no two sellers'
+// charts can be read against each other. Handles quarterly ("2020Q1") and monthly
+// ("2020-01") period labels.
+const periodStart = p => {
+  const q = p.match(/^(\d{4})Q([1-4])$/);
+  return (q ? Date.UTC(+q[1], (+q[2] - 1) * 3, 1) : Date.UTC(+p.slice(0, 4), +p.slice(5, 7) - 1, 1)) / 864e5;
+};
+const periodEnd = p => {                                   // last day of the period
+  const q = p.match(/^(\d{4})Q([1-4])$/);
+  return (q ? Date.UTC(+q[1], +q[2] * 3, 1) : Date.UTC(+p.slice(0, 4), +p.slice(5, 7), 1)) / 864e5 - 1;
+};
+const xDomain = () => [periodStart(DATA.months[0]), periodEnd(DATA.months[DATA.months.length - 1])];
+// Year boundaries inside the domain: with a fixed window a short gig sits in a
+// small slice of the chart, so it needs reference marks to be locatable.
+function yearTicks(d0, d1) {
+  const out = [];
+  for (let y = new Date(d0 * 864e5).getUTCFullYear(); y <= new Date(d1 * 864e5).getUTCFullYear(); y++) {
+    const dn = Date.UTC(y, 0, 1) / 864e5;
+    if (dn >= d0 && dn <= d1) out.push({ dn, label: "’" + String(y).slice(2) });
+  }
+  return out;
+}
+
 // Compact inline-SVG line chart for one gig. series = [[YYYYMMDD,b,s,p], ...].
 function gigChart(series, baseColor, w = 340, h = 96) {
   const padL = 34, padR = 46, padT = 8, padB = 16;
@@ -163,9 +188,8 @@ function gigChart(series, baseColor, w = 340, h = 96) {
   let lo = Math.min(...prices), hi = Math.max(...prices);
   if (!(lo < hi)) { lo = Math.max(0, lo - 1); hi = hi + 1; }            // flat series → give it height
   const pad = (hi - lo) * 0.12; lo = Math.max(0, lo - pad); hi += pad;
-  const days = series.map(r => dayNum(r[0]));
-  const d0 = days[0], d1 = days[days.length - 1], span = d1 - d0 || 1;
-  const x = dn => padL + ((dn - d0) / span) * (w - padL - padR);
+  const [d0, d1] = xDomain(), span = d1 - d0 || 1;
+  const x = dn => padL + ((Math.min(Math.max(dn, d0), d1) - d0) / span) * (w - padL - padR);
   const y = v => h - padB - ((v - lo) / (hi - lo)) * (h - padT - padB);
 
   const svg = el("svg", { _svg: 1, width: "100%", height: h, viewBox: `0 0 ${w} ${h}`,
@@ -177,16 +201,31 @@ function gigChart(series, baseColor, w = 340, h = 96) {
     svg.appendChild(el("text", { _svg: 1, x: padL - 5, y: y(v) + 3, "text-anchor": "end",
       class: "gcax" }, ["$" + Math.round(v)]));
   });
+  // x gridlines + labels at year boundaries of the shared window
+  for (const t of yearTicks(d0, d1)) {
+    svg.appendChild(el("line", { _svg: 1, x1: x(t.dn), x2: x(t.dn), y1: padT, y2: h - padB,
+      stroke: "#f1f2f6", "stroke-width": 1 }));
+    svg.appendChild(el("text", { _svg: 1, x: x(t.dn), y: h - 3, "text-anchor": "middle",
+      class: "gcax" }, [t.label]));
+  }
   // one line per tier that has data, lightest→darkest; collect end-labels for a
   // vertical de-collision pass (tiers with near-equal prices would otherwise overlap)
+  const isGap = r => r[1] == null && r[2] == null && r[3] == null;   // coverage-gap sentinel
   const labels = [];
   TIERS.forEach(t => {
-    const pts = series.filter(r => r[t.i] != null);
+    const pts = series.filter(r => !isGap(r) && r[t.i] != null);      // real observations only
     if (!pts.length) return;
     const col = mixWhite(baseColor, t.light);
-    if (pts.length > 1) {
-      let d = "";
-      pts.forEach((r, k) => { d += `${k ? "L" : "M"}${x(dayNum(r[0])).toFixed(1)} ${y(r[t.i]).toFixed(1)} `; });
+    // one path, lifting the pen across coverage gaps so we never draw a line through
+    // a stretch with no captures — a straight bridge there would invent prices.
+    let d = "", pen = false, drawn = 0;
+    series.forEach(r => {
+      if (isGap(r)) { pen = false; return; }         // no captures here -> break the line
+      if (r[t.i] == null) return;                    // this tier missing at a real capture -> skip
+      d += `${pen ? "L" : "M"}${x(dayNum(r[0])).toFixed(1)} ${y(r[t.i]).toFixed(1)} `;
+      pen = true; drawn++;
+    });
+    if (drawn > 1) {
       svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: col,
         "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
     }
@@ -217,10 +256,6 @@ function gigChart(series, baseColor, w = 340, h = 96) {
   for (const L of labels) L.y = Math.max(padT + 4, L.y);
   labels.forEach(L => svg.appendChild(el("text", { _svg: 1, x: L.x, y: L.y + 3,
     class: "gcend", fill: L.col }, [L.text])));
-  // x date range
-  svg.appendChild(el("text", { _svg: 1, x: padL, y: h - 3, class: "gcax" }, [fmtDate(series[0][0])]));
-  svg.appendChild(el("text", { _svg: 1, x: w - padR, y: h - 3, "text-anchor": "end", class: "gcax" },
-    [fmtDate(series[series.length - 1][0])]));
   return svg;
 }
 
@@ -340,39 +375,39 @@ function drawChart(cats, comp) {
   box.appendChild(svg);
 }
 
-// ---- corrected (fixed-effects) index chart, drawn under the main IPI chart -----
-// Same categories/weights/quarters as the main chart, but reads DATA.index_tpd
+// ---- corrected (GEKS-Jevons) index chart, drawn under the main IPI chart -------
+// Same categories/weights/quarters as the main chart, but reads DATA.index_geks
 // (the drift-free, correctly-timed series). Shares the global pinned quarter.
-function drawChartTPD(cats) {
+function drawChartGEKS(cats) {
   const box = document.getElementById("chart2");
-  if (!box || !DATA.index_tpd) return;
+  if (!box || !DATA.index_geks) return;
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
   const tip = document.getElementById("tip2");
   const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 74 };  // match the main chart's size
   const months = DATA.months, n = months.length;
   const mains = cats.filter(c => !isSub(c));
   const showComposite = mains.length >= 2;
-  const comp = compositeSeries(mains, DATA.index_tpd);
+  const comp = compositeSeries(mains, DATA.index_geks);
   const lineOp = cats.length > 10 ? 0.32 : (showComposite ? 0.5 : 0.95);
-  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index_tpd[c] || [], color: colorOf(c),
+  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index_geks[c] || [], color: colorOf(c),
                                   w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
   if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1, dash: "" });
 
   // 95% confidence band for the emphasised line (composite when 2+ categories,
   // else the single category). se is the log-scale regression standard error;
   // band = level·exp(±1.96·se). Wide bands = thin categories = less trustworthy.
-  const emph = showComposite ? comp : (mains.length ? (DATA.index_tpd[mains[0]] || []) : []);
+  const emph = showComposite ? comp : (mains.length ? (DATA.index_geks[mains[0]] || []) : []);
   const seAt = i => {
-    if (!DATA.index_tpd_se) return null;
+    if (!DATA.index_geks_se) return null;
     if (showComposite) {                        // composite SE from weighted category SEs
       let num = 0, wsum = 0;
       for (const c of mains) {
-        const v = (DATA.index_tpd[c] || [])[i], w = DATA.weights[c], se = (DATA.index_tpd_se[c] || [])[i];
+        const v = (DATA.index_geks[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
         if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
       }
       return wsum > 0 ? Math.sqrt(num) / wsum : null;
     }
-    const se = mains.length ? (DATA.index_tpd_se[mains[0]] || [])[i] : null;
+    const se = mains.length ? (DATA.index_geks_se[mains[0]] || [])[i] : null;
     return se == null ? null : se;
   };
   const band = emph.map((v, i) => { const se = seAt(i);
@@ -401,13 +436,22 @@ function drawChartTPD(cats) {
     svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
       "font-size": 11, fill: "#999" }, [mo])); });
 
-  // shaded 95% confidence band under the emphasised line (drawn first, lines on top)
-  const bpts = band.map((b, i) => b ? { i, lo: b[0], hi: b[1] } : null).filter(Boolean);
-  if (bpts.length > 1) {
-    let d = bpts.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
-    for (let k = bpts.length - 1; k >= 0; k--) d += ` L${X(bpts[k].i).toFixed(1)} ${Y(bpts[k].lo).toFixed(1)}`;
-    svg.appendChild(el("path", { _svg: 1, d: d + " Z",
-      fill: showComposite ? "#111" : colorOf(mains[0]), opacity: 0.11, stroke: "none" }));
+  // shaded 95% confidence band under the emphasised line (drawn first, lines on top).
+  // One polygon per CONTIGUOUS run of estimated quarters, so the band breaks at gaps
+  // exactly where the line does rather than bridging quarters we never estimated.
+  const bandFill = showComposite ? "#111" : colorOf(mains[0]);
+  const bandRuns = [];
+  band.forEach((b, i) => {
+    if (!b) return;
+    const cur = bandRuns[bandRuns.length - 1];
+    if (cur && cur[cur.length - 1].i === i - 1) cur.push({ i, lo: b[0], hi: b[1] });
+    else bandRuns.push([{ i, lo: b[0], hi: b[1] }]);
+  });
+  for (const run of bandRuns) {
+    if (run.length < 2) continue;               // a lone point has no area to shade
+    let d = run.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
+    for (let k = run.length - 1; k >= 0; k--) d += ` L${X(run[k].i).toFixed(1)} ${Y(run[k].lo).toFixed(1)}`;
+    svg.appendChild(el("path", { _svg: 1, d: d + " Z", fill: bandFill, opacity: 0.11, stroke: "none" }));
   }
 
   for (const s of series) {
@@ -422,7 +466,7 @@ function drawChartTPD(cats) {
   if (pinnedFx != null && pinnedFx >= 0 && pinnedFx < n) {
     svg.appendChild(el("line", { _svg: 1, x1: X(pinnedFx), x2: X(pinnedFx), y1: m.t, y2: H - m.b,
       stroke: "#2563eb", "stroke-width": 1.4, opacity: 0.9, "stroke-dasharray": "3 3" }));
-    const pv = showComposite ? comp[pinnedFx] : (mains.length ? (DATA.index_tpd[mains[0]] || [])[pinnedFx] : null);
+    const pv = showComposite ? comp[pinnedFx] : (mains.length ? (DATA.index_geks[mains[0]] || [])[pinnedFx] : null);
     if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinnedFx), cy: Y(pv), r: 4.5,
       fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
     svg.appendChild(el("text", { _svg: 1, x: X(pinnedFx), y: m.t - 4, "text-anchor": "middle",
@@ -442,7 +486,7 @@ function drawChartTPD(cats) {
     guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
     const rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
       `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
-    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· fixed-effects (${DATA.base_period}=100)</span>${rows}`;
+    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· GEKS-Jevons (${DATA.base_period}=100)</span>${rows}`;
     tip.style.display = "block";
     const left = Math.min(X(i) / sx + 12, r.width - tip.offsetWidth - 6);
     tip.style.left = Math.max(0, left) + "px";
@@ -452,9 +496,9 @@ function drawChartTPD(cats) {
   box.appendChild(svg);
 
   // headline delta for whatever basket is selected (composite, or the lone category)
-  const dl = document.getElementById("tpdDelta");
+  const dl = document.getElementById("geksDelta");
   if (dl) {
-    const shown = showComposite ? comp : (mains.length ? (DATA.index_tpd[mains[0]] || []) : []);
+    const shown = showComposite ? comp : (mains.length ? (DATA.index_geks[mains[0]] || []) : []);
     const d = pctChange(shown);
     dl.textContent = d == null ? "—" : (d > 0 ? "+" : "") + d.toFixed(1) + "%";
     dl.className = d == null ? "" : (d < 0 ? "down" : "up");
@@ -517,7 +561,7 @@ function initInspector() {
 }
 // Fill a readout with the composite level first, then all 7 categories in
 // alphabetical order, each at the pinned quarter. Reused by the main chart
-// (DATA.index) and the fixed-effects chart (DATA.index_tpd).
+// (DATA.index) and the GEKS-Jevons chart (DATA.index_geks).
 function renderInspectorInto(boxId, clrId, pinnedVal, indexSrc) {
   const box = document.getElementById(boxId);
   const clr = document.getElementById(clrId);
@@ -542,7 +586,7 @@ function renderInspectorInto(boxId, clrId, pinnedVal, indexSrc) {
   box.innerHTML = html;
 }
 function renderInspector()   { renderInspectorInto("qreadout",  "qclear",  pinned,   DATA.index); }
-function renderInspectorFx() { renderInspectorInto("qreadout2", "qclear2", pinnedFx, DATA.index_tpd); }
+function renderInspectorFx() { renderInspectorInto("qreadout2", "qclear2", pinnedFx, DATA.index_geks); }
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => s >= raw) || mag;
@@ -613,6 +657,10 @@ function gigPanel(seller, c) {
     it.appendChild(document.createTextNode(t.name));
     legend.appendChild(it);
   });
+  // all charts in the panel — and in every other seller's panel — share one time
+  // axis, so a line covering part of the width means the gig was priced only then
+  legend.appendChild(el("span", { class: "glnote" },
+    [`· shared time axis ${DATA.months[0]}–${DATA.months[DATA.months.length - 1]}`]));
   panel.appendChild(legend);
   // richest series first so the most informative gigs read at the top
   gigs.slice().sort((a, b) => b.series.length - a.series.length).forEach(g => {
@@ -680,7 +728,7 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
-  drawChartTPD(cats);                    // corrected (fixed-effects) index, drawn underneath
+  drawChartGEKS(cats);                   // corrected (GEKS-Jevons) index, drawn underneath
   renderMoveNotes(comp, mainChecked);
   renderInspector();
   renderInspectorFx();

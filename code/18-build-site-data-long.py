@@ -37,14 +37,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 PILOT = BASE_DIR / "data" / "pilot"
 HIST_CSV = PILOT / "panel-category-indices.csv"
 RECENT_CSV = PILOT / "recent-category-indices.csv"
-# Corrected (time-dummy / TPD) category indices from code/19-tpd-index.py.
+# Drift-free (GEKS-Jevons) category indices from code/21-geks-index.py.
 # Spliced + re-based identically to the Jevons pair; emitted as a parallel
-# `index_tpd` block so the site can draw the drift-free index under the main one.
-HIST_TPD_CSV = PILOT / "panel-category-indices-tpd.csv"
-RECENT_TPD_CSV = PILOT / "recent-category-indices-tpd.csv"
-# per-quarter regression standard errors (log scale) for the fixed-effects bands
-HIST_TPD_SE_CSV = PILOT / "panel-category-indices-tpd-se.csv"
-RECENT_TPD_SE_CSV = PILOT / "recent-category-indices-tpd-se.csv"
+# `index_geks` block so the site can draw the drift-free index under the main one.
+# (Superseded the time-dummy / fixed-effects index on 2026-07-15; see progress.md.)
+HIST_GEKS_CSV = PILOT / "panel-category-indices-geks.csv"
+RECENT_GEKS_CSV = PILOT / "recent-category-indices-geks.csv"
+# per-quarter bootstrap standard errors (log scale) for the confidence bands
+HIST_GEKS_SE_CSV = PILOT / "panel-category-indices-geks-se.csv"
+RECENT_GEKS_SE_CSV = PILOT / "recent-category-indices-geks-se.csv"
 WEIGHTS_CSV = PILOT / "recent-category-weights.csv"
 MANIFEST = PILOT / "recent-manifest.tsv"
 HIST_PRICES = PILOT / "pilot-prices.csv"     # historical extracted prices (2011->2026)
@@ -203,18 +204,40 @@ def _num(x):
         return None
 
 
+GAP_DAYS = 180   # break a gig's price line if there's no capture for this long
+                 # (2+ quarters): captures run ~monthly, so a lapse this large is a
+                 # real coverage hole, not a flat-but-observed stretch.
+
+
+def _day_ord(ymd):
+    """'YYYYMMDD' -> ordinal day number, for measuring gaps between captures."""
+    return date(int(ymd[:4]), int(ymd[4:6]), int(ymd[6:8])).toordinal()
+
+
 def _compress_series(points):
     """points: list of (date, basic, standard, premium). Sort, dedupe consecutive
     rows with identical (b, s, p) — most gigs are flat for long stretches — while
-    always keeping the first and last observation so the line spans the full range."""
+    always keeping the first and last observation so the line spans the full range.
+
+    Wherever two consecutive captures are more than GAP_DAYS apart, emit an
+    all-None sentinel row so the chart BREAKS the line across that stretch instead
+    of drawing through months we never observed. Because identical prices are
+    deduped, a long span between kept points does NOT by itself imply a gap (the
+    price may have been observed flat throughout) — only a gap in the RAW capture
+    dates does, which is what we test here (2026-07-22 decision)."""
     pts = sorted(set(points))
-    out, prev = [], object()
+    out, prev_key, prev_day, last_emit = [], object(), None, None
     for d, b, s, p in pts:
-        key = (b, s, p)
-        if key != prev:
+        day = _day_ord(d)
+        if prev_day is not None and day - prev_day > GAP_DAYS:
+            out.append([None, None, None, None])   # coverage gap -> line breaks here
+            prev_key = object()                     # force the post-gap point to emit
+        if (b, s, p) != prev_key:
             out.append([d, b, s, p])
-            prev = key
-    if pts and out[-1][0] != pts[-1][0]:
+            prev_key = (b, s, p)
+            last_emit = d
+        prev_day = day
+    if pts and last_emit != pts[-1][0]:             # keep the final observation
         d, b, s, p = pts[-1]
         out.append([d, b, s, p])
     return out
@@ -336,68 +359,66 @@ def main():
     cats = [c for c in CATS if c in chained]
 
     def aligned(chained_by_cat):
-        """Forward-fill each category's chained level onto the display quarters qs
-        (None until first observed, then carried across gaps so lines stay whole)."""
+        """Place each category's chained level onto the display quarters qs.
+        A quarter with no observation stays None, so the line BREAKS there. We do
+        NOT carry the last value across gaps: painting a level for a quarter we
+        never measured fabricates data that doesn't exist (2026-07-21 decision)."""
         out = {}
         for c in cats:
             ch = chained_by_cat.get(c, {})
-            series, last = [], None
-            for q in qs:
-                if q in ch:
-                    last = round(ch[q], 2)
-                first_seen = any(qq in ch for qq in qs[:qs.index(q) + 1])
-                series.append(last if first_seen else None)
-            out[c] = series
+            out[c] = [round(ch[q], 2) if q in ch else None for q in qs]
         return out
 
-    def fill_composite(chained_by_cat):
-        comp = [composite({c: chained_by_cat[c] for c in chained_by_cat}, weights, q) for q in qs]
-        filled, last = [], None
-        for v in comp:
-            if v is not None:
-                last = v
-            filled.append(round(last, 2) if last is not None else None)
-        return filled
+    def composite_series(chained_by_cat):
+        """Composite per display quarter over whatever categories are observed that
+        quarter (the weighted geometric mean renormalizes on the present weights).
+        None only when NO category is observed -> a genuine gap. No carry-forward:
+        a category that is missing this quarter simply drops out of this quarter's
+        basket rather than contributing a stale, invented level."""
+        vals = chained_by_cat
+        out = []
+        for q in qs:
+            v = composite({c: vals[c] for c in vals}, weights, q)
+            out.append(round(v, 2) if v is not None else None)
+        return out
 
     index = aligned(chained)
-    comp = fill_composite(chained)
+    comp = composite_series(chained)
 
-    # corrected (time-dummy / TPD) index — spliced + re-based the same way,
+    # drift-free (GEKS-Jevons) index — spliced + re-based the same way,
     # aligned to the same quarters and category set for the second chart.
-    hist_tpd = read_index_csv(HIST_TPD_CSV)
-    recent_tpd = read_index_csv(RECENT_TPD_CSV)
-    chained_tpd = {}
+    hist_geks = read_index_csv(HIST_GEKS_CSV)
+    recent_geks = read_index_csv(RECENT_GEKS_CSV)
+    chained_geks = {}
     for cat in cats:
-        s = chain_category(cat, hist_tpd, recent_tpd)
+        s = chain_category(cat, hist_geks, recent_geks)
         if s:
-            chained_tpd[cat] = s
-    index_tpd = aligned(chained_tpd)
-    comp_tpd = fill_composite(chained_tpd)
+            chained_geks[cat] = s
+    index_geks = aligned(chained_geks)
+    comp_geks = composite_series(chained_geks)
 
-    # fixed-effects standard errors (log scale) -> 95% confidence bands.
+    # GEKS bootstrap standard errors (log scale) -> 95% confidence bands.
     # Per display quarter use the SE from the panel that supplies that quarter's
     # level (recent for the spliced-in window, else historical); forward-fill.
-    hist_se = read_index_csv(HIST_TPD_SE_CSV) if HIST_TPD_SE_CSV.exists() else {}
-    recent_se = read_index_csv(RECENT_TPD_SE_CSV) if RECENT_TPD_SE_CSV.exists() else {}
-    se_tpd = {}
+    hist_se = read_index_csv(HIST_GEKS_SE_CSV) if HIST_GEKS_SE_CSV.exists() else {}
+    recent_se = read_index_csv(RECENT_GEKS_SE_CSV) if RECENT_GEKS_SE_CSV.exists() else {}
+    se_geks = {}
     for c in cats:
         hs, rs = hist_se.get(c, {}), recent_se.get(c, {})
-        series, last = [], None
-        for q in qs:
-            v = rs.get(q, hs.get(q))          # recent takes precedence on overlap
-            if v is not None:
-                last = round(v, 5)
-            series.append(last)
-        se_tpd[c] = series
+        # SE only for quarters actually estimated (recent takes precedence on
+        # overlap); None elsewhere so the confidence band breaks wherever the
+        # index line breaks, instead of carrying a stale band across a gap.
+        se_geks[c] = [round(rs[q], 5) if q in rs
+                      else (round(hs[q], 5) if q in hs else None) for q in qs]
     # composite band: Var(ln comp) = Σ (w_c/Σw)^2 · se_c^2 over categories present
-    comp_tpd_se = []
+    comp_geks_se = []
     for i, q in enumerate(qs):
         num, wsum = 0.0, 0.0
         for c in cats:
-            v, w, se = index_tpd[c][i], weights.get(c, 0.0), se_tpd[c][i]
+            v, w, se = index_geks[c][i], weights.get(c, 0.0), se_geks[c][i]
             if v and w > 0 and se is not None:
                 num += (w * se) ** 2; wsum += w
-        comp_tpd_se.append(round(math.sqrt(num) / wsum, 5) if wsum > 0 else None)
+        comp_geks_se.append(round(math.sqrt(num) / wsum, 5) if wsum > 0 else None)
 
     def full_delta(series):
         a = next((v for v in series if v is not None), None)
@@ -406,8 +427,8 @@ def main():
 
     delta = {c: full_delta(index[c]) for c in cats}
     delta["composite"] = full_delta(comp)
-    delta_tpd = {c: full_delta(index_tpd[c]) for c in cats}
-    delta_tpd["composite"] = full_delta(comp_tpd)
+    delta_geks = {c: full_delta(index_geks[c]) for c in cats}
+    delta_geks["composite"] = full_delta(comp_geks)
 
     rankings, freelancers = build_rankings()
 
@@ -422,11 +443,11 @@ def main():
         "index": index,
         "composite_all": comp,
         "delta12": {k: v for k, v in delta.items()},   # now full-period change
-        "index_tpd": index_tpd,                        # corrected (time-dummy) index
-        "composite_tpd": comp_tpd,
-        "delta_tpd": delta_tpd,
-        "index_tpd_se": se_tpd,                        # log-scale SE per category/quarter
-        "composite_tpd_se": comp_tpd_se,               # log-scale SE of the composite
+        "index_geks": index_geks,                      # drift-free (GEKS-Jevons) index
+        "composite_geks": comp_geks,
+        "delta_geks": delta_geks,
+        "index_geks_se": se_geks,                      # log-scale SE per category/quarter
+        "composite_geks_se": comp_geks_se,             # log-scale SE of the composite
         "labels": {c: LABELS[c] for c in cats},
         "colors": {c: COLORS[c] for c in cats},
         "rankings": rankings,

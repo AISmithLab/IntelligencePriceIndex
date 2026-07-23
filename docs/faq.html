@@ -388,31 +388,41 @@
       <p class="legend">The same expression yields the composite's <code>Δ'20–'26</code> figure when the
       composite index is substituted for a category's index.</p>
 
-      <p class="step">Step 5 &middot; Correcting for irregular sampling (the fixed-effects index)</p>
-      <p>Steps 1&ndash;4 compare each gig only between the quarters we actually caught it in. But Wayback
-      snapshots are irregular &mdash; some gigs are captured often, others only once every year or two &mdash;
-      so when a gig disappears for several quarters and returns at a new price, the chained index is forced to
-      dump that whole change into the single quarter it reappears, creating spikes that mislocate <i>when</i>
-      prices really moved. The second chart on the home page corrects this with a <b>fixed-effects
-      (time-dummy) index</b>. The intuition: the gigs we captured frequently reveal the true <i>shape</i> of
-      the price path, and the method uses them to spread each rarely-captured gig's change across the correct
-      quarters instead of piling it into one. For example, if one logo gig is seen every year rising steadily
-      while another is seen only in 2020 and 2023, the +30% gap on the second gig is distributed across
-      2021&ndash;2023 &mdash; matching the steady path the first gig reveals &mdash; rather than dropped
-      entirely on 2023. Formally, for each category we fit one regression on log prices:</p>
+      <p class="step">Step 5 &middot; Correcting for chain drift (the GEKS-Jevons index)</p>
+      <p>Steps 1&ndash;4 build the index as a <i>chain</i>: 2020Q1 is compared with 2020Q2, that with 2020Q3,
+      and so on, each link multiplied onto the last. Because Wayback snapshots are irregular &mdash; some gigs
+      are captured often, others only once every year or two &mdash; the set of gigs available for each link is
+      different, and the small errors that introduces do not cancel. They compound along the chain, a
+      well-documented problem called <b>chain drift</b>: by 2026 the chained index reads roughly twice what the
+      drift-free estimate does, even though both use exactly the same prices.</p>
+      <p>The second chart on the home page corrects this with a <b>GEKS-Jevons index</b>. The intuition: rather
+      than walking from 2020 to 2026 one quarter at a time, compare <i>every</i> pair of quarters directly, then
+      average all the routes between them. To get 2020Q1&nbsp;&rarr;&nbsp;2026Q1 you can go direct, or via
+      2022Q3, or via 2024Q1, and so on &mdash; each route uses a different set of gigs, so no single one is
+      privileged. Averaging over all of them yields one consistent set of levels with no chain left to drift
+      along. Formally, the direct comparison between two quarters <i>s</i> and <i>t</i> is the average log price
+      change over the <i>N<sub>s,t</sub></i> gigs seen in <b>both</b> (a Jevons index):</p>
       <div class="math">
-        ln <i>p</i><sub><i>i,t</i></sub> &nbsp;=&nbsp; &alpha;<sub><i>i</i></sub> &nbsp;+&nbsp;
-        &delta;<sub><i>t</i></sub> &nbsp;+&nbsp; &epsilon;<sub><i>i,t</i></sub>
+        <i>P</i><sub><i>s,t</i></sub> &nbsp;=&nbsp; exp&thinsp;&#40;&thinsp;
+        <span style="display:inline-block;text-align:center">1<hr style="margin:1px 0;border:0;border-top:1px solid currentColor"><i>N</i><sub><i>s,t</i></sub></span>
+        &thinsp;&sum;<sub><i>i</i></sub> &thinsp;ln&thinsp;
+        <span style="display:inline-block;text-align:center"><i>p</i><sub><i>i,t</i></sub><hr style="margin:1px 0;border:0;border-top:1px solid currentColor"><i>p</i><sub><i>i,s</i></sub></span>
+        &thinsp;&#41;
       </div>
-      <p class="legend">The <b>gig effect &alpha;<sub><i>i</i></sub></b> absorbs each service&rsquo;s own
-      price level (so a $5 gig and a $500 gig can be pooled &mdash; only their percentage moves count), and
-      the <b>quarter effect &delta;<sub><i>t</i></sub></b> is the common price level in quarter <i>t</i>,
-      estimated jointly from every gig at once; the index is <code>100 &times;
-      exp(&delta;<sub><i>t</i></sub>)</code>. A quarter is included only if it is connected to the base period
-      through overlapping gigs (otherwise its timing is unknowable, and we leave it out rather than guess),
-      and each quarter carries a confidence band that widens where it rests on fewer observations. Roughly a
-      quarter of historical and 40% of recent price changes span such sampling gaps &mdash; a measure of how
-      much timing the naive chain was getting wrong.</p>
+      <p>and the index for quarter <i>t</i> against base quarter <i>0</i> is the geometric average of the
+      direct route and every indirect route through a link quarter <i>&#8467;</i>:</p>
+      <div class="math">
+        <i>I</i><sub><i>t</i></sub> &nbsp;=&nbsp; 100 &times; &prod;<sub><i>&#8467;</i></sub>
+        &#40;&thinsp;<i>P</i><sub><i>0,&#8467;</i></sub> &sdot; <i>P</i><sub><i>&#8467;,t</i></sub>&thinsp;&#41;<sup>1/<i>L</i></sup>
+      </div>
+      <p class="legend">Each gig&rsquo;s own price level cancels inside the ratio
+      <code>p<sub>i,t</sub>/p<sub>i,s</sub></code>, so a $5 gig and a $500 gig can be pooled &mdash; only their
+      percentage moves count. A quarter pair is used only where at least 3 gigs are seen in both; a quarter
+      appears in the chart only if it can be reached from the base period this way, and we leave it out rather
+      than guess otherwise. Confidence bands come from a bootstrap that resamples gigs, so they widen where a
+      quarter rests on fewer or thinner comparisons (translation and audio most of all). Unlike a regression-based
+      correction, GEKS never imputes a price for a gig-quarter it did not observe &mdash; it uses matched pairs
+      only.</p>
     </div>
 
     <!-- 12 -->

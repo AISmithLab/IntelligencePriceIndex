@@ -85,7 +85,7 @@
     .layout { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr);
               gap: 18px; align-items: start; margin-top: 18px; }
     @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-    /* left column stacks the main IPI chart and the fixed-effects chart as two
+    /* left column stacks the main IPI chart and the GEKS chart as two
        separate cards of equal width; the category table is the right column. */
     .leftcol { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
     .fxwrap { padding: 20px 22px 18px; }
@@ -284,24 +284,24 @@
 
       <section class="card fxwrap">
         <div class="headline">
-          <h2 class="charttitle">Intelligence Price Index (Fixed Effects)</h2>
+          <h2 class="charttitle">Intelligence Price Index (GEKS-Jevons)</h2>
           <ul class="fxbullets">
-            <li>Same prices and weights as the index above, re-estimated so each gig's change is attributed
-              to the quarters it actually spans rather than the one quarter it reappears &mdash; eliminating
-              chain drift. Composite change over the window: <span id="tpdDelta"></span>.</li>
-            <li><b>Shaded band &mdash; 95% confidence interval.</b> It reflects the estimate's statistical
-              precision; wider bands (e.g. thin categories such as translation or audio) indicate a less
-              certain level.</li>
+            <li>Same prices and weights as the index above, re-estimated so that every quarter is compared
+              with every other quarter directly rather than through a chain of links &mdash; eliminating
+              chain drift. Composite change over the window: <span id="geksDelta"></span>.</li>
+            <li><b>Shaded band &mdash; 95% confidence interval.</b> From a bootstrap over gigs, it reflects
+              the estimate's statistical precision; wider bands (e.g. thin categories such as translation or
+              audio) indicate a less certain level.</li>
             <li><b>Validated data and method.</b> The underlying prices were independently corroborated
               against their archived source pages (100% agreement on a random sample of the displayed
-              2020Q1&ndash;present window). The index is estimated with a two-way fixed-effects
-              (Time&ndash;Product&ndash;Dummy) model &mdash; the standard drift-free estimator for
-              irregularly sampled panels.</li>
+              2020Q1&ndash;present window). The index is estimated with <b>GEKS-Jevons</b>, the standard
+              drift-free multilateral estimator when only posted prices (and no quantities) are observed;
+              our implementation reproduces the <code>PriceIndexCalc</code> reference exactly.</li>
           </ul>
         </div>
         <div id="chart2"><div class="tip" id="tip2"></div></div>
         <div class="inspect">
-          <select id="qpick2" aria-label="Inspect a specific quarter on the fixed-effects chart"></select>
+          <select id="qpick2" aria-label="Inspect a specific quarter on the GEKS-Jevons chart"></select>
           <div id="qreadout2" class="readout"></div>
           <a id="qclear2" class="qclear" style="display:none">clear</a>
         </div>
