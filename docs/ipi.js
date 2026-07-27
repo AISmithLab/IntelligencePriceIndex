@@ -4,7 +4,6 @@
 let DATA, checked, sortK = "name", sortDir = 1;      // default: categories A→Z
 const open = new Set();
 let pinned = null;                                    // quarter index the user is inspecting (or null)
-let pinnedFx = null;                                  // same, for the GEKS chart's own dropdown
 // Per-seller gig price histories live in a separate freelancers.json (a few hundred
 // KB) that is fetched once, lazily, the first time any category is expanded — so the
 // initial page load stays light. openSeller keys are `${cat}/${seller}` because one
@@ -52,15 +51,15 @@ fetch("data.json").then(r => r.json()).then(data => {
   document.getElementById("hRange").textContent =
     `(${DATA.months[0]} → ${DATA.months[DATA.months.length - 1]})`;
   document.getElementById("caveat").textContent =
-    "Quarterly index, base " + DATA.base_period + " = 100. Categories are ranked by their price " +
-    "change over the whole window. The series chains two matched-model panels — the historical " +
+    "Quarterly GEKS-Jevons index, base " + DATA.base_period + " = 100. Categories are ranked by their " +
+    "price change over the whole window. The series joins two matched-model panels — the historical " +
     "pilot (2020–2024) spliced at 2024Q3 onto the recent trailing-window crawl — so the level is " +
     "continuous through the join. Expand any category (▸) to see its top freelancers ranked by the " +
     "number of distinct gigs/services they offer, then click a freelancer to see each gig and how its " +
     "package prices (Basic/Standard/Premium) moved over time. Note the panel is a sample of archived sellers, " +
     "and the composite is design-heavy (design ≈ 71% of review weight), so it tracks design closely.";
   document.getElementById("src").innerHTML =
-    `Source: Fiverr gig prices via the Wayback Machine, matched-model index (quarterly, ${DATA.base_period}=100). ` +
+    `Source: Fiverr gig prices via the Wayback Machine, matched-model GEKS-Jevons index (quarterly, ${DATA.base_period}=100). ` +
     `Composite = review-weighted geometric mean of the selected categories: ` +
     `<code>exp(Σ w·ln(index) / Σ w)</code>. Freelancer rankings from archived gig counts. Data generated ${DATA.generated}.`;
   wireControls();
@@ -72,7 +71,14 @@ fetch("data.json").then(r => r.json()).then(data => {
 });
 
 // ---- math ------------------------------------------------------------------
-function compositeSeries(cats, src = DATA.index) {
+// Everything on this page reads the drift-free GEKS-Jevons series (DATA.index_geks).
+// DATA.index — the naive chained-Jevons series — is retained in data.json for the
+// paper's method comparison but is NOT plotted: chaining credits a sparsely-sampled
+// gig's multi-quarter price change to the single quarter it reappears, on top of the
+// growth already chained in from densely-sampled gigs, so the same increase is counted
+// more than once. Over 2020Q1–2026Q1 that inflates the composite to 317.7 pts against
+// 144.7 for GEKS. See faq.html Step 5.
+function compositeSeries(cats, src = DATA.index_geks) {
   return DATA.months.map((_, i) => {
     let logSum = 0, wSum = 0;
     for (const c of cats) {
@@ -259,7 +265,7 @@ function gigChart(series, baseColor, w = 340, h = 96) {
   return svg;
 }
 
-// ---- main trend chart ------------------------------------------------------
+// ---- main trend chart (GEKS-Jevons) ----------------------------------------
 function drawChart(cats, comp) {
   const box = document.getElementById("chart");
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
@@ -270,13 +276,34 @@ function drawChart(cats, comp) {
   // The composite is only meaningful for a basket of 2+ categories; with a single
   // category selected we show that individual series on its own (its composite would
   // just duplicate it under a heavy black line).
-  const showComposite = cats.filter(c => !isSub(c)).length >= 2;
+  const mains = cats.filter(c => !isSub(c));
+  const showComposite = mains.length >= 2;
   const lineOp = cats.length > 10 ? 0.32 : (showComposite ? 0.5 : 0.95);
-  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index[c], color: colorOf(c),
+  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index_geks[c] || [], color: colorOf(c),
                                   w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
   if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1 });
 
-  const ys = series.flatMap(s => s.vals).filter(v => v != null);
+  // 95% confidence band for the emphasised line (composite when 2+ categories, else
+  // the single category). se is the bootstrap standard error on the log scale;
+  // band = level·exp(±1.96·se). Wide bands = thin categories = less certain level.
+  const emph = showComposite ? comp : (mains.length ? (DATA.index_geks[mains[0]] || []) : []);
+  const seAt = i => {
+    if (!DATA.index_geks_se) return null;
+    if (showComposite) {                        // composite SE from weighted category SEs
+      let num = 0, wsum = 0;
+      for (const c of mains) {
+        const v = (DATA.index_geks[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
+        if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
+      }
+      return wsum > 0 ? Math.sqrt(num) / wsum : null;
+    }
+    return mains.length ? ((DATA.index_geks_se[mains[0]] || [])[i] ?? null) : null;
+  };
+  const band = emph.map((v, i) => { const se = seAt(i);
+    return (v == null || se == null) ? null : [v * Math.exp(-1.96 * se), v * Math.exp(1.96 * se)]; });
+
+  const ys = series.flatMap(s => s.vals).filter(v => v != null)
+    .concat(band.filter(Boolean).flatMap(b => b));   // keep the band inside the frame
   let lo = ys.length ? Math.min(...ys) : 95, hi = ys.length ? Math.max(...ys) : 105;
   const pad = Math.max((hi - lo) * 0.15, 0.8); lo -= pad; hi += pad;
   const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
@@ -304,6 +331,24 @@ function drawChart(cats, comp) {
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
     svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
       "font-size": 11, fill: "#999" }, [mo])); });
+
+  // shaded 95% confidence band under the emphasised line (drawn first, lines on top).
+  // One polygon per CONTIGUOUS run of estimated quarters, so the band breaks at gaps
+  // exactly where the line does rather than bridging quarters we never estimated.
+  const bandFill = showComposite ? "#111" : colorOf(mains[0]);
+  const bandRuns = [];
+  band.forEach((b, i) => {
+    if (!b) return;
+    const cur = bandRuns[bandRuns.length - 1];
+    if (cur && cur[cur.length - 1].i === i - 1) cur.push({ i, lo: b[0], hi: b[1] });
+    else bandRuns.push([{ i, lo: b[0], hi: b[1] }]);
+  });
+  for (const run of bandRuns) {
+    if (run.length < 2) continue;               // a lone point has no area to shade
+    let d = run.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
+    for (let k = run.length - 1; k >= 0; k--) d += ` L${X(run[k].i).toFixed(1)} ${Y(run[k].lo).toFixed(1)}`;
+    svg.appendChild(el("path", { _svg: 1, d: d + " Z", fill: bandFill, opacity: 0.11, stroke: "none" }));
+  }
 
   // series paths
   for (const s of series) {
@@ -364,7 +409,7 @@ function drawChart(cats, comp) {
     guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
     let rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
       `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
-    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· IPI (${DATA.base_period}=100)</span>${rows}`;
+    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· GEKS-Jevons (${DATA.base_period}=100)</span>${rows}`;
     tip.style.display = "block";
     const tx = X(i) / sx, left = Math.min(tx + 12, r.width - tip.offsetWidth - 6);
     tip.style.left = Math.max(0, left) + "px";
@@ -373,137 +418,16 @@ function drawChart(cats, comp) {
   hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
 
   box.appendChild(svg);
-}
-
-// ---- corrected (GEKS-Jevons) index chart, drawn under the main IPI chart -------
-// Same categories/weights/quarters as the main chart, but reads DATA.index_geks
-// (the drift-free, correctly-timed series). Shares the global pinned quarter.
-function drawChartGEKS(cats) {
-  const box = document.getElementById("chart2");
-  if (!box || !DATA.index_geks) return;
-  [...box.querySelectorAll("svg")].forEach(s => s.remove());
-  const tip = document.getElementById("tip2");
-  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 74 };  // match the main chart's size
-  const months = DATA.months, n = months.length;
-  const mains = cats.filter(c => !isSub(c));
-  const showComposite = mains.length >= 2;
-  const comp = compositeSeries(mains, DATA.index_geks);
-  const lineOp = cats.length > 10 ? 0.32 : (showComposite ? 0.5 : 0.95);
-  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index_geks[c] || [], color: colorOf(c),
-                                  w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
-  if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1, dash: "" });
-
-  // 95% confidence band for the emphasised line (composite when 2+ categories,
-  // else the single category). se is the log-scale regression standard error;
-  // band = level·exp(±1.96·se). Wide bands = thin categories = less trustworthy.
-  const emph = showComposite ? comp : (mains.length ? (DATA.index_geks[mains[0]] || []) : []);
-  const seAt = i => {
-    if (!DATA.index_geks_se) return null;
-    if (showComposite) {                        // composite SE from weighted category SEs
-      let num = 0, wsum = 0;
-      for (const c of mains) {
-        const v = (DATA.index_geks[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
-        if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
-      }
-      return wsum > 0 ? Math.sqrt(num) / wsum : null;
-    }
-    const se = mains.length ? (DATA.index_geks_se[mains[0]] || [])[i] : null;
-    return se == null ? null : se;
-  };
-  const band = emph.map((v, i) => { const se = seAt(i);
-    return (v == null || se == null) ? null : [v * Math.exp(-1.96 * se), v * Math.exp(1.96 * se)]; });
-
-  const ys = series.flatMap(s => s.vals).filter(v => v != null)
-    .concat(band.filter(Boolean).flatMap(b => b));   // keep the band inside the frame
-  let lo = ys.length ? Math.min(...ys) : 95, hi = ys.length ? Math.max(...ys) : 105;
-  const pad = Math.max((hi - lo) * 0.15, 0.8); lo -= pad; hi += pad;
-  const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
-  const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
-  const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
-
-  for (const t of niceTicks(lo, hi, 5)) {
-    svg.appendChild(el("line", { _svg: 1, x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t),
-      stroke: t === 100 ? "#cfcfcf" : "#eee", "stroke-width": 1, "stroke-dasharray": t === 100 ? "4 3" : "" }));
-    svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(t) + 3, "text-anchor": "end",
-      "font-size": 11, fill: "#999" }, [String(t) + " pts"]));
-  }
-  const yMid = m.t + (H - m.t - m.b) / 2;
-  svg.appendChild(el("text", { _svg: 1, x: 14, y: yMid, "text-anchor": "middle",
-    "font-size": 11, "font-weight": 600, fill: "#6b7280", transform: `rotate(-90 14 ${yMid.toFixed(1)})` },
-    [`IPI · index points (${DATA.base_period} = 100)`]));
-  const step = Math.max(1, Math.round(n / 6));
-  months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
-    svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
-      "font-size": 11, fill: "#999" }, [mo])); });
-
-  // shaded 95% confidence band under the emphasised line (drawn first, lines on top).
-  // One polygon per CONTIGUOUS run of estimated quarters, so the band breaks at gaps
-  // exactly where the line does rather than bridging quarters we never estimated.
-  const bandFill = showComposite ? "#111" : colorOf(mains[0]);
-  const bandRuns = [];
-  band.forEach((b, i) => {
-    if (!b) return;
-    const cur = bandRuns[bandRuns.length - 1];
-    if (cur && cur[cur.length - 1].i === i - 1) cur.push({ i, lo: b[0], hi: b[1] });
-    else bandRuns.push([{ i, lo: b[0], hi: b[1] }]);
-  });
-  for (const run of bandRuns) {
-    if (run.length < 2) continue;               // a lone point has no area to shade
-    let d = run.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
-    for (let k = run.length - 1; k >= 0; k--) d += ` L${X(run[k].i).toFixed(1)} ${Y(run[k].lo).toFixed(1)}`;
-    svg.appendChild(el("path", { _svg: 1, d: d + " Z", fill: bandFill, opacity: 0.11, stroke: "none" }));
-  }
-
-  for (const s of series) {
-    let d = "", pen = false;
-    s.vals.forEach((v, i) => { if (v == null) { pen = false; return; }
-      d += `${pen ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)} `; pen = true; });
-    svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: s.color, "stroke-width": s.w,
-      opacity: s.op, "stroke-linejoin": "round", "stroke-dasharray": s.dash || "" }));
-  }
-  if (showComposite) comp.forEach((v, i) => { if (v != null) svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v), r: 2.5, fill: "#111" })); });
-
-  if (pinnedFx != null && pinnedFx >= 0 && pinnedFx < n) {
-    svg.appendChild(el("line", { _svg: 1, x1: X(pinnedFx), x2: X(pinnedFx), y1: m.t, y2: H - m.b,
-      stroke: "#2563eb", "stroke-width": 1.4, opacity: 0.9, "stroke-dasharray": "3 3" }));
-    const pv = showComposite ? comp[pinnedFx] : (mains.length ? (DATA.index_geks[mains[0]] || [])[pinnedFx] : null);
-    if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinnedFx), cy: Y(pv), r: 4.5,
-      fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
-    svg.appendChild(el("text", { _svg: 1, x: X(pinnedFx), y: m.t - 4, "text-anchor": "middle",
-      "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinnedFx]]));
-  }
-
-  const guide = el("line", { _svg: 1, y1: m.t, y2: H - m.b, stroke: "#bbb", "stroke-width": 1, opacity: 0 });
-  svg.appendChild(guide);
-  const hit = el("rect", { _svg: 1, x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent", style: "cursor:pointer" });
-  svg.appendChild(hit);
-  const idxAt = ev => { const r = svg.getBoundingClientRect(), sx = W / r.width;
-    let i = Math.round(((ev.clientX - r.left) * sx - m.l) / ((W - m.l - m.r) / (n - 1)));
-    return Math.max(0, Math.min(n - 1, i)); };
-  hit.addEventListener("click", ev => { const i = idxAt(ev); pinQuarterFx(pinnedFx === i ? null : i); });
-  hit.addEventListener("mousemove", ev => {
-    const r = svg.getBoundingClientRect(), sx = W / r.width, i = idxAt(ev);
-    guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
-    const rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
-      `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
-    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· GEKS-Jevons (${DATA.base_period}=100)</span>${rows}`;
-    tip.style.display = "block";
-    const left = Math.min(X(i) / sx + 12, r.width - tip.offsetWidth - 6);
-    tip.style.left = Math.max(0, left) + "px";
-    tip.style.top = (ev.clientY - r.top + 12) + "px";
-  });
-  hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
-  box.appendChild(svg);
 
   // headline delta for whatever basket is selected (composite, or the lone category)
   const dl = document.getElementById("geksDelta");
   if (dl) {
-    const shown = showComposite ? comp : (mains.length ? (DATA.index_geks[mains[0]] || []) : []);
-    const d = pctChange(shown);
+    const d = pctChange(emph);
     dl.textContent = d == null ? "—" : (d > 0 ? "+" : "") + d.toFixed(1) + "%";
     dl.className = d == null ? "" : (d < 0 ? "down" : "up");
   }
 }
+
 // ---- highlighted-move descriptions (list under the chart) ------------------
 function renderMoveNotes(comp, cats) {
   const ul = document.getElementById("movenotes");
@@ -533,12 +457,6 @@ function pinQuarter(i) {
   if (sel) sel.value = i == null ? "" : String(i);
   render();
 }
-function pinQuarterFx(i) {
-  pinnedFx = i;
-  const sel = document.getElementById("qpick2");
-  if (sel) sel.value = i == null ? "" : String(i);
-  render();
-}
 // Populate a quarter dropdown (grouped by year) and wire its onchange.
 function fillQuarterPicker(id, onpick) {
   const sel = document.getElementById(id);
@@ -555,13 +473,10 @@ function fillQuarterPicker(id, onpick) {
 }
 function initInspector() {
   fillQuarterPicker("qpick", pinQuarter);
-  fillQuarterPicker("qpick2", pinQuarterFx);
   const c1 = document.getElementById("qclear"); if (c1) c1.onclick = () => pinQuarter(null);
-  const c2 = document.getElementById("qclear2"); if (c2) c2.onclick = () => pinQuarterFx(null);
 }
 // Fill a readout with the composite level first, then all 7 categories in
-// alphabetical order, each at the pinned quarter. Reused by the main chart
-// (DATA.index) and the GEKS-Jevons chart (DATA.index_geks).
+// alphabetical order, each at the pinned quarter, on the GEKS-Jevons series.
 function renderInspectorInto(boxId, clrId, pinnedVal, indexSrc) {
   const box = document.getElementById(boxId);
   const clr = document.getElementById(clrId);
@@ -585,8 +500,7 @@ function renderInspectorInto(boxId, clrId, pinnedVal, indexSrc) {
   });
   box.innerHTML = html;
 }
-function renderInspector()   { renderInspectorInto("qreadout",  "qclear",  pinned,   DATA.index); }
-function renderInspectorFx() { renderInspectorInto("qreadout2", "qclear2", pinnedFx, DATA.index_geks); }
+function renderInspector()   { renderInspectorInto("qreadout",  "qclear",  pinned,   DATA.index_geks); }
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => s >= raw) || mag;
@@ -595,9 +509,13 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- table -----------------------------------------------------------------
+// Δ column reads delta_geks, matching the chart. delta12 (naive chained) is not
+// shown anywhere on the site — see the note on compositeSeries.
+const deltaOf = c => (DATA.delta_geks && DATA.delta_geks[c] != null) ? DATA.delta_geks[c] : null;
+
 function sortedCats() {
-  const key = c => ({ name: c, delta: DATA.delta12[c] ?? 0, weight: DATA.weights[c] ?? 0,
-                      gigs: DATA.panel_gigs[c] ?? 0, rank: DATA.delta12[c] ?? 0 }[sortK]);
+  const key = c => ({ name: c, delta: deltaOf(c) ?? 0, weight: DATA.weights[c] ?? 0,
+                      gigs: DATA.panel_gigs[c] ?? 0, rank: deltaOf(c) ?? 0 }[sortK]);
   return [...DATA.categories].sort((a, b) => {
     const x = key(a), y = key(b);
     return (typeof x === "string" ? x.localeCompare(y) : x - y) * sortDir;
@@ -606,7 +524,7 @@ function sortedCats() {
 
 // one table row for a category — main, or a nested subcategory detail line
 function catRow(c, rank, sub) {
-  const d = DATA.delta12[c], col = colorOf(c);
+  const d = deltaOf(c), col = colorOf(c);
   const tr = el("tr", { class: sub ? "cat sub" : "cat" });
   const caret = el("td", {}, sub ? [] : [el("span", { class: "caret" }, [open.has(c) ? "▾" : "▸"])]);
   if (!sub) caret.onclick = () => { open.has(c) ? open.delete(c) : open.add(c); render(); };
@@ -617,7 +535,7 @@ function catRow(c, rank, sub) {
   const nameCell = el("td", { class: "name" },
     (sub ? [el("span", { class: "sublead" }, ["↳ "])] : [])
       .concat([el("span", { class: "swatch", style: `background:${col}` }), labelOf(c)]));
-  const sparkCell = el("td", {}); sparkCell.appendChild(spark(DATA.index[c], 110, 20, col));
+  const sparkCell = el("td", {}); sparkCell.appendChild(spark(DATA.index_geks[c] || [], 110, 20, col));
   const wt = (DATA.weights[c] * 100).toFixed(1) + "%";
   tr.appendChild(caret); tr.appendChild(cbCell);
   tr.appendChild(nameCell); tr.appendChild(sparkCell);
@@ -728,10 +646,8 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
-  drawChartGEKS(cats);                   // corrected (GEKS-Jevons) index, drawn underneath
   renderMoveNotes(comp, mainChecked);
   renderInspector();
-  renderInspectorFx();
   // the highlighted-move legend only applies when composite highlights are drawn
   const note = document.getElementById("chartnote");
   if (note) note.style.display = showComposite ? "" : "none";

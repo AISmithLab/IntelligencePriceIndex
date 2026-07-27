@@ -85,15 +85,14 @@
     .layout { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr);
               gap: 18px; align-items: start; margin-top: 18px; }
     @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-    /* left column stacks the main IPI chart and the GEKS chart as two
-       separate cards of equal width; the category table is the right column. */
+    /* left column holds the IPI chart card; the category table is the right column. */
     .leftcol { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
-    .fxwrap { padding: 20px 22px 18px; }
-    .fxwrap .headline { margin-bottom: 12px; }
     .fxbullets { margin: 8px 0 0; padding-left: 20px; color: var(--mut);
                  font-size: 12.5px; line-height: 1.55; }
     .fxbullets li { margin: 5px 0; }
     .fxbullets b { color: var(--ink); font-weight: 700; }
+    #geksDelta { font-weight: 700; font-variant-numeric: tabular-nums; }
+    #geksDelta.up { color: var(--up); } #geksDelta.down { color: var(--down); }
 
     /* selection bar (right column header) ----------------------------------- */
     .selbar { display: flex; align-items: center; gap: 10px; padding: 2px 4px 12px;
@@ -118,8 +117,8 @@
                        color: #fff; }
 
     /* chart ----------------------------------------------------------------- */
-    #chart, #chart2 { position: relative; width: 100%; margin-top: 4px; }
-    #chart svg, #chart2 svg { display: block; width: 100%; height: auto; }
+    #chart { position: relative; width: 100%; margin-top: 4px; }
+    #chart svg { display: block; width: 100%; height: auto; }
     .tip { position: absolute; pointer-events: none; background: #fff;
            border: 1px solid var(--line); box-shadow: 0 6px 20px -6px rgba(17,24,39,.28);
            font-size: 12px; padding: 8px 10px; border-radius: 8px; white-space: nowrap;
@@ -265,8 +264,26 @@
       <div class="leftcol">
       <section class="card hero">
         <div class="headline">
-          <h2 class="charttitle">Intelligence Price Index</h2>
+          <h2 class="charttitle">Intelligence Price Index (GEKS-Jevons)</h2>
           <div class="sub" id="hCaption">Index level in index points (base 2020Q1 = 100) &middot; full history <span id="hRange"></span></div>
+          <ul class="fxbullets">
+            <li>Every quarter is compared with every other quarter <b>directly</b>, rather than through a
+              chain of quarter-to-quarter links &mdash; so the index is free of <b>chain drift</b>. Change
+              over the window: <span id="geksDelta"></span>.</li>
+            <li><b>Shaded band &mdash; 95% confidence interval.</b> From a bootstrap over gigs, it reflects
+              the estimate's statistical precision; wider bands (e.g. thin categories such as translation or
+              audio) indicate a less certain level.</li>
+            <li><b>Validated data and method.</b> The underlying prices were independently corroborated
+              against their archived source pages (100% agreement on a random sample of the displayed
+              2020Q1&ndash;present window). The index is estimated with <b>GEKS-Jevons</b>, the standard
+              drift-free multilateral estimator when only posted prices (and no quantities) are observed;
+              our implementation reproduces the <code>PriceIndexCalc</code> reference exactly.</li>
+            <li><b>Why not a simple chained index?</b> Gigs are not archived every quarter, so a chained
+              index credits a gig's whole multi-quarter price change to the one quarter it reappears &mdash;
+              on top of the rise already chained in from gigs that <em>were</em> observed in between,
+              counting the same increase more than once. On this panel that inflates the composite to
+              317.7 pts against 144.7 here. <a href="faq.html">Step 5 of the FAQ</a> works through it.</li>
+          </ul>
         </div>
         <div id="chart"><div class="tip" id="tip"></div></div>
         <div class="inspect">
@@ -280,31 +297,6 @@
           <span><span class="dot" style="background:#dc2626"></span>price drop</span>
         </div>
         <ul class="movenotes" id="movenotes"></ul>
-      </section>
-
-      <section class="card fxwrap">
-        <div class="headline">
-          <h2 class="charttitle">Intelligence Price Index (GEKS-Jevons)</h2>
-          <ul class="fxbullets">
-            <li>Same prices and weights as the index above, re-estimated so that every quarter is compared
-              with every other quarter directly rather than through a chain of links &mdash; eliminating
-              chain drift. Composite change over the window: <span id="geksDelta"></span>.</li>
-            <li><b>Shaded band &mdash; 95% confidence interval.</b> From a bootstrap over gigs, it reflects
-              the estimate's statistical precision; wider bands (e.g. thin categories such as translation or
-              audio) indicate a less certain level.</li>
-            <li><b>Validated data and method.</b> The underlying prices were independently corroborated
-              against their archived source pages (100% agreement on a random sample of the displayed
-              2020Q1&ndash;present window). The index is estimated with <b>GEKS-Jevons</b>, the standard
-              drift-free multilateral estimator when only posted prices (and no quantities) are observed;
-              our implementation reproduces the <code>PriceIndexCalc</code> reference exactly.</li>
-          </ul>
-        </div>
-        <div id="chart2"><div class="tip" id="tip2"></div></div>
-        <div class="inspect">
-          <select id="qpick2" aria-label="Inspect a specific quarter on the GEKS-Jevons chart"></select>
-          <div id="qreadout2" class="readout"></div>
-          <a id="qclear2" class="qclear" style="display:none">clear</a>
-        </div>
       </section>
       </div>
 

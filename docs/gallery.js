@@ -32,12 +32,13 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- category index trend, with 95% confidence band -----------------------
-// Prefers the drift-free GEKS-Jevons series (DATA.index_geks); band from its
-// bootstrap log-scale standard error: level·exp(±1.96·se).
+// Always the drift-free GEKS-Jevons series (DATA.index_geks); band from its
+// bootstrap log-scale standard error: level·exp(±1.96·se). There is deliberately
+// NO fallback to DATA.index (naive chained) — that series double-counts the price
+// change of gigs archived only intermittently and is not shown anywhere on the site.
 function drawIndexMini(cat) {
-  const useGeks = DATA.index_geks && DATA.index_geks[cat];
-  const vals = (useGeks ? DATA.index_geks[cat] : DATA.index[cat]) || [];
-  const se   = useGeks && DATA.index_geks_se ? (DATA.index_geks_se[cat] || []) : [];
+  const vals = (DATA.index_geks && DATA.index_geks[cat]) || [];
+  const se   = (DATA.index_geks_se && DATA.index_geks_se[cat]) || [];
   const months = DATA.months, n = months.length, color = colorOf(cat);
   const W = 440, H = 232, m = { t: 14, r: 16, b: 26, l: 46 };
 
@@ -260,10 +261,9 @@ function featuredGig(cat) {
 function buildGallery() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-  // order categories by the size of their move over the window (most dramatic first).
-  // Use the drift-free GEKS-Jevons delta (delta_geks) to match the charts below —
-  // the naive chained delta (delta12) overstates thin/volatile panels via chain drift.
-  const moveOf = c => Math.abs((DATA.delta_geks && DATA.delta_geks[c] != null ? DATA.delta_geks[c] : DATA.delta12[c]) ?? 0);
+  // order categories by the size of their move over the window (most dramatic first),
+  // on the drift-free GEKS-Jevons delta so the ordering matches the charts below.
+  const moveOf = c => Math.abs((DATA.delta_geks && DATA.delta_geks[c]) ?? 0);
   const cats = [...DATA.categories].filter(c => !(DATA.level && DATA.level[c] === "sub"))
     .sort((a, b) => moveOf(b) - moveOf(a));
 
@@ -271,10 +271,9 @@ function buildGallery() {
     const color = colorOf(cat);
     const card = el("section", { class: "gcard" });
 
-    // header: swatch + name + Δ badge. The badge reports the drift-free
-    // GEKS-Jevons change (delta_geks) so it agrees with the trend chart below;
-    // the naive chained delta12 overstates thin/volatile panels (e.g. marketing).
-    const d = DATA.delta_geks && DATA.delta_geks[cat] != null ? DATA.delta_geks[cat] : DATA.delta12[cat];
+    // header: swatch + name + Δ badge, on the drift-free GEKS-Jevons change
+    // (delta_geks) so it agrees with the trend chart below.
+    const d = (DATA.delta_geks && DATA.delta_geks[cat]) ?? null;
     const head = el("div", { class: "ghead" });
     head.appendChild(el("span", { class: "gsw", style: `background:${color}` }));
     head.appendChild(el("span", { class: "gname" }, [labelOf(cat)]));

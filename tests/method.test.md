@@ -1,7 +1,7 @@
 # Tests: Method
 
 **Draft file:** drafts/sections/method.md
-**Last reviewed:** 2026-07-23
+**Last reviewed:** 2026-07-27
 
 ## Reviewer Simulation
 
@@ -15,6 +15,8 @@
 | R6 | "Translation is estimated off very thin overlap — is that index meaningful?" | major | BLOCKED | 43% of translation quarter pairs clear the 3-gig bar, 15% have zero overlap, 22/25 quarters identified, bootstrap band ±26%. §3.4 reports the coverage and the band honestly, but the publication decision (report with wide band vs suppress) is still open. |
 | R7 | "How do we know the GEKS implementation is correct?" | minor | PASS | §3.4 implementation-validation paragraph: exact agreement with `PriceIndexCalc` 0.7 (max abs diff 0.0000, r=1.0000) on the four categories the reference can process; the reference's ZeroDivisionError on the other three is explained as a panel-sparsity assumption it makes and ours violates. |
 | R8 | "The base period is stated as 2019Q1 for the composite but the reported index runs from 2020Q1." | minor | FAIL | Pre-existing inconsistency in the composite-IPI paragraph of §3.4 (2019Q1) against the published 2020Q1 base used by the site and the GEKS window. Needs one base period stated throughout. |
+| R9 | "You attribute the whole chained-vs-GEKS gap (+217.7% vs +44.6%) to chain drift, but part of it is a coding defect in your own chained estimator." | major | FAIL | Correct. `code/12-panel-ipi.py` keys within-gig relatives by destination quarter alone, so a gig's multi-quarter change is applied as a single-quarter change on top of growth already chained in from gigs observed in between (22–31% of links span >1 quarter). Design 2020Q1→2024Q3: 326 as-built, **229 adjacent-only**, 154 direct matched-pair, 147 GEKS. §3.4 must either fix the estimator and requote the gap or state that the chained figure is an upper bound that mixes drift with the defect. Tracked as `plans/tech-debt-tracker.md` TD1. |
+| R10 | "How do you know GEKS is right, given both alternatives you compare it to share your panel construction?" | major | PASS (new evidence, not yet in the draft) | Direct matched-pair Jevons 2020Q1→2024Q3 — no chaining, no transitivity correction, no regression — corroborates GEKS in every category: design 154 vs 147, coding 197 vs 206, writing 186 vs 186, video 283 vs 274, marketing 245 vs 268, audio 392 vs 307, translation 283 vs 228, against 318/380/337/502/723/703/239 chained. Caveat to report: only 2–17 gigs survive both endpoints per category, so this is corroboration, not a precise estimate. Worth adding to §3.4 as a third, assumption-free check. |
 
 ## User Requirements
 
@@ -23,3 +25,4 @@
 | U1 | "Explain exactly how you aggregate data across freelancers sampled at different rates / covering different time ranges" | 2026-07-14 | PASS | §3.4 (GEKS-Jevons paragraphs); FAQ §8 Step 5 |
 | U2 | "Use another method besides fixed effects" | 2026-07-15 | PASS | §3.4 — GEKS-Jevons built (`code/21-geks-index.py`) |
 | U3 | "Drop fixed effects entirely; GEKS-Jevons is the approach" | 2026-07-15 | PASS | §3.4 no longer presents FE/TPD as the index; it appears only as the imputation alternative in the comparison paragraph. Site (`docs/index.html`, `docs/faq.html`, `docs/gallery.html`, `ipi.js`, `gallery.js`) reads `index_geks` and names GEKS-Jevons throughout. |
+| U4 | "Design IPI tripled over 6 years — that's suspicious" → "fix it" | 2026-07-27 | PASS | The chained-Jevons series is no longer plotted anywhere on the site: `docs/index.html` has a single GEKS-Jevons chart, and `ipi.js` reads `index_geks`/`index_geks_se`/`delta_geks` for the chart, band, Δ column, sparklines and quarter inspector. `gallery.js` fallbacks to `DATA.index`/`delta12` removed. A hero bullet states why a chained index is not used, with the 317.7-vs-144.7 contrast. |
