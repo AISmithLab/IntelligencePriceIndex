@@ -190,14 +190,19 @@
       chart opens on a single category, since a composite of one line is uninformative; selecting further
       categories rebuilds the weighted composite and draws it alongside them.</p>
       <p>What the levels track is the price of work that generative AI performs with increasing competence. In
-      this pilot every category has risen, several to three or four times their 2020 level, so an AI effect is
-      to be sought in the ordering rather than in the height of any one line. Translation, writing, and
-      coding, the tasks language models address most directly, occupy the bottom of the change column, while
-      audio, video, and marketing occupy the top. A category rising more slowly than its neighbours, or more
-      slowly than prices in general, is where substitution is most plausible; a steep rise is more consistent
-      with AI complementing the seller. The figures are nominal and the levels are chained, so consult
-      <a href="#inflation">inflation</a> and <a href="#caveats">limitations</a> before drawing a conclusion
-      from a single number.</p>
+      this pilot every category has risen even after adjusting for inflation, but the spread is wide &mdash;
+      from <b>design at +5.8%</b> over six years to <b>translation at +117%</b>, with the composite at
+      <b>+14.1%</b> &mdash; so an AI effect is to be sought in the <i>ordering</i> rather than in the height of
+      any one line. Design, writing, and coding sit at the bottom of the change column; video, marketing, and
+      translation sit at the top. A category rising more slowly than its neighbours, or more slowly than prices
+      in general, is where substitution is most plausible; a steep rise is more consistent with AI complementing
+      the seller.</p>
+      <p>That ordering is not uniformly what an exposure story would predict. Translation is among the tasks
+      language models handle most directly, yet it shows the largest rise of any category &mdash; though it is
+      also the thinnest series here, with the widest confidence band and several quarters missing entirely, so
+      its level carries the least weight of the seven. The figures default to <b>real</b> (inflation-adjusted)
+      terms and can be switched to nominal on the chart, so consult <a href="#inflation">inflation</a> and
+      <a href="#caveats">limitations</a> before drawing a conclusion from a single number.</p>
     </div>
 
     <!-- 4 -->
@@ -215,9 +220,11 @@
       natural place to look for a substitution signal in exposed categories such as writing and design.
       Two confounders complicate that reading. The opening quarters coincide with the COVID shock of 2020
       and 2021, which moved freelance demand for reasons unrelated to AI, so the earliest movements should
-      not be taken as an AI story. General inflation and the platform's own growth also press on posted
-      prices across the whole window. The index records how prices moved. It does not, on its own,
-      establish why. Disentangling an AI effect from these other forces is the task of the accompanying
+      not be taken as an AI story. General inflation also presses on posted prices across the whole
+      window &mdash; the <a href="#inflation">real series</a> now removes that particular confounder,
+      and it turns out to account for about two-thirds of the nominal rise &mdash; but the platform's own
+      growth, its shift in seller mix, and sellers repricing as they accumulate reputation all remain.
+      The index records how prices moved. It does not, on its own, establish why. Disentangling an AI effect from these other forces is the task of the accompanying
       paper, and the relevant <a href="#caveats">limitations</a> appear below.</p>
     </div>
 
@@ -311,10 +318,17 @@
     <!-- 11 -->
     <div class="q" id="formulas">
       <h3>8. How is the index calculated?</h3>
-      <p>The IPI is a <b>matched-model index</b> assembled in three steps, following the approach the BLS
-      applies to CPI items that are difficult to quality-adjust. A fourth step turns the resulting level
-      into the reported change. The composite is recomputed <i>live</i> in the browser whenever the basket
-      changes.</p>
+      <p>The IPI is a <b>matched-model index</b>, following the approach the BLS applies to CPI items that
+      are difficult to quality-adjust. The series actually plotted on the home page is a <b>GEKS-Jevons</b>
+      index, <b>deflated by CPI-U</b> &mdash; steps 5 and 6 below.</p>
+      <p>Steps 1&ndash;4 come first anyway, because they are the clearest way to see what a matched-model
+      index does: compare each gig only with its own past, average those changes geometrically, weight the
+      categories together. They build the index as a <i>chain</i>, which is the textbook construction and
+      also, on data as irregularly sampled as an archive, the one that fails. Step 5 explains that failure
+      and replaces the chain; step 6 converts the result from dollars to constant purchasing power. The
+      chained series of steps 1&ndash;4 is <b>not plotted anywhere on this site</b> &mdash; it is retained
+      in the underlying data only as the comparison that motivates step 5. The composite is recomputed
+      <i>live</i> in the browser whenever the basket changes.</p>
 
       <p class="step">Step 1 &middot; Price relatives (same gig, period to period)</p>
       <p>For every gig <i>i</i> seen in two consecutive quarters, take the ratio of its later price to its
@@ -331,7 +345,7 @@
       falling outside the band <code>0.1 to 10×</code> are treated as data errors and discarded, and a
       category-quarter enters only once at least <b>3</b> gigs are matched.</p>
 
-      <p class="step">Step 2 &middot; Category index (Jevons, chained)</p>
+      <p class="step">Step 2 &middot; Category index (Jevons, chained &mdash; the comparison series)</p>
       <p>Within a category, that quarter's price relatives are combined through a <b>Jevons index</b>, the
       geometric mean of the relatives, and chained onto the previous quarter's level:</p>
       <div class="math">
@@ -395,7 +409,8 @@
       different, and the small errors that introduces do not cancel. They compound along the chain, a
       well-documented problem called <b>chain drift</b>: by 2026 the chained index reads roughly twice what the
       drift-free estimate does, even though both use exactly the same prices.</p>
-      <p>The second chart on the home page corrects this with a <b>GEKS-Jevons index</b>. The intuition: rather
+      <p>The chart on the home page therefore does not use the chain at all. It shows a <b>GEKS-Jevons
+      index</b> instead. The intuition: rather
       than walking from 2020 to 2026 one quarter at a time, compare <i>every</i> pair of quarters directly, then
       average all the routes between them. To get 2020Q1&nbsp;&rarr;&nbsp;2026Q1 you can go direct, or via
       2022Q3, or via 2024Q1, and so on &mdash; each route uses a different set of gigs, so no single one is
@@ -423,20 +438,59 @@
       quarter rests on fewer or thinner comparisons (translation and audio most of all). Unlike a regression-based
       correction, GEKS never imputes a price for a gig-quarter it did not observe &mdash; it uses matched pairs
       only.</p>
+
+      <p class="step">Step 6 &middot; Deflating to real terms (the default view)</p>
+      <p>Everything above yields a price in <b>dollars</b>, and the dollar itself changed over this window.
+      To ask whether intelligence work genuinely became more expensive, rather than whether the currency
+      became worth less, each quarter's level is divided by the change in consumer prices since the base
+      quarter:</p>
+      <div class="math">
+        <i>I</i><sup>real</sup><sub><i>c,t</i></sub> &nbsp;=&nbsp;
+        <i>I</i><sub><i>c,t</i></sub> &nbsp;&times;&nbsp;
+        <span class="frac">
+          <span class="num">CPI<sub>0</sub></span>
+          <span class="den">CPI<sub><i>t</i></sub></span>
+        </span>
+      </div>
+      <p class="legend"><b>CPI<sub><i>t</i></sub></b> is the quarterly average of <b>CPI-U</b> &mdash; the US
+      Consumer Price Index for All Urban Consumers, city average, all items, seasonally adjusted, published
+      by the Bureau of Labor Statistics (FRED series <code>CPIAUCSL</code>) &mdash; and <b>CPI<sub>0</sub></b>
+      its value in the base quarter, 2020&nbsp;Q1. The result is stated in constant 2020&nbsp;Q1 dollars.
+      The seasonally adjusted series is used because the index is read quarter over quarter, and adjustment
+      removes the seasonal wave that would otherwise appear in every real quarterly change; the unadjusted
+      series was checked as a robustness test and never diverges by more than <b>0.36%</b>.
+      Because the deflator is a single constant per quarter and carries no sampling error of its own, the
+      <b>bootstrap confidence bands are identical on the real and nominal series</b> &mdash; deflation moves
+      the level, not the precision. See <a href="#inflation">question 9</a> for what this changes and what
+      it does not.</p>
     </div>
 
     <!-- 12 -->
     <div class="q" id="inflation">
       <h3>9. Are these prices adjusted for inflation?</h3>
-      <p>The index is stated in <b>nominal US dollars</b> and carries no inflation adjustment at present.
-      It follows the actual posted price of a gig over time, without deflating by CPI or any other
-      measure. A reading above <code>100</code> index points therefore does not by itself mean the work grew more
-      expensive in real terms, since part of any increase reflects economy-wide inflation over the same
-      span.</p>
-      <p>What speaks more directly to substitution by AI is a fall in gig prices, or a rise slower than
-      general prices, against an inflationary backdrop. A real, inflation-adjusted version is planned.
-      Until it exists, the reported change is best read as a <b>nominal</b> figure, with the wider
-      macroeconomic context kept in view.</p>
+      <p><b>Yes &mdash; the default view is inflation-adjusted.</b> The chart opens on the
+      <b>Real</b> series, which divides the index by <b>CPI-U</b> (the US Consumer Price Index for All
+      Urban Consumers, city average, all items, seasonally adjusted, published by the Bureau of Labor
+      Statistics). A real reading answers &ldquo;how much of an ordinary basket of goods does this gig
+      cost?&rdquo; rather than &ldquo;how many dollars does it cost?&rdquo;. The <b>Nominal</b> toggle
+      shows the undeflated dollar series, with CPI-U drawn alongside it as a dashed grey line so the gap
+      between the two is visible directly.</p>
+      <p>The adjustment matters a great deal here. US consumer prices rose <b>26.8%</b> between 2020Q1
+      and 2026Q1, and the composite IPI rose <b>44.7%</b> in nominal terms over the same window &mdash;
+      so roughly <b>two-thirds of the nominal increase is the dollar losing value</b>, not intelligence
+      work becoming more expensive. In real terms the composite rise is <b>+14.1%</b>. Some categories
+      change character entirely once deflated: design is <b>+34.1% nominal</b> but only
+      <b>+5.8% real</b> over six years, and writing goes from <b>+40.6%</b> to <b>+10.9%</b>.</p>
+      <p>Two caveats worth stating. First, deflation removes <em>general</em> inflation and nothing else
+      &mdash; it is not a control for sellers raising prices as they accumulate reviews and reputation,
+      for shifts in Fiverr's seller mix, or for the fact that a matched-model index follows surviving
+      gigs rather than new entrants. Those are separate corrections. Second, the BLS did not publish a
+      CPI-U figure for <b>October 2025</b>, so the 2025Q4 deflator interpolates that one month from its
+      neighbours; the quarter is flagged in the underlying data and in the chart tooltip.</p>
+      <p>What speaks most directly to substitution by AI is a fall in gig prices, or a rise slower than
+      general prices, against an inflationary backdrop &mdash; which is what the real series is built to
+      show. Note that the featured gig price histories elsewhere on the site are the <b>nominal dollar
+      amounts actually posted</b> on Fiverr and are not deflated.</p>
     </div>
 
     <!-- 13 -->
@@ -501,12 +555,26 @@
       <ul>
         <li><b>Pilot scale.</b> The figures rest on a sample of sellers rather than the whole
         marketplace, and are best read as indicative rather than settled.</li>
-        <li><b>Possible upward drift in the level.</b> The composite is chained from quarter-to-quarter
-        geometric means. When the panel of matched gigs turns over heavily between quarters, indices built
-        this way can accumulate drift, and diagnostic runs using drift-free multilateral (GEKS) and
-        hedonic estimators place the true cumulative rise well below the chained figure. The level is
-        therefore better read as an upper bound, with the <i>direction</i> of movement and the
-        <i>ordering</i> across categories carrying more weight than the absolute magnitude.</li>
+        <li><b>Chain drift is corrected, but the correction is itself an estimate.</b> The published series
+        is the drift-free GEKS-Jevons index, not the chained one, which is why the levels here are far below
+        what a naive chained construction reports (composite <code>+44.7%</code> nominal against
+        <code>+217.7%</code> chained). Different drift-free estimators still disagree with one another by
+        several index points in the thinner categories, so the <i>direction</i> of movement and the
+        <i>ordering</i> across categories carry more weight than any absolute magnitude.</li>
+        <li><b>Sellers reprice as they build a reputation.</b> A gig's price rises with its accumulated
+        review count independently of anything happening in the wider market: within the same gig, and after
+        absorbing every platform-wide shock, a doubling of reviews is associated with a price roughly
+        <b>7%</b> higher, and reputation accumulation of this kind accounts for something like <b>40%</b> of
+        the within-gig price growth in the panel. Part of what the index records is therefore sellers ageing
+        rather than intelligence work repricing. This cannot simply be subtracted out, because review counts
+        are cumulative <i>sales</i> &mdash; if AI suppressed demand, review growth would slow too, and
+        adjusting for reviews would absorb some of the very effect the index exists to measure.</li>
+        <li><b>The index follows survivors, and new entrants tell a different story.</b> A matched-model
+        index can only track gigs that persist, so it follows incumbents as they age. Gigs observed entering
+        the market for the first time post at roughly <b>flat prices from 2019 to 2025</b> in design,
+        writing, video, and marketing, over the same span in which the matched index for those categories
+        climbs substantially. Both facts are true of the same marketplace, and the gap between them is the
+        classic matched-model survivorship problem rather than a contradiction.</li>
         <li><b>Thin categories read flat.</b> Sparse matched-pair coverage can hold a series at
         <code>100</code> index points for long stretches, which reflects missing matches rather than genuine
         price stability. The earliest quarters and the smallest categories (translation, audio) are most exposed
@@ -519,19 +587,31 @@
         quarters overlap the COVID shock.</li>
         <li><b>Survivorship and archiving gaps.</b> The Wayback Machine does not capture every page in
         every quarter, and gigs that disappear drop out of the panel.</li>
-        <li><b>Association, not established causation.</b> The index documents how prices moved. Assigning
-        those movements to AI specifically requires the further analysis in the paper.</li>
+        <li><b>Association, not established causation.</b> The index documents how prices moved; it does not
+        establish why, and the honest position is that <b>AI is one candidate explanation among several</b>.
+        General inflation, the reputation treadmill, survivorship, shifts in Fiverr's seller mix, and the
+        platform's own growth all press on these prices, and the first three are measured above rather than
+        merely acknowledged. Isolating an AI effect would require a comparison group of similar work that
+        AI barely touches; every category in this sample is exposed, so no such group exists within it. Read
+        the index as a description of what happened to the price of intelligence work, not as a measurement
+        of what AI did to it.</li>
       </ul>
     </div>
 
     <!-- 14 -->
     <div class="q" id="repro">
       <h3>14. Can I reproduce this, and how often is it updated?</h3>
-      <p>The series can be regenerated from the project's analysis pipeline under <code>code/</code>. The
-      full-history quarterly build is <code>code/18-build-site-data-long.py</code>, which writes
-      <code>docs/data.json</code>; the page loads that file and recomputes the composite on the client.
-      <code>README.md</code> and <code>GUIDE.md</code> alongside this page document the data contract and
-      the build steps.</p>
+      <p>The series can be regenerated from the project's analysis pipeline under <code>code/</code>. Three
+      steps produce what this site shows: <code>21-geks-index.py</code> estimates the drift-free GEKS-Jevons
+      indices and their bootstrap standard errors, <code>23-real-index.py</code> fetches CPI-U and deflates
+      them to real terms, and <code>18-build-site-data-long.py</code> splices the historical and recent
+      segments, rebases them, and writes <code>docs/data.json</code>. The page loads that file and recomputes
+      the composite on the client. <code>README.md</code> and <code>GUIDE.md</code> alongside this page
+      document the data contract and the build steps, though both still describe an earlier revision of that
+      contract; <code>docs/data.json</code> itself is the authoritative version.</p>
+      <p>The GEKS implementation was checked against an independent reference package
+      (<code>PriceIndexCalc</code>) on the same panel and reproduces it exactly, to within
+      <code>0.0000</code> index points, on every category that package is able to process.</p>
       <p>Updates come from rebuilding against fresh Wayback Machine snapshots rather than from a live feed,
       so the index moves when the pipeline is re-run, not continuously. Each build stamps the page with a
       <b>generation date</b> and the quarters it covers, so the currency of the displayed series stays
