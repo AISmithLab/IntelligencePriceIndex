@@ -93,6 +93,19 @@
     .fxbullets b { color: var(--ink); font-weight: 700; }
     #geksDelta { font-weight: 700; font-variant-numeric: tabular-nums; }
     #geksDelta.up { color: var(--up); } #geksDelta.down { color: var(--down); }
+    /* real / nominal segmented toggle ---------------------------------------- */
+    .basisrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin: 10px 0 2px; }
+    .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px;
+      overflow: hidden; background: #fff; }
+    .seg button { font: inherit; font-size: 12.5px; font-weight: 600; color: var(--mut);
+      background: transparent; border: 0; padding: 5px 11px; cursor: pointer; }
+    .seg button + button { border-left: 1px solid var(--line); }
+    .seg button:hover { background: #f2f4f7; color: var(--ink); }
+    .seg button.on { background: #2a78d6; color: #fff; }
+    .seg button.on:hover { background: #2a78d6; }
+    .basisnote { font-size: 11.5px; color: var(--mut); line-height: 1.45; }
+    .basisnote b { color: var(--ink); font-weight: 700; }
 
     /* selection bar (right column header) ----------------------------------- */
     .selbar { display: flex; align-items: center; gap: 10px; padding: 2px 4px 12px;
@@ -246,14 +259,16 @@
             prices and track how the cost of freelance &ldquo;intelligence&rdquo; work &mdash; design,
             writing, coding, video, audio &mdash; has moved since 2020. The <b>Intelligence Price Index
             (IPI)</b> is a CPI-style index of that work. The goal: separate the upward pull of
-            <b>inflation</b> from the downward push of <b>AI productivity gains</b>.</p>
+            <b>inflation</b> from the downward push of <b>AI productivity gains</b> &mdash; which is why
+            the chart shows the index <b>deflated by CPI-U</b> by default.</p>
           </div>
           <div class="ibox">
             <div class="ibox-h">How to read it</div>
             <p>The IPI is in <b>index points</b>, not dollars: <b>2020Q1 = 100</b>, every quarter scaled
-            to it. <b>142 pts</b> = 42% more expensive than 2020Q1; <b>80 pts</b> = 20% less. Read
+            to it. <b>114 pts</b> = 14% more expensive than 2020Q1; <b>80 pts</b> = 20% less. Read
             <b>levels in points</b> and <b>changes in percent</b> (quarter-over-quarter, year-over-year,
-            or vs. the 2020Q1 base).</p>
+            or vs. the 2020Q1 base). In the default <b>Real</b> view, &ldquo;more expensive&rdquo; means
+            <em>after</em> stripping out general inflation.</p>
           </div>
         </div>
         <nav><a href="gallery.html">Gallery</a> &nbsp;&middot;&nbsp; <a href="faq.html">Full FAQ &amp; methodology &rarr;</a></nav>
@@ -266,10 +281,24 @@
         <div class="headline">
           <h2 class="charttitle">Intelligence Price Index (GEKS-Jevons)</h2>
           <div class="sub" id="hCaption">Index level in index points (base 2020Q1 = 100) &middot; full history <span id="hRange"></span></div>
+          <div class="basisrow">
+            <div class="seg" role="group" aria-label="Price basis">
+              <button type="button" id="basisReal" class="on">Real</button>
+              <button type="button" id="basisNominal">Nominal</button>
+            </div>
+            <span class="basisnote" id="basisNote"></span>
+          </div>
           <ul class="fxbullets">
             <li>Every quarter is compared with every other quarter <b>directly</b>, rather than through a
               chain of quarter-to-quarter links &mdash; so the index is free of <b>chain drift</b>. Change
               over the window: <span id="geksDelta"></span>.</li>
+            <li><b>Real, not just nominal.</b> Freelance prices are quoted in dollars, and the dollar itself
+              lost value over this window &mdash; US consumer prices rose <b>26.8%</b> between 2020Q1 and
+              2026Q1. The default <b>Real</b> view divides the index by <b>CPI-U</b> (US city average, all
+              items, seasonally adjusted) so it shows what a gig costs in constant 2020Q1 dollars. On the
+              composite, general inflation accounts for roughly <b>two-thirds</b> of the nominal rise:
+              <b>+44.7% nominal</b> becomes <b>+14.1% real</b>. Switch to <b>Nominal</b> to see the
+              undeflated series with CPI-U drawn alongside it for comparison.</li>
             <li><b>Shaded band &mdash; 95% confidence interval.</b> From a bootstrap over gigs, it reflects
               the estimate's statistical precision; wider bands (e.g. thin categories such as translation or
               audio) indicate a less certain level.</li>

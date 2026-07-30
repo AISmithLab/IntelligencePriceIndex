@@ -1,6 +1,7 @@
 // Intelligence Price Index — Gallery. Self-contained (no external libs), reuses
 // the same data contract as ipi.js. For each category it renders two graphs:
-//   1. the category's GEKS-Jevons price-index trend, with a 95% confidence band
+//   1. the category's GEKS-Jevons price-index trend (real, CPI-U-deflated where
+//      available, matching the index page's default), with a 95% confidence band
 //   2. a featured real gig's package-price history (from freelancers.json)
 // so the reader sees both the macro index and a concrete micro example per domain.
 
@@ -32,12 +33,16 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- category index trend, with 95% confidence band -----------------------
-// Always the drift-free GEKS-Jevons series (DATA.index_geks); band from its
-// bootstrap log-scale standard error: level·exp(±1.96·se). There is deliberately
-// NO fallback to DATA.index (naive chained) — that series double-counts the price
-// change of gigs archived only intermittently and is not shown anywhere on the site.
+// Always the drift-free GEKS-Jevons series, REAL (CPI-U-deflated) where available
+// so this page agrees with the index page's default view; band from its bootstrap
+// log-scale standard error: level·exp(±1.96·se). The deflator carries no sampling
+// error, so the same SEs apply to both bases. There is deliberately NO fallback to
+// DATA.index (naive chained) — that series double-counts the price change of gigs
+// archived only intermittently and is not shown anywhere on the site.
+const galleryIdx = () => (DATA.index_geks_real || DATA.index_geks || {});
+const galleryReal = () => !!DATA.index_geks_real;
 function drawIndexMini(cat) {
-  const vals = (DATA.index_geks && DATA.index_geks[cat]) || [];
+  const vals = galleryIdx()[cat] || [];
   const se   = (DATA.index_geks_se && DATA.index_geks_se[cat]) || [];
   const months = DATA.months, n = months.length, color = colorOf(cat);
   const W = 440, H = 232, m = { t: 14, r: 16, b: 26, l: 46 };
@@ -263,7 +268,8 @@ function buildGallery() {
   grid.innerHTML = "";
   // order categories by the size of their move over the window (most dramatic first),
   // on the drift-free GEKS-Jevons delta so the ordering matches the charts below.
-  const moveOf = c => Math.abs((DATA.delta_geks && DATA.delta_geks[c]) ?? 0);
+  const galleryDelta = () => (DATA.delta_geks_real || DATA.delta_geks || {});
+  const moveOf = c => Math.abs(galleryDelta()[c] ?? 0);
   const cats = [...DATA.categories].filter(c => !(DATA.level && DATA.level[c] === "sub"))
     .sort((a, b) => moveOf(b) - moveOf(a));
 
@@ -273,20 +279,22 @@ function buildGallery() {
 
     // header: swatch + name + Δ badge, on the drift-free GEKS-Jevons change
     // (delta_geks) so it agrees with the trend chart below.
-    const d = (DATA.delta_geks && DATA.delta_geks[cat]) ?? null;
+    const d = galleryDelta()[cat] ?? null;
     const head = el("div", { class: "ghead" });
     head.appendChild(el("span", { class: "gsw", style: `background:${color}` }));
     head.appendChild(el("span", { class: "gname" }, [labelOf(cat)]));
     const badge = el("span", { class: "gbadge " + (d > 0 ? "up" : d < 0 ? "down" : "") },
       [fmtPct(d) + " ’20–’26"]);
-    badge.setAttribute("title", "Change over 2020Q1→present, GEKS-Jevons (drift-free) estimate");
+    badge.setAttribute("title", "Change over 2020Q1→present, GEKS-Jevons (drift-free) estimate"
+      + (galleryReal() ? ", in real (CPI-U-deflated) terms" : ", in nominal dollars"));
     head.appendChild(badge);
     card.appendChild(head);
 
     // graph 1: price-index trend
     const g1 = el("figure", { class: "gfig" });
     g1.appendChild(el("figcaption", { class: "gcap" },
-      ["Price index · GEKS-Jevons, base " + DATA.base_period + " = 100 · shaded = 95% CI"]));
+      ["Price index · GEKS-Jevons, base " + DATA.base_period + " = 100 · "
+       + (galleryReal() ? "real, CPI-U-deflated" : "nominal USD") + " · shaded = 95% CI"]));
     g1.appendChild(drawIndexMini(cat));
     card.appendChild(g1);
 

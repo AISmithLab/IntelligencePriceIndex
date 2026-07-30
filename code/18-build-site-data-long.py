@@ -46,6 +46,13 @@ RECENT_GEKS_CSV = PILOT / "recent-category-indices-geks.csv"
 # per-quarter bootstrap standard errors (log scale) for the confidence bands
 HIST_GEKS_SE_CSV = PILOT / "panel-category-indices-geks-se.csv"
 RECENT_GEKS_SE_CSV = PILOT / "recent-category-indices-geks-se.csv"
+# CPI-U-deflated (real) counterparts from code/23-real-index.py, plus the
+# quarterly deflator itself so the site can draw CPI-U as a reference line.
+# The real CSVs run through the SAME splice/rebase path as the nominal ones, so
+# the two series on the chart differ only by the deflator (2026-07-30).
+HIST_GEKS_REAL_CSV = PILOT / "panel-category-indices-geks-real.csv"
+RECENT_GEKS_REAL_CSV = PILOT / "recent-category-indices-geks-real.csv"
+CPI_QUARTERLY_CSV = PILOT / "cpi-quarterly.csv"
 WEIGHTS_CSV = PILOT / "recent-category-weights.csv"
 MANIFEST = PILOT / "recent-manifest.tsv"
 HIST_PRICES = PILOT / "pilot-prices.csv"     # historical extracted prices (2011->2026)
@@ -420,6 +427,38 @@ def main():
                 num += (w * se) ** 2; wsum += w
         comp_geks_se.append(round(math.sqrt(num) / wsum, 5) if wsum > 0 else None)
 
+    # CPI-U-deflated (real) index — same splice + rebase path as the nominal
+    # GEKS series, so on the chart the two differ only by the deflator.
+    index_geks_real, comp_geks_real = None, None
+    if HIST_GEKS_REAL_CSV.exists() and RECENT_GEKS_REAL_CSV.exists():
+        hist_geks_real = read_index_csv(HIST_GEKS_REAL_CSV)
+        recent_geks_real = read_index_csv(RECENT_GEKS_REAL_CSV)
+        chained_geks_real = {}
+        for cat in cats:
+            s = chain_category(cat, hist_geks_real, recent_geks_real)
+            if s:
+                chained_geks_real[cat] = s
+        index_geks_real = aligned(chained_geks_real)
+        comp_geks_real = composite_series(chained_geks_real)
+
+    # CPI-U itself, rebased to START_Q = 100, as a reference line. `cpi_imputed`
+    # marks quarters whose deflator contains an interpolated month (no October
+    # 2025 CPI-U was published) so the site can flag them rather than pretend
+    # the deflator is fully observed everywhere.
+    cpi_series, cpi_imputed = None, None
+    if CPI_QUARTERLY_CSV.exists():
+        cpi_raw, cpi_imp = {}, {}
+        with open(CPI_QUARTERLY_CSV) as f:
+            for row in csv.DictReader(f):
+                if row.get("cpi_sa"):
+                    cpi_raw[row["quarter"]] = float(row["cpi_sa"])
+                    cpi_imp[row["quarter"]] = row.get("imputed_month") == "1"
+        base_cpi = cpi_raw.get(START_Q)
+        if base_cpi:
+            cpi_series = [round(100.0 * cpi_raw[q] / base_cpi, 2) if q in cpi_raw
+                          else None for q in qs]
+            cpi_imputed = [bool(cpi_imp.get(q)) for q in qs]
+
     def full_delta(series):
         a = next((v for v in series if v is not None), None)
         b = next((v for v in reversed(series) if v is not None), None)
@@ -429,6 +468,10 @@ def main():
     delta["composite"] = full_delta(comp)
     delta_geks = {c: full_delta(index_geks[c]) for c in cats}
     delta_geks["composite"] = full_delta(comp_geks)
+    delta_geks_real = None
+    if index_geks_real is not None:
+        delta_geks_real = {c: full_delta(index_geks_real[c]) for c in cats}
+        delta_geks_real["composite"] = full_delta(comp_geks_real)
 
     rankings, freelancers = build_rankings()
 
@@ -448,6 +491,14 @@ def main():
         "delta_geks": delta_geks,
         "index_geks_se": se_geks,                      # log-scale SE per category/quarter
         "composite_geks_se": comp_geks_se,             # log-scale SE of the composite
+        # CPI-U-deflated counterparts. The deflator is a per-quarter constant with
+        # no sampling error, so index_geks_se applies unchanged to the real series
+        # and no separate *_real_se block is emitted (see code/23-real-index.py).
+        "index_geks_real": index_geks_real,
+        "composite_geks_real": comp_geks_real,
+        "delta_geks_real": delta_geks_real,
+        "cpi": cpi_series,                             # CPI-U (SA), rebased to base_period
+        "cpi_imputed": cpi_imputed,                    # quarter's deflator has an interpolated month
         "labels": {c: LABELS[c] for c in cats},
         "colors": {c: COLORS[c] for c in cats},
         "rankings": rankings,
@@ -469,6 +520,14 @@ def main():
         bar = "#" * int((v or 0) / 8)
         print(f"  {q:<7} {('%7.1f' % v) if v else '    n/a'}  {bar}")
     print(f"\nFull-period change {qs[0]}->{qs[-1]}:  composite {delta['composite']:+.1f}%")
+    if delta_geks_real:
+        print(f"GEKS composite {qs[0]}->{qs[-1]}:  "
+              f"nominal {delta_geks['composite']:+.1f}%   "
+              f"real {delta_geks_real['composite']:+.1f}%   "
+              f"CPI-U {(cpi_series[-1] - 100):+.1f}%")
+        if cpi_imputed and any(cpi_imputed):
+            flagged = [q for q, f in zip(qs, cpi_imputed) if f]
+            print(f"  deflator contains an interpolated month in: {', '.join(flagged)}")
     print("Per-category full-period change:")
     for c in sorted(cats, key=lambda x: delta[x] if delta[x] is not None else 0):
         d = delta[c]

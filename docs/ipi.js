@@ -61,24 +61,43 @@ fetch("data.json").then(r => r.json()).then(data => {
   document.getElementById("src").innerHTML =
     `Source: Fiverr gig prices via the Wayback Machine, matched-model GEKS-Jevons index (quarterly, ${DATA.base_period}=100). ` +
     `Composite = review-weighted geometric mean of the selected categories: ` +
-    `<code>exp(Σ w·ln(index) / Σ w)</code>. Freelancer rankings from archived gig counts. Data generated ${DATA.generated}.`;
+    `<code>exp(Σ w·ln(index) / Σ w)</code>. Real series deflated by CPI-U, US city average, all items, ` +
+    `seasonally adjusted (BLS, via FRED <code>CPIAUCSL</code>); no CPI-U was published for October 2025, ` +
+    `so the 2025Q4 deflator interpolates that month from its neighbours. ` +
+    `Freelancer rankings from archived gig counts. Data generated ${DATA.generated}.`;
   wireControls();
   initInspector();
-  render();
+  setBasis(hasReal() ? basis : "nominal");   // sets the toggle state + note, then renders
 }).catch(e => {
   document.getElementById("chart").innerHTML =
     `<p style="color:#c5221f">Could not load data.json (${e}). Serve over HTTP, not file://.</p>`;
 });
 
 // ---- math ------------------------------------------------------------------
-// Everything on this page reads the drift-free GEKS-Jevons series (DATA.index_geks).
+// Everything on this page reads the drift-free GEKS-Jevons series — DATA.index_geks
+// (nominal) or DATA.index_geks_real (CPI-U-deflated), routed through idxSrc() below.
 // DATA.index — the naive chained-Jevons series — is retained in data.json for the
 // paper's method comparison but is NOT plotted: chaining credits a sparsely-sampled
 // gig's multi-quarter price change to the single quarter it reappears, on top of the
 // growth already chained in from densely-sampled gigs, so the same increase is counted
 // more than once. Over 2020Q1–2026Q1 that inflates the composite to 317.7 pts against
 // 144.7 for GEKS. See faq.html Step 5.
-function compositeSeries(cats, src = DATA.index_geks) {
+// ---- price basis: real (CPI-U-deflated) vs nominal --------------------------
+// Real is the DEFAULT view. The index is quoted in dollars and the dollar lost
+// ~27% of its value over 2020Q1-2026Q1, so the nominal series answers "how many
+// dollars does this gig cost" while the real series answers "how much of a
+// basket of goods does this gig cost" -- the latter is the one that speaks to
+// whether intelligence work actually got more expensive. Both are published;
+// nominal additionally draws CPI-U alongside so the gap is visible directly.
+// Falls back to nominal if data.json predates the real block (2026-07-30).
+let basis = "real";
+const hasReal   = () => !!(DATA && DATA.index_geks_real);
+const idxSrc    = () => (basis === "real" && hasReal()) ? DATA.index_geks_real : DATA.index_geks;
+const deltaSrc  = () => (basis === "real" && DATA.delta_geks_real) ? DATA.delta_geks_real : DATA.delta_geks;
+const isReal    = () => basis === "real" && hasReal();
+const basisWord = () => isReal() ? "real" : "nominal";
+
+function compositeSeries(cats, src = idxSrc()) {
   return DATA.months.map((_, i) => {
     let logSum = 0, wSum = 0;
     for (const c of cats) {
@@ -279,20 +298,30 @@ function drawChart(cats, comp) {
   const mains = cats.filter(c => !isSub(c));
   const showComposite = mains.length >= 2;
   const lineOp = cats.length > 10 ? 0.32 : (showComposite ? 0.5 : 0.95);
-  const series = cats.map(c => ({ name: labelOf(c), vals: DATA.index_geks[c] || [], color: colorOf(c),
+  const SRC = idxSrc();
+  const series = cats.map(c => ({ name: labelOf(c), vals: SRC[c] || [], color: colorOf(c),
                                   w: showComposite ? 1.3 : 2.2, op: lineOp, dash: isSub(c) ? "5 3" : "" }));
   if (showComposite) series.push({ name: "Composite", vals: comp, color: "#111", w: 3, op: 1 });
+  // In the nominal view, draw CPI-U alongside so the reader can see directly how
+  // much of the climb is the general price level. In the real view CPI-U is flat
+  // at 100 by construction, so plotting it would be noise.
+  const showCpi = !isReal() && Array.isArray(DATA.cpi);
+  if (showCpi) series.push({ name: "CPI-U (US consumer prices)", vals: DATA.cpi,
+                             color: "#8a90a0", w: 2, op: 0.95, dash: "6 4" });
 
   // 95% confidence band for the emphasised line (composite when 2+ categories, else
   // the single category). se is the bootstrap standard error on the log scale;
   // band = level·exp(±1.96·se). Wide bands = thin categories = less certain level.
-  const emph = showComposite ? comp : (mains.length ? (DATA.index_geks[mains[0]] || []) : []);
+  // The deflator is a per-quarter constant with no sampling error, so the bootstrap
+  // SEs are the same on the real and nominal series -- only the level they scale
+  // changes (see code/23-real-index.py).
+  const emph = showComposite ? comp : (mains.length ? (SRC[mains[0]] || []) : []);
   const seAt = i => {
     if (!DATA.index_geks_se) return null;
     if (showComposite) {                        // composite SE from weighted category SEs
       let num = 0, wsum = 0;
       for (const c of mains) {
-        const v = (DATA.index_geks[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
+        const v = (SRC[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
         if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
       }
       return wsum > 0 ? Math.sqrt(num) / wsum : null;
@@ -325,7 +354,7 @@ function drawChart(cats, comp) {
   svg.appendChild(el("text", { _svg: 1, x: 14, y: yMid, "text-anchor": "middle",
     "font-size": 11, "font-weight": 600, fill: "#6b7280",
     transform: `rotate(-90 14 ${yMid.toFixed(1)})` },
-    [`IPI · index points (${DATA.base_period} = 100)`]));
+    [`IPI · index points (${DATA.base_period} = 100, ${basisWord()})`]));
   // x labels (~6)
   const step = Math.max(1, Math.round(n / 6));
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
@@ -409,7 +438,9 @@ function drawChart(cats, comp) {
     guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
     let rows = series.slice().reverse().map(s => s.vals[i] == null ? "" :
       `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b> pts</div>`).join("");
-    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· GEKS-Jevons (${DATA.base_period}=100)</span>${rows}`;
+    const flag = (DATA.cpi_imputed && DATA.cpi_imputed[i])
+      ? ` <span style="color:var(--faint);font-weight:400">· deflator interpolated</span>` : "";
+    tip.innerHTML = `<b>${months[i]}</b> <span style="color:var(--faint);font-weight:400">· GEKS-Jevons, ${basisWord()} (${DATA.base_period}=100)</span>${flag}${rows}`;
     tip.style.display = "block";
     const tx = X(i) / sx, left = Math.min(tx + 12, r.width - tip.offsetWidth - 6);
     tip.style.left = Math.max(0, left) + "px";
@@ -500,7 +531,7 @@ function renderInspectorInto(boxId, clrId, pinnedVal, indexSrc) {
   });
   box.innerHTML = html;
 }
-function renderInspector()   { renderInspectorInto("qreadout",  "qclear",  pinned,   DATA.index_geks); }
+function renderInspector()   { renderInspectorInto("qreadout",  "qclear",  pinned,   idxSrc()); }
 function niceTicks(lo, hi, n) {
   const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => s >= raw) || mag;
@@ -509,9 +540,10 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- table -----------------------------------------------------------------
-// Δ column reads delta_geks, matching the chart. delta12 (naive chained) is not
-// shown anywhere on the site — see the note on compositeSeries.
-const deltaOf = c => (DATA.delta_geks && DATA.delta_geks[c] != null) ? DATA.delta_geks[c] : null;
+// Δ column reads delta_geks (or delta_geks_real in the real view), matching the
+// chart. delta12 (naive chained) is not shown anywhere on the site — see the note
+// on compositeSeries.
+const deltaOf = c => { const d = deltaSrc(); return (d && d[c] != null) ? d[c] : null; };
 
 function sortedCats() {
   const key = c => ({ name: c, delta: deltaOf(c) ?? 0, weight: DATA.weights[c] ?? 0,
@@ -535,7 +567,7 @@ function catRow(c, rank, sub) {
   const nameCell = el("td", { class: "name" },
     (sub ? [el("span", { class: "sublead" }, ["↳ "])] : [])
       .concat([el("span", { class: "swatch", style: `background:${col}` }), labelOf(c)]));
-  const sparkCell = el("td", {}); sparkCell.appendChild(spark(DATA.index_geks[c] || [], 110, 20, col));
+  const sparkCell = el("td", {}); sparkCell.appendChild(spark(idxSrc()[c] || [], 110, 20, col));
   const wt = (DATA.weights[c] * 100).toFixed(1) + "%";
   tr.appendChild(caret); tr.appendChild(cbCell);
   tr.appendChild(nameCell); tr.appendChild(sparkCell);
@@ -685,7 +717,33 @@ function render() {
   });
 }
 
+function setBasis(b) {
+  basis = b;
+  const rb = document.getElementById("basisReal"), nb = document.getElementById("basisNominal");
+  if (rb) rb.classList.toggle("on", b === "real");
+  if (nb) nb.classList.toggle("on", b !== "real");
+  const note = document.getElementById("basisNote");
+  if (note) {
+    const cpiPct = Array.isArray(DATA.cpi)
+      ? [...DATA.cpi].reverse().find(v => v != null) : null;
+    const cpiTxt = cpiPct != null ? `${(cpiPct - 100) >= 0 ? "+" : "−"}${Math.abs(cpiPct - 100).toFixed(1)}%` : "n/a";
+    note.innerHTML = b === "real"
+      ? `Deflated by <b>CPI-U</b> &mdash; constant ${DATA.base_period} dollars. US consumer prices rose <b>${cpiTxt}</b> over this window.`
+      : `Undeflated <b>dollar prices</b>. The dashed grey line is <b>CPI-U</b> (${cpiTxt} over the window) &mdash; the gap between it and the index is the real change.`;
+  }
+  render();
+}
+
 function wireControls() {
+  const rb = document.getElementById("basisReal"), nb = document.getElementById("basisNominal");
+  if (rb && nb) {
+    if (!hasReal()) {                     // older data.json: hide the toggle entirely
+      rb.parentElement.style.display = "none";
+    } else {
+      rb.onclick = () => setBasis("real");
+      nb.onclick = () => setBasis("nominal");
+    }
+  }
   document.getElementById("selAll").onclick  = () => { checked = new Set(DATA.categories); render(); };
   document.getElementById("selNone").onclick = () => { checked = new Set(); render(); };
   document.querySelectorAll("thead th[data-k]").forEach(th => {
