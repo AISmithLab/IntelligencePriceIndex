@@ -191,18 +191,50 @@
       categories rebuilds the weighted composite and draws it alongside them.</p>
       <p>What the levels track is the price of work that generative AI performs with increasing competence. In
       this pilot every category has risen even after adjusting for inflation, but the spread is wide &mdash;
-      from <b>design at +5.8%</b> over six years to <b>translation at +117%</b>, with the composite at
-      <b>+14.1%</b> &mdash; so an AI effect is to be sought in the <i>ordering</i> rather than in the height of
-      any one line. Design, writing, and coding sit at the bottom of the change column; video, marketing, and
-      translation sit at the top. A category rising more slowly than its neighbours, or more slowly than prices
-      in general, is where substitution is most plausible; a steep rise is more consistent with AI complementing
-      the seller.</p>
-      <p>That ordering is not uniformly what an exposure story would predict. Translation is among the tasks
-      language models handle most directly, yet it shows the largest rise of any category &mdash; though it is
-      also the thinnest series here, with the widest confidence band and several quarters missing entirely, so
-      its level carries the least weight of the seven. The figures default to <b>real</b> (inflation-adjusted)
-      terms and can be switched to nominal on the chart, so consult <a href="#inflation">inflation</a> and
-      <a href="#caveats">limitations</a> before drawing a conclusion from a single number.</p>
+      from <b>design at +23.2%</b> over six years to <b>audio at +154%</b>, with the composite at
+      <b>+40.7%</b>. An AI effect would show up in the <i>ordering</i> of those categories rather than in the
+      height of any one line &mdash; a category rising more slowly than its neighbours is where substitution is
+      most plausible.</p>
+      <p><b>But this pilot cannot support that ordering, and we do not claim it.</b> We hold each category to a
+      stated precision standard &mdash; within <b>&plusmn;5%</b> at 95% confidence in the latest quarter &mdash;
+      and <b>six of the seven miss it</b>:</p>
+      <table class="ftable">
+        <thead><tr><th>Category</th><th class="r">Real level, 2026Q1</th><th class="r">&plusmn;95%</th>
+          <th class="r">Meets &plusmn;5%?</th></tr></thead>
+        <tbody>
+          <tr><td>Translation</td><td class="r">236.3</td><td class="r">&plusmn;29.2%</td><td class="r">no</td></tr>
+          <tr><td>Coding</td><td class="r">197.3</td><td class="r">&plusmn;17.1%</td><td class="r">no</td></tr>
+          <tr><td>Audio</td><td class="r">254.2</td><td class="r">&plusmn;13.9%</td><td class="r">no</td></tr>
+          <tr><td>Video</td><td class="r">209.5</td><td class="r">&plusmn;11.9%</td><td class="r">no</td></tr>
+          <tr><td>Writing</td><td class="r">159.2</td><td class="r">&plusmn;8.3%</td><td class="r">no</td></tr>
+          <tr><td>Marketing</td><td class="r">232.2</td><td class="r">&plusmn;7.7%</td><td class="r">no</td></tr>
+          <tr><td>Design</td><td class="r">123.2</td><td class="r">&plusmn;4.8%</td><td class="r res">yes</td></tr>
+          <tr><td><b>Composite</b></td><td class="r res">140.7</td><td class="r res">&plusmn;3.7%</td>
+            <td class="r res">yes</td></tr>
+        </tbody>
+      </table>
+      <p>The composite passes while six of its seven components fail, which is not a contradiction: it is a
+      review-weighted average and <b>design carries about 71% of the weight</b>, so the basket inherits
+      design&rsquo;s precision. The headline <b>+40.7%</b> is therefore on firmer ground than any individual
+      category line except design&rsquo;s.</p>
+      <p>The consequence is concrete: the three categories at the top of the change column &mdash; audio
+      (254.2 &plusmn;13.9%), translation (236.3 &plusmn;29.2%) and marketing (232.2 &plusmn;7.7%) &mdash; have
+      intervals that overlap one another completely, so <b>which of them is &ldquo;highest&rdquo; is not
+      something these data determine</b>. Only design is far enough from the rest, and precise enough, to be
+      called apart from the pack. Sorting the table by &Delta; produces a ranking; that ranking is mostly
+      sampling noise, and the <b>&plusmn;95%</b> column is there so you can see how much.</p>
+      <p>Two further reasons not to read the ordering as an AI signal. First, it is not what an exposure story
+      predicts anyway: translation and audio are among the tasks language models handle most directly, yet they
+      sit at the <i>top</i> of the change column. Second, price is only one margin. We separately measured
+      whether sales rates or gig dormancy broke after ChatGPT&rsquo;s release, and found <b>no detectable change
+      in any category</b> &mdash; but with bounds so wide (&plusmn;23% to &plusmn;66%) that the test settles
+      nothing either way. Suppressing the six imprecise categories would leave a one-category site, so we
+      publish them all with their bands showing and the standard stated. Reaching &plusmn;5% needs roughly
+      850&ndash;2,500 matched gigs per category against the low hundreds collected here; that is a target for
+      the full-scale collection, not something this pilot achieves. The figures default to <b>real</b>
+      (inflation-adjusted) terms and can be switched to nominal on the chart, so consult
+      <a href="#inflation">inflation</a> and <a href="#caveats">limitations</a> before drawing a conclusion
+      from a single number.</p>
     </div>
 
     <!-- 4 -->
@@ -222,7 +254,7 @@
       and 2021, which moved freelance demand for reasons unrelated to AI, so the earliest movements should
       not be taken as an AI story. General inflation also presses on posted prices across the whole
       window &mdash; the <a href="#inflation">real series</a> now removes that particular confounder,
-      and it turns out to account for about two-thirds of the nominal rise &mdash; but the platform's own
+      and it turns out to account for about half of the nominal rise &mdash; but the platform's own
       growth, its shift in seller mix, and sellers repricing as they accumulate reputation all remain.
       The index records how prices moved. It does not, on its own, establish why. Disentangling an AI effect from these other forces is the task of the accompanying
       paper, and the relevant <a href="#caveats">limitations</a> appear below.</p>
@@ -292,6 +324,21 @@
           <tr><td>HTML <code>&lt;span&gt;</code></td><td>2018 to 2020</td><td><code>class="price"</code> DOM element</td><td class="r">0.7%</td></tr>
         </tbody>
       </table>
+      <p class="legend">Shares are of the <b>22,632</b> pilot pages above. The recent crawl, added later,
+      is almost entirely <code>packageList</code>.</p>
+
+      <p class="step">Pages that look like gigs but are not</p>
+      <p>A Fiverr gig lives at <code>fiverr.com/&lt;seller&gt;/&lt;slug&gt;</code>, so the crawl keys every
+      observation on that two-segment path. Some of Fiverr's own section pages share the shape &mdash;
+      <code>/hire/&lt;category&gt;</code> (Pro category directories) and <code>/agencies/&lt;name&gt;</code>
+      &mdash; where the first segment is a reserved site section rather than a seller handle. Those pages
+      carry no <code>packageList</code>, so extraction fell through to the dollar fallback and picked up the
+      page's <b>budget-filter default</b>, which is not a price at all. Fiverr changed that default from
+      <code>$1000</code> to <code>$500</code> between 2024Q4 and 2025Q1, which injected a spurious
+      &minus;50% step into every affected category. <b>All such rows are now excluded</b> at panel
+      construction &mdash; 3,846 of 37,782 observations, entirely within the recent crawl. The exclusion keys
+      on the reserved path segment rather than on the extraction method, because the dollar fallback also
+      recovers genuine prices from pre-2017 pages, where it is the only method that works.</p>
 
       <p class="step">What this site shows specifically</p>
       <p>The full study spans 2011 to 2026. The figures on <i>this page</i> draw on the <b>full-history
@@ -476,11 +523,11 @@
       shows the undeflated dollar series, with CPI-U drawn alongside it as a dashed grey line so the gap
       between the two is visible directly.</p>
       <p>The adjustment matters a great deal here. US consumer prices rose <b>26.8%</b> between 2020Q1
-      and 2026Q1, and the composite IPI rose <b>44.7%</b> in nominal terms over the same window &mdash;
-      so roughly <b>two-thirds of the nominal increase is the dollar losing value</b>, not intelligence
-      work becoming more expensive. In real terms the composite rise is <b>+14.1%</b>. Some categories
-      change character entirely once deflated: design is <b>+34.1% nominal</b> but only
-      <b>+5.8% real</b> over six years, and writing goes from <b>+40.6%</b> to <b>+10.9%</b>.</p>
+      and 2026Q1, and the composite IPI rose <b>78.4%</b> in nominal terms over the same window &mdash;
+      so roughly <b>half of the nominal increase is the dollar losing value</b>, not intelligence
+      work becoming more expensive. In real terms the composite rise is <b>+40.7%</b>. Some categories
+      change character substantially once deflated: design is <b>+56.1% nominal</b> but
+      <b>+23.2% real</b> over six years, and writing goes from <b>+101.8%</b> to <b>+59.2%</b>.</p>
       <p>Two caveats worth stating. First, deflation removes <em>general</em> inflation and nothing else
       &mdash; it is not a control for sellers raising prices as they accumulate reviews and reputation,
       for shifts in Fiverr's seller mix, or for the fact that a matched-model index follows surviving
@@ -557,8 +604,8 @@
         marketplace, and are best read as indicative rather than settled.</li>
         <li><b>Chain drift is corrected, but the correction is itself an estimate.</b> The published series
         is the drift-free GEKS-Jevons index, not the chained one, which is why the levels here are far below
-        what a naive chained construction reports (composite <code>+44.7%</code> nominal against
-        <code>+217.7%</code> chained). Different drift-free estimators still disagree with one another by
+        what a naive chained construction reports (composite <code>+78.4%</code> nominal against
+        <code>+282.9%</code> chained). Different drift-free estimators still disagree with one another by
         several index points in the thinner categories, so the <i>direction</i> of movement and the
         <i>ordering</i> across categories carry more weight than any absolute magnitude.</li>
         <li><b>Sellers reprice as they build a reputation.</b> A gig's price rises with its accumulated

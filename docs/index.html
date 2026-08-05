@@ -168,6 +168,13 @@
     td.d { font-weight: 600; }
     td.d.up { color: var(--up); } td.d.down { color: var(--down); }
     td.faint { color: var(--mut); }
+    /* precision column: the ±95% half-width sits beside every change figure.
+       `.imprecise` marks a category that misses the ±5% terminal-quarter standard —
+       six of seven currently do, so this is a routine caution, not an alarm. */
+    td.prec { color: var(--mut); font-variant-numeric: tabular-nums; font-size: 12px;
+              cursor: help; }
+    td.prec.imprecise { color: #9a5b00; background: #fff6e6; font-weight: 600;
+                        border-radius: 4px; }
     tr.detail td { background: #fafbfd; color: var(--mut); font-size: 12px;
                    padding: 9px 16px; }
     tr.detail .vals { font-variant-numeric: tabular-nums; line-height: 1.8; }
@@ -265,7 +272,7 @@
           <div class="ibox">
             <div class="ibox-h">How to read it</div>
             <p>The IPI is in <b>index points</b>, not dollars: <b>2020Q1 = 100</b>, every quarter scaled
-            to it. <b>114 pts</b> = 14% more expensive than 2020Q1; <b>80 pts</b> = 20% less. Read
+            to it. <b>141 pts</b> = 41% more expensive than 2020Q1; <b>80 pts</b> = 20% less. Read
             <b>levels in points</b> and <b>changes in percent</b> (quarter-over-quarter, year-over-year,
             or vs. the 2020Q1 base). In the default <b>Real</b> view, &ldquo;more expensive&rdquo; means
             <em>after</em> stripping out general inflation.</p>
@@ -296,12 +303,20 @@
               lost value over this window &mdash; US consumer prices rose <b>26.8%</b> between 2020Q1 and
               2026Q1. The default <b>Real</b> view divides the index by <b>CPI-U</b> (US city average, all
               items, seasonally adjusted) so it shows what a gig costs in constant 2020Q1 dollars. On the
-              composite, general inflation accounts for roughly <b>two-thirds</b> of the nominal rise:
-              <b>+44.7% nominal</b> becomes <b>+14.1% real</b>. Switch to <b>Nominal</b> to see the
+              composite, general inflation accounts for roughly <b>half</b> of the nominal rise:
+              <b>+78.4% nominal</b> becomes <b>+40.7% real</b>. Switch to <b>Nominal</b> to see the
               undeflated series with CPI-U drawn alongside it for comparison.</li>
-            <li><b>Shaded band &mdash; 95% confidence interval.</b> From a bootstrap over gigs, it reflects
-              the estimate's statistical precision; wider bands (e.g. thin categories such as translation or
-              audio) indicate a less certain level.</li>
+            <li><b>Shaded bands &mdash; 95% confidence intervals, on every line.</b> From a bootstrap over
+              gigs. We hold this pilot to a stated precision standard &mdash; a category should be within
+              <b>&plusmn;5%</b> at 95% confidence in the latest quarter &mdash; and <b>six of the seven
+              categories do not meet it</b>: translation &plusmn;29.2%, coding &plusmn;17.1%, audio
+              &plusmn;13.9%, video &plusmn;11.9%, writing &plusmn;8.3%, marketing &plusmn;7.7%; only design
+              (&plusmn;4.8%) clears it. The <b>&plusmn;95%</b> column reports each one and shades the misses.
+              The <b>composite</b> does meet the standard (<b>&plusmn;3.7%</b>) &mdash; it is
+              review-weighted and design carries about 71% of that weight, so the basket is far better
+              measured than most of its parts.
+              <b>Read the shaded band, not the line</b> &mdash; and treat the category ordering as
+              provisional, since the top of the table is well within its own error bars.</li>
             <li><b>Validated data and method.</b> The underlying prices were independently corroborated
               against their archived source pages (100% agreement on a random sample of the displayed
               2020Q1&ndash;present window). The index is estimated with <b>GEKS-Jevons</b>, the standard
@@ -345,6 +360,7 @@
               <th class="l" data-k="name">Category</th>
               <th class="l" style="width:110px">Trend</th>
               <th data-k="delta">&Delta;'20&ndash;'26</th>
+              <th data-k="prec" title="Half-width of the 95% confidence interval on the latest quarter's level. Shaded = misses the &plusmn;5% precision standard.">&plusmn;95%</th>
               <th data-k="weight">Weight</th>
               <th data-k="gigs">Gigs</th>
             </tr>

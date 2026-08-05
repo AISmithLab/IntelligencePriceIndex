@@ -51,8 +51,11 @@ fetch("data.json").then(r => r.json()).then(data => {
   document.getElementById("hRange").textContent =
     `(${DATA.months[0]} → ${DATA.months[DATA.months.length - 1]})`;
   document.getElementById("caveat").textContent =
-    "Quarterly GEKS-Jevons index, base " + DATA.base_period + " = 100. Categories are ranked by their " +
-    "price change over the whole window. The series joins two matched-model panels — the historical " +
+    "Quarterly GEKS-Jevons index, base " + DATA.base_period + " = 100. Categories can be sorted by their " +
+    "price change over the whole window, but that ordering is provisional: six of the seven categories miss " +
+    "the ±5% precision standard at the latest quarter (see the ±95% column), and the intervals of the top " +
+    "three overlap one another entirely, so which is highest is not determined by these data. " +
+    "The series joins two matched-model panels — the historical " +
     "pilot (2020–2024) spliced at 2024Q3 onto the recent trailing-window crawl — so the level is " +
     "continuous through the join. Expand any category (▸) to see its top freelancers ranked by the " +
     "number of distinct gigs/services they offer, then click a freelancer to see each gig and how its " +
@@ -96,6 +99,49 @@ const idxSrc    = () => (basis === "real" && hasReal()) ? DATA.index_geks_real :
 const deltaSrc  = () => (basis === "real" && DATA.delta_geks_real) ? DATA.delta_geks_real : DATA.delta_geks;
 const isReal    = () => basis === "real" && hasReal();
 const basisWord = () => isReal() ? "real" : "nominal";
+
+// ---- precision --------------------------------------------------------------
+// Sample-adequacy standard (plans/todo.md, adopted 2026-08-05): a category index
+// should be within ±5% at 95% confidence at the terminal quarter. At 2026Q1 SIX of
+// the seven categories miss it — translation ±29.2%, coding ±17.1%, audio ±13.9%,
+// video ±11.9%, writing ±8.3%, marketing ±7.7% — and only design (±4.8%) clears it.
+// Suppressing the failures would leave one category, so the site instead publishes
+// the half-width beside every level and marks the ones that miss the standard.
+// Half-width is reported as 1.96·se on the log scale (the convention the project
+// records precision in); the exact asymmetric interval is in the cell's tooltip.
+const PRECISION_RULE = 5;                        // ±% at 95% on the terminal quarter
+const seriesOf   = c => (idxSrc()[c] || []);
+const lastPresent = arr => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return i; return -1; };
+const seAtOf = (c, i) => (DATA.index_geks_se && (DATA.index_geks_se[c] || [])[i]) ?? null;
+// terminal-quarter log-scale SE for one category
+function seTerminal(c) {
+  const i = lastPresent(seriesOf(c));
+  return i < 0 ? null : seAtOf(c, i);
+}
+// ...and for the composite of a basket, weighted exactly as the composite itself is
+function seTerminalComposite(cats) {
+  if (!DATA.index_geks_se || !cats.length) return null;
+  const comp = compositeSeries(cats);
+  const i = lastPresent(comp);
+  if (i < 0) return null;
+  let num = 0, wsum = 0;
+  for (const c of cats) {
+    const v = seriesOf(c)[i], w = DATA.weights[c], se = seAtOf(c, i);
+    if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
+  }
+  return wsum > 0 ? Math.sqrt(num) / wsum : null;
+}
+const halfWidth  = se => se == null ? null : 196 * se;          // ±% at 95%, log scale
+const meetsRule  = se => se != null && halfWidth(se) <= PRECISION_RULE;
+const fmtHalf    = se => se == null ? "–" : "±" + halfWidth(se).toFixed(1) + "%";
+// exact (asymmetric) interval on the full-window change, for the tooltip
+function deltaCiText(se, level) {
+  if (se == null || level == null) return "";
+  const lo = (level * Math.exp(-1.96 * se) / 100 - 1) * 100;
+  const hi = (level * Math.exp(1.96 * se) / 100 - 1) * 100;
+  return `95% CI on the change: ${lo >= 0 ? "+" : "−"}${Math.abs(lo).toFixed(1)}% to ` +
+         `${hi >= 0 ? "+" : "−"}${Math.abs(hi).toFixed(1)}%`;
+}
 
 function compositeSeries(cats, src = idxSrc()) {
   return DATA.months.map((_, i) => {
@@ -309,30 +355,36 @@ function drawChart(cats, comp) {
   if (showCpi) series.push({ name: "CPI-U (US consumer prices)", vals: DATA.cpi,
                              color: "#8a90a0", w: 2, op: 0.95, dash: "6 4" });
 
-  // 95% confidence band for the emphasised line (composite when 2+ categories, else
-  // the single category). se is the bootstrap standard error on the log scale;
-  // band = level·exp(±1.96·se). Wide bands = thin categories = less certain level.
+  // 95% confidence bands. EVERY published level carries one — the composite (when a
+  // 2+ category basket is selected) and each selected category — because six of the
+  // seven categories miss the ±5% terminal-quarter precision standard, so drawing a
+  // bare line for any of them would show it as more certain than it is. se is the
+  // bootstrap standard error on the log scale; band = level·exp(±1.96·se).
   // The deflator is a per-quarter constant with no sampling error, so the bootstrap
   // SEs are the same on the real and nominal series -- only the level they scale
   // changes (see code/23-real-index.py).
   const emph = showComposite ? comp : (mains.length ? (SRC[mains[0]] || []) : []);
-  const seAt = i => {
+  const compositeSeAt = i => {                  // composite SE from weighted category SEs
     if (!DATA.index_geks_se) return null;
-    if (showComposite) {                        // composite SE from weighted category SEs
-      let num = 0, wsum = 0;
-      for (const c of mains) {
-        const v = (SRC[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
-        if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
-      }
-      return wsum > 0 ? Math.sqrt(num) / wsum : null;
+    let num = 0, wsum = 0;
+    for (const c of mains) {
+      const v = (SRC[c] || [])[i], w = DATA.weights[c], se = (DATA.index_geks_se[c] || [])[i];
+      if (v > 0 && w > 0 && se != null) { num += (w * se) ** 2; wsum += w; }
     }
-    return mains.length ? ((DATA.index_geks_se[mains[0]] || [])[i] ?? null) : null;
+    return wsum > 0 ? Math.sqrt(num) / wsum : null;
   };
-  const band = emph.map((v, i) => { const se = seAt(i);
+  const bandOf = (vals, seAt) => vals.map((v, i) => { const se = seAt(i);
     return (v == null || se == null) ? null : [v * Math.exp(-1.96 * se), v * Math.exp(1.96 * se)]; });
 
+  const bandSpecs = [];
+  if (showComposite) bandSpecs.push({ band: bandOf(comp, compositeSeAt), color: "#111", op: 0.13 });
+  for (const c of mains) {
+    bandSpecs.push({ band: bandOf(SRC[c] || [], i => seAtOf(c, i)),
+                     color: colorOf(c), op: showComposite ? 0.07 : 0.11 });
+  }
+
   const ys = series.flatMap(s => s.vals).filter(v => v != null)
-    .concat(band.filter(Boolean).flatMap(b => b));   // keep the band inside the frame
+    .concat(bandSpecs.flatMap(b => b.band.filter(Boolean).flatMap(p => p)));   // bands inside the frame
   let lo = ys.length ? Math.min(...ys) : 95, hi = ys.length ? Math.max(...ys) : 105;
   const pad = Math.max((hi - lo) * 0.15, 0.8); lo -= pad; hi += pad;
   const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
@@ -361,22 +413,23 @@ function drawChart(cats, comp) {
     svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
       "font-size": 11, fill: "#999" }, [mo])); });
 
-  // shaded 95% confidence band under the emphasised line (drawn first, lines on top).
-  // One polygon per CONTIGUOUS run of estimated quarters, so the band breaks at gaps
-  // exactly where the line does rather than bridging quarters we never estimated.
-  const bandFill = showComposite ? "#111" : colorOf(mains[0]);
-  const bandRuns = [];
-  band.forEach((b, i) => {
-    if (!b) return;
-    const cur = bandRuns[bandRuns.length - 1];
-    if (cur && cur[cur.length - 1].i === i - 1) cur.push({ i, lo: b[0], hi: b[1] });
-    else bandRuns.push([{ i, lo: b[0], hi: b[1] }]);
-  });
-  for (const run of bandRuns) {
-    if (run.length < 2) continue;               // a lone point has no area to shade
-    let d = run.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
-    for (let k = run.length - 1; k >= 0; k--) d += ` L${X(run[k].i).toFixed(1)} ${Y(run[k].lo).toFixed(1)}`;
-    svg.appendChild(el("path", { _svg: 1, d: d + " Z", fill: bandFill, opacity: 0.11, stroke: "none" }));
+  // shaded 95% confidence bands (drawn first, lines on top). One polygon per
+  // CONTIGUOUS run of estimated quarters, so a band breaks at gaps exactly where its
+  // line does rather than bridging quarters we never estimated.
+  for (const spec of bandSpecs) {
+    const runs = [];
+    spec.band.forEach((b, i) => {
+      if (!b) return;
+      const cur = runs[runs.length - 1];
+      if (cur && cur[cur.length - 1].i === i - 1) cur.push({ i, lo: b[0], hi: b[1] });
+      else runs.push([{ i, lo: b[0], hi: b[1] }]);
+    });
+    for (const run of runs) {
+      if (run.length < 2) continue;             // a lone point has no area to shade
+      let d = run.map((p, k) => `${k ? "L" : "M"}${X(p.i).toFixed(1)} ${Y(p.hi).toFixed(1)}`).join(" ");
+      for (let k = run.length - 1; k >= 0; k--) d += ` L${X(run[k].i).toFixed(1)} ${Y(run[k].lo).toFixed(1)}`;
+      svg.appendChild(el("path", { _svg: 1, d: d + " Z", fill: spec.color, opacity: spec.op, stroke: "none" }));
+    }
   }
 
   // series paths
@@ -547,7 +600,8 @@ const deltaOf = c => { const d = deltaSrc(); return (d && d[c] != null) ? d[c] :
 
 function sortedCats() {
   const key = c => ({ name: c, delta: deltaOf(c) ?? 0, weight: DATA.weights[c] ?? 0,
-                      gigs: DATA.panel_gigs[c] ?? 0, rank: deltaOf(c) ?? 0 }[sortK]);
+                      gigs: DATA.panel_gigs[c] ?? 0, rank: deltaOf(c) ?? 0,
+                      prec: seTerminal(c) ?? 0 }[sortK]);
   return [...DATA.categories].sort((a, b) => {
     const x = key(a), y = key(b);
     return (typeof x === "string" ? x.localeCompare(y) : x - y) * sortDir;
@@ -572,6 +626,18 @@ function catRow(c, rank, sub) {
   tr.appendChild(caret); tr.appendChild(cbCell);
   tr.appendChild(nameCell); tr.appendChild(sparkCell);
   tr.appendChild(el("td", { class: "num d " + cls(d) }, [fmtPct(d)]));
+  // precision on the terminal-quarter level: published beside every change figure so
+  // the Δ column can't be read as a clean ranking when the intervals overlap.
+  const se = seTerminal(c), lvl = seriesOf(c)[lastPresent(seriesOf(c))];
+  const pcell = el("td", { class: "num prec" + (se != null && !meetsRule(se) ? " imprecise" : "") },
+                   [fmtHalf(se)]);
+  if (se != null) {
+    pcell.setAttribute("title",
+      `${labelOf(c)}: ${deltaCiText(se, lvl)}. ` +
+      (meetsRule(se) ? `Meets the ±${PRECISION_RULE}% precision standard.`
+                     : `MISSES the ±${PRECISION_RULE}% precision standard — treat the level as a range, not a point.`));
+  }
+  tr.appendChild(pcell);
   // subs show their gig-share in parens — informational, not part of the basket
   tr.appendChild(el("td", { class: "num faint" }, [sub ? `(${wt})` : wt]));
   tr.appendChild(el("td", { class: "num faint" }, [DATA.panel_gigs[c] != null ? String(DATA.panel_gigs[c]) : "–"]));
@@ -636,7 +702,7 @@ function rankingRow(c) {
   if (!rk || !rk.top || !rk.top.length) {
     inner.appendChild(el("div", { class: "rankhead" },
       ["No freelancer ranking available for " + labelOf(c) + "."]));
-    return el("tr", { class: "detail" }, [el("td", {}), el("td", {}), el("td", { colspan: 5 }, [inner])]);
+    return el("tr", { class: "detail" }, [el("td", {}), el("td", {}), el("td", { colspan: 6 }, [inner])]);
   }
   loadFreelancers();      // warm the detail cache so drill-down is instant
   inner.appendChild(el("div", { class: "rankhead", html:
@@ -666,7 +732,7 @@ function rankingRow(c) {
   inner.appendChild(ol);
   return el("tr", { class: "detail" }, [
     el("td", {}), el("td", {}),
-    el("td", { colspan: 5 }, [inner])]);
+    el("td", { colspan: 6 }, [inner])]);
 }
 
 function render() {
@@ -704,6 +770,12 @@ function render() {
     ftr.appendChild(el("td", { colspan: 3, html: `Composite &middot; <span style="font-weight:400;color:#777">${mainChecked.length} of ${mainCount} categories</span>` }));
     const sc = el("td", {}); sc.appendChild(spark(comp, 110, 20, "#111")); ftr.appendChild(sc);
     ftr.appendChild(el("td", { class: "num d " + cls(pc) }, [fmtPct(pc)]));
+    const cse = seTerminalComposite(mainChecked);
+    const cft = el("td", { class: "num prec" + (cse != null && !meetsRule(cse) ? " imprecise" : "") },
+                   [fmtHalf(cse)]);
+    if (cse != null) cft.setAttribute("title",
+      `Composite: ${deltaCiText(cse, [...comp].reverse().find(v => v != null))}.`);
+    ftr.appendChild(cft);
     ftr.appendChild(el("td", { class: "num" }, ["100%"]));
     ftr.appendChild(el("td", { class: "num" }, [String(mainChecked.reduce((s, c) => s + (DATA.panel_gigs[c] || 0), 0))]));
     ft.appendChild(ftr);
