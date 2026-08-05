@@ -1,7 +1,9 @@
 # FAQ & Methodology · Draft Section
 
 **Target file:** `docs/faq.html`
-**Status:** applied to live `docs/faq.html` (2026-07-12); this draft mirrors what is shipped
+**Status:** ⚠️ **OUT OF SYNC** — last mirrored 2026-07-12. The live `docs/faq.html` has since been revised
+by the real-terms rollout (2026-07-30), the full FAQ audit (2026-07-30), and the non-gig-page exclusion
+(2026-07-31). Treat `docs/faq.html` as authoritative until this mirror is rebuilt.
 **Audience:** freelancers and buyers active on **Fiverr and Upwork**, plus researchers interested in AI's effect on the price of knowledge work.
 
 This document holds the **full FAQ copy** as it appears on the live page. All questions are given
@@ -22,10 +24,11 @@ Two corrections applied in this revision:
 - The **composite headline number was dropped** from `index.html` and the chart defaults to a single
   category, so the old "what does the headline number mean?" answer was reframed around the per-category
   `Δ'20–'26` column and the composite shown when two or more categories are selected.
-- Current `docs/data.json` shows the composite at **317.7 (+217.7%)** with **every category up** (+109%
-  to +478%), so the earlier deflation-first framing was corrected to be direction-neutral. A **chain-drift**
-  caveat was added to the limitations (chained Jevons likely overstates the true rise by ~2.4× versus
-  drift-free GEKS/hedonic estimators).
+- At the time of that revision `docs/data.json` showed the composite at **317.7 (+217.7%)** on the chained
+  series with **every category up** (+109% to +478%), so the earlier deflation-first framing was corrected
+  to be direction-neutral. A **chain-drift** caveat was added to the limitations. *(Superseded: the chained
+  series was retired on 2026-07-27 and the published index is now GEKS-Jevons, real by default — composite
+  **+78.4% nominal / +40.7% real** as of 2026-07-31.)*
 
 ---
 

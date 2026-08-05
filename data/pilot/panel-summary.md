@@ -1,6 +1,6 @@
 # Panel-Based Intelligence Price Index — Summary
 
-**Generated:** 2026-07-07
+**Generated:** 2026-07-31
 **Method:** Matched-model panel (Jevons elementary, Törnqvist composite)
 **Panel gigs:** 1,245 (observed in ≥2 quarters)
 **Time span:** 2011Q3–2026Q1

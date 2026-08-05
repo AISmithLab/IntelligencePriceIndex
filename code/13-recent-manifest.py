@@ -26,6 +26,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gigfilter import is_gig_id
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 CLASSIFIED = BASE_DIR / "data" / "cdx-index" / "gig-pages-classified.tsv"
 OUTPUT = BASE_DIR / "data" / "pilot" / "recent-manifest.tsv"
@@ -82,11 +85,15 @@ def main():
     # gig -> {"cat":, "quarters": set, "months": {YYYYMM: (timestamp, original)}}
     gigs = {}
     n = 0
+    n_reserved = 0
     for cat, ts, original, urlkey in iter_rows(args.prefiltered):
         n += 1
         if cat in SKIP_CATEGORIES:
             continue
         gid = gig_id(urlkey)
+        if not is_gig_id(gid):
+            n_reserved += 1     # /hire/, /agencies/ etc. — landing pages, not gigs
+            continue
         g = gigs.get(gid)
         if g is None:
             g = gigs[gid] = {"cat": cat, "quarters": set(), "months": {}}
@@ -97,6 +104,7 @@ def main():
         if prev is None or ts > prev[0]:
             g["months"][ym] = (ts, original)
     print(f"  Scanned {n:,} snapshots; {len(gigs):,} distinct gigs in window")
+    print(f"  Excluded {n_reserved:,} reserved-path snapshots (/hire/, /agencies/, ...)")
 
     # Select gigs with multi-quarter coverage reaching the trailing window.
     selected = {gid: g for gid, g in gigs.items()

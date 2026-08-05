@@ -37,6 +37,10 @@ from pathlib import Path
 
 import numpy as np
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gigfilter import is_gig
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PRICES_FILE = BASE_DIR / "data" / "pilot" / "recent-prices.csv"
 MANIFEST_FILE = BASE_DIR / "data" / "pilot" / "recent-manifest.tsv"
@@ -101,6 +105,8 @@ def build_panel(period_fn):
 
     with open(PRICES_FILE) as f:
         for row in csv.DictReader(f):
+            if not is_gig(row["seller"]):      # /hire/, /agencies/ landing pages
+                continue
             gid = f"{row['seller']}/{row['slug']}"
             cat = gig_cat.get(gid)
             if not cat:

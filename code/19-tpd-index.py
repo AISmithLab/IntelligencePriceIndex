@@ -40,6 +40,10 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import lsqr, splu
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gigfilter import is_gig
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PILOT = BASE_DIR / "data" / "pilot"
 
@@ -121,6 +125,8 @@ def build_panel_historical():
     gig_cat = {}
     with open(HIST_PRICES) as f:
         for row in csv.DictReader(f):
+            if not is_gig(row["seller"]):      # /hire/, /agencies/ landing pages
+                continue
             key = (row["seller"], row["slug"])
             item = item_map.get(key)
             if not item:
@@ -151,6 +157,8 @@ def build_panel_recent():
     gig_quarter = defaultdict(lambda: defaultdict(list))
     with open(RECENT_PRICES) as f:
         for row in csv.DictReader(f):
+            if not is_gig(row["seller"]):      # /hire/, /agencies/ landing pages
+                continue
             key = (row["seller"], row["slug"])
             if key not in gig_cat:
                 continue

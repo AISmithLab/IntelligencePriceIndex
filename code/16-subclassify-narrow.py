@@ -26,6 +26,10 @@ import statistics
 from collections import Counter, defaultdict
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gigfilter import is_gig
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SRC_MANIFEST = BASE_DIR / "data" / "pilot" / "recent-manifest.tsv"
 DST_MANIFEST = BASE_DIR / "data" / "pilot" / "recent-manifest-narrow.tsv"
@@ -117,6 +121,8 @@ def measure_coverage(src=SRC_MANIFEST, prices=PRICES_FILE, window=WINDOW):
     panel = defaultdict(lambda: defaultdict(list))
     with open(prices) as f:
         for row in csv.DictReader(f):
+            if not is_gig(row["seller"]):      # /hire/, /agencies/ landing pages
+                continue
             gid = f"{row['seller']}/{row['slug']}"
             if gid not in gig_sub:
                 continue

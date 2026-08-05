@@ -39,6 +39,7 @@ import numpy as np
 
 BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE / "code"))
+from gigfilter import is_gig
 
 
 def _load(name, filename):
@@ -125,6 +126,8 @@ def build_reputation_panel():
                             (PILOT / "recent-prices.csv", False)):
         with open(path) as f:
             for row in csv.DictReader(f):
+                if not is_gig(row["seller"]):   # /hire/, /agencies/ landing pages
+                    continue
                 key = (row["seller"], row["slug"])
                 try:
                     price = float(row.get("price_basic") or 0)
@@ -327,6 +330,8 @@ def test_c():
     for path in (PILOT / "pilot-prices.csv", PILOT / "recent-prices.csv"):
         with open(path) as f:
             for row in csv.DictReader(f):
+                if not is_gig(row["seller"]):   # /hire/, /agencies/ landing pages
+                    continue
                 key = (row["seller"], row["slug"])
                 try:
                     price = float(row.get("price_basic") or 0)

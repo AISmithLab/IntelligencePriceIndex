@@ -33,6 +33,9 @@ from collections import defaultdict
 from datetime import date
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PILOT = BASE_DIR / "data" / "pilot"
 HIST_CSV = PILOT / "panel-category-indices.csv"
@@ -67,11 +70,10 @@ LINK_Q = "2024Q3"           # shared quarter used to splice recent onto historic
 TOP_N = 100                 # freelancers listed per category ranking
 
 # Fiverr URL path segments that are NOT seller handles (landing/section pages).
-# gig_id is "seller/slug"; when the first segment is one of these it's not a gig.
-RESERVED = {"hire", "agencies", "categories", "category", "search", "gig", "gigs",
-            "s", "users", "user", "profile", "inbox", "support", "help", "business",
-            "pro", "resource", "resources", "cp", "community", "blog", "invite",
-            "logo-maker", "start_selling", "seller_onboarding", "login", "join"}
+# Single source of truth is code/gigfilter.py, which the panel builders share —
+# keeping one copy means the gallery and the index can never disagree on what
+# counts as a gig. See that module for why /hire/ rows corrupted the index.
+from gigfilter import RESERVED  # noqa: E402
 
 # broad categories that make up the basket (order/labels/colors for display)
 CATS = ["audio", "coding", "design", "marketing", "translation", "video", "writing"]

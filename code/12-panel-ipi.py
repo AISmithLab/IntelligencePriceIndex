@@ -29,6 +29,9 @@ from pathlib import Path
 import numpy as np
 from scipy import stats as sp_stats
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gigfilter import is_gig
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PRICES_FILE = BASE_DIR / "data" / "pilot" / "pilot-prices.csv"
 ITEMS_FILE = BASE_DIR / "data" / "pilot" / "gig-items.csv"
@@ -111,6 +114,8 @@ def main():
 
     with open(PRICES_FILE) as f:
         for row in csv.DictReader(f):
+            if not is_gig(row["seller"]):      # /hire/, /agencies/ landing pages
+                continue
             key = (row["seller"], row["slug"])
             item = item_map.get(key)
             if not item:
