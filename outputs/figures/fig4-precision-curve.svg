@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" width="720" height="420" role="img" aria-labelledby="t d">
+<title id="t">Index precision versus matched sample size</title><desc id="d">Log-log plot of the 95 percent half-width against the number of sampled gigs, with a one-over-root-n reference and the adequacy rules.</desc>
+<rect width="720" height="420" fill="#ffffff"/>
+<path d="M 62 326.5 L 562 326.5" fill="none" stroke="#e8eaf0" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<text x="54.0" y="330.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="400">±5%</text>
+<path d="M 62 245.8 L 562 245.8" fill="none" stroke="#e8eaf0" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<text x="54.0" y="249.3" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="400">±10%</text>
+<path d="M 62 165.1 L 562 165.1" fill="none" stroke="#e8eaf0" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<text x="54.0" y="168.6" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="400">±20%</text>
+<path d="M 62 58.4 L 562 58.4" fill="none" stroke="#e8eaf0" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<text x="54.0" y="61.9" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="400">±50%</text>
+<text x="83.3" y="384.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="400">25</text>
+<text x="174.3" y="384.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="400">50</text>
+<text x="265.2" y="384.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="400">100</text>
+<text x="356.2" y="384.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="400">200</text>
+<text x="447.1" y="384.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="400">400</text>
+<text x="538.1" y="384.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="400">800</text>
+<path d="M 62 326.5 L 562 326.5" fill="none" stroke="#15803d" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity="1.0" stroke-dasharray="6 4"/>
+<text x="558.0" y="321.5" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="9.5" fill="#15803d" text-anchor="end" font-weight="400">±5% adequacy rule</text>
+<path d="M 62 245.8 L 562 245.8" fill="none" stroke="#b45309" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity="1.0" stroke-dasharray="6 4"/>
+<text x="558.0" y="240.8" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="9.5" fill="#b45309" text-anchor="end" font-weight="400">±10%</text>
+<path d="M 83.3 92.9 L 538.1 294.6" fill="none" stroke="#9aa1ad" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity="1.0" stroke-dasharray="2 4"/>
+<text x="534.1" y="308.6" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="9.5" fill="#6b7280" text-anchor="end" font-weight="400">1/√n</text>
+<path d="M 83.3 92.9 L 174.3 140.4 L 265.2 168.1 L 356.2 187.9 L 447.1 257.7 L 538.1 307.4" fill="none" stroke="#2a78d6" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<circle cx="83.3" cy="92.9" r="3" fill="#2a78d6"/>
+<circle cx="174.3" cy="140.4" r="3" fill="#2a78d6"/>
+<circle cx="265.2" cy="168.1" r="3" fill="#2a78d6"/>
+<circle cx="356.2" cy="187.9" r="3" fill="#2a78d6"/>
+<circle cx="447.1" cy="257.7" r="3" fill="#2a78d6"/>
+<circle cx="538.1" cy="307.4" r="3" fill="#2a78d6"/>
+<text x="546.1" y="310.9" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10.5" fill="#2a78d6" text-anchor="start" font-weight="700">Design</text>
+<path d="M 83.3 60.0 L 174.3 81.6 L 265.2 88.0 L 356.2 116.5" fill="none" stroke="#008300" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<circle cx="83.3" cy="60.0" r="3" fill="#008300"/>
+<circle cx="174.3" cy="81.6" r="3" fill="#008300"/>
+<circle cx="265.2" cy="88.0" r="3" fill="#008300"/>
+<circle cx="356.2" cy="116.5" r="3" fill="#008300"/>
+<text x="364.2" y="120.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10.5" fill="#008300" text-anchor="start" font-weight="700">Coding</text>
+<path d="M 83.3 128.4 L 174.3 154.4 L 265.2 188.1 L 356.2 238.9" fill="none" stroke="#4a3aa7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<circle cx="83.3" cy="128.4" r="3" fill="#4a3aa7"/>
+<circle cx="174.3" cy="154.4" r="3" fill="#4a3aa7"/>
+<circle cx="265.2" cy="188.1" r="3" fill="#4a3aa7"/>
+<circle cx="356.2" cy="238.9" r="3" fill="#4a3aa7"/>
+<text x="364.2" y="242.4" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10.5" fill="#4a3aa7" text-anchor="start" font-weight="700">Writing</text>
+<path d="M 83.3 104.0 L 174.3 150.6 L 265.2 166.6" fill="none" stroke="#e34948" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="1.0"/>
+<circle cx="83.3" cy="104.0" r="3" fill="#e34948"/>
+<circle cx="174.3" cy="150.6" r="3" fill="#e34948"/>
+<circle cx="265.2" cy="166.6" r="3" fill="#e34948"/>
+<text x="273.2" y="170.1" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10.5" fill="#e34948" text-anchor="start" font-weight="700">Video</text>
+<text x="62.0" y="18.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" fill="#1c2230" text-anchor="start" font-weight="700">Precision versus matched sample size</text>
+<text x="62.0" y="402.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#6b7280" text-anchor="start" font-weight="400">gigs sampled (log scale)</text>
+<text x="62.0" y="410.0" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="9.5" fill="#6b7280" text-anchor="start" font-weight="400">Recent panel, terminal quarter 2026Q1. Each point is the sd of the log level over 60 independent subsamples, ×1.96.</text>
+</svg>

@@ -29,6 +29,9 @@ from pathlib import Path
 import numpy as np
 from scipy import stats as sp_stats
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gigfilter import is_gig
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PRICES_FILE = BASE_DIR / "data" / "pilot" / "pilot-prices.csv"
 ITEMS_FILE = BASE_DIR / "data" / "pilot" / "gig-items.csv"
@@ -111,6 +114,8 @@ def main():
 
     with open(PRICES_FILE) as f:
         for row in csv.DictReader(f):
+            if not is_gig(row["seller"]):      # /hire/, /agencies/ landing pages
+                continue
             key = (row["seller"], row["slug"])
             item = item_map.get(key)
             if not item:
@@ -196,17 +201,25 @@ def main():
         # Initialize at base quarter = 100
         index = {base_q: 100.0}
 
-        # Chain forward from base
+        # Chain forward from base. Gap-tolerant: the matched-model relative at a
+        # quarter is p_t / p_{gig's previous observed quarter}, which already spans
+        # any gap, so we chain from the most recent quarter already in the index
+        # rather than requiring the immediately-preceding grid quarter. This keeps a
+        # category alive across coverage gaps (e.g. translation is empty in 2019Q2–Q4
+        # right after the base but has 18 solid transitions over 2020Q1–2024Q3; the
+        # old "prev grid quarter must be in index" rule silently discarded all of it).
         forward_qs = [q for q in all_quarters if q >= base_q]
+        last_q = base_q
         for i in range(1, len(forward_qs)):
             q = forward_qs[i]
             if q in quarter_relatives and len(quarter_relatives[q]) >= 3:
                 geo_mean = np.exp(np.mean(np.log(quarter_relatives[q])))
-                prev_q = forward_qs[i-1]
-                if prev_q in index:
-                    index[q] = index[prev_q] * geo_mean
+                index[q] = index[last_q] * geo_mean
+                last_q = q
 
-        # Chain backward from base
+        # Chain backward from base. Kept strict (immediately-preceding grid quarter
+        # must already be in the index) so pre-base historical levels — which feed
+        # the paper's peak/start figures — are unchanged by this fix.
         backward_qs = [q for q in reversed(all_quarters) if q <= base_q]
         for i in range(1, len(backward_qs)):
             q = backward_qs[i]

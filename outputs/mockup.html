@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intelligence Price Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --border: #E0DED8;
+    --text-primary: #1A1916;
+    --text-secondary: #6B6860;
+    --text-tertiary: #9E9C96;
+    --accent: #1A4D8F;
+    --accent-light: #E8EFF8;
+    --green: #1D6B44;
+    --green-light: #E6F4ED;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+
+  /* HERO */
+  .hero {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+  }
+  .hero-title strong { font-weight: 500; }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 580px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  .hero-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+
+  /* MAIN LAYOUT */
+  main { max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+  section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 1.5rem;
+  }
+
+  /* IPI SCORE STRIP */
+  .ipi-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .ipi-main {
+    background: var(--text-primary);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .ipi-main-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.5rem;
+  }
+  .ipi-main-value {
+    font-size: 3rem;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .ipi-main-sub { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+  .ipi-cats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+  .ipi-cat {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 80px;
+  }
+  .ipi-cat-name {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+  }
+  .ipi-cat-val {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .ipi-cat-delta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    margin-top: 4px;
+  }
+
+  /* CHART SECTION */
+  .bench-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+  }
+  .bench-tab {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .bench-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .bench-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .chart-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chart-title { font-size: 14px; font-weight: 500; }
+  .chart-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-tertiary);
+    max-width: 360px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .chart-wrap { position: relative; width: 100%; height: 260px; margin-bottom: 1rem; }
+
+  .model-trail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 0.75rem;
+  }
+  .model-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid #C3D4EC;
+  }
+
+  /* METHODOLOGY */
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .method-cell {
+    background: var(--surface);
+    padding: 1.25rem;
+  }
+  .method-cell-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 0.5rem;
+  }
+  .method-cell-title { font-size: 13px; font-weight: 500; margin-bottom: 0.35rem; }
+  .method-cell-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+  .cat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 1rem;
+  }
+  .cat-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+  .cat-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+  .cat-table td:first-child { color: var(--text-primary); font-weight: 500; }
+  .cat-table tr:last-child td { border-bottom: none; }
+
+  /* CPI COMPARISON */
+  .cpi-compare-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(2, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .cpi-col { display: contents; }
+  .cpi-cell {
+    padding: 0.65rem 0.9rem;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .cpi-cell:last-child { border-bottom: none; }
+  .cpi-col:last-child .cpi-cell { border-right: none; }
+  .cpi-label-cell {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    background: var(--bg);
+    font-weight: 500;
+  }
+  .cpi-col-header .cpi-cell { background: var(--bg); }
+  .cpi-badge {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 2px;
+  }
+  .cpi-badge-cpi { color: #C0392B; }
+  .cpi-badge-ipi { color: var(--accent); }
+  .cpi-badge-sub { font-size: 11px; color: var(--text-tertiary); display: block; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  footer p { font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); }
+  footer a { color: var(--text-tertiary); text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .ipi-strip { grid-template-columns: 1fr; }
+    .ipi-cats { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 1rem; }
+    .hero, main { padding-left: 1rem; padding-right: 1rem; }
+    .chart-note { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#">IPI</a>
+  <div class="nav-links">
+    <a href="#index">Index</a>
+    <a href="#benchmarks">Benchmarks</a>
+    <a href="#cpi">IPI vs CPI</a>
+    <a href="#methodology">Methodology</a>
+    <a href="https://github.com/AISmithLab/IntelligencePriceIndex" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <p class="hero-eyebrow">Research Prototype · AISmithLab</p>
+  <h1 class="hero-title">The <strong>Intelligence</strong><br>Price Index</h1>
+  <p class="hero-sub">A measure of how much it costs to get knowledge work done over time, tracking AI's impact on the price of intelligence, analogous to the CPI for labor.</p>
+  <div class="hero-meta">
+    <span><span class="dot"></span> Pilot data through early 2025</span>
+    <span>6 capability categories</span>
+    <span>8 benchmarks</span>
+    <span>Weights preliminary</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- IPI SCORE -->
+  <section id="index">
+    <p class="section-label">Composite index</p>
+    <div class="ipi-strip">
+      <div class="ipi-main">
+        <div>
+          <p class="ipi-main-label">IPI — composite (2019 = 1.0×)</p>
+          <p class="ipi-main-value" id="ipi-composite">—</p>
+          <p class="ipi-main-sub" id="ipi-composite-sub"></p>
+        </div>
+      </div>
+      <div class="ipi-cats" id="ipi-cats"></div>
+    </div>
+  </section>
+
+  <!-- BENCHMARKS -->
+  <section id="benchmarks">
+    <p class="section-label">Benchmark trajectories</p>
+    <div class="bench-tabs" id="bench-tabs"></div>
+    <div class="chart-header">
+      <p class="chart-title" id="chart-title"></p>
+      <p class="chart-note" id="chart-note"></p>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="mainChart" role="img" aria-label="Line chart showing AI benchmark scores over time"></canvas>
+    </div>
+    <div class="model-trail" id="model-trail"></div>
+  </section>
+
+  <!-- CPI COMPARISON -->
+  <section id="cpi">
+    <p class="section-label">IPI vs CPI — the analogy</p>
+
+    <div class="cpi-compare-grid">
+      <div class="cpi-col cpi-col-header">
+        <div class="cpi-cell cpi-label-cell"></div>
+        <div class="cpi-cell"><span class="cpi-badge cpi-badge-cpi">CPI</span><br><span class="cpi-badge-sub">Consumer Price Index</span></div>
+        <div class="cpi-cell"><span class="cpi-badge cpi-badge-ipi">IPI</span><br><span class="cpi-badge-sub">Intelligence Price Index</span></div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">What it measures</div>
+        <div class="cpi-cell">Price of a basket of consumer goods &amp; services</div>
+        <div class="cpi-cell">Capability of AI to perform knowledge-work tasks</div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">Basket</div>
+        <div class="cpi-cell">Food, housing, transport, medical, apparel…</div>
+        <div class="cpi-cell">Coding, writing, translation, design, data analysis, audio</div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">Unit of measurement</div>
+        <div class="cpi-cell">Dollar cost of fixed basket</div>
+        <div class="cpi-cell">Capability index relative to 2019 baseline (1.0×)</div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">Direction of "inflation"</div>
+        <div class="cpi-cell">Rising prices = bad for consumers</div>
+        <div class="cpi-cell">Rising capability = falling cost of knowledge work</div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">Weights</div>
+        <div class="cpi-cell">Household expenditure surveys (BLS)</div>
+        <div class="cpi-cell">Freelance demand share on Upwork &amp; Fiverr (TBD)</div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">Data source</div>
+        <div class="cpi-cell">Retail price surveys, ~80k items</div>
+        <div class="cpi-cell">AI benchmark leaderboards; gig-platform pricing</div>
+      </div>
+      <div class="cpi-col">
+        <div class="cpi-cell cpi-label-cell">Update frequency</div>
+        <div class="cpi-cell">Monthly</div>
+        <div class="cpi-cell">Quarterly (target)</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <p class="section-label" style="margin-bottom: 1rem;">IPI capability gain vs US CPI inflation (2019–2025, indexed to 1.0)</p>
+      <div class="chart-wrap" style="height: 220px;">
+        <canvas id="cpiChart" role="img" aria-label="Line chart comparing IPI capability gain against CPI inflation since 2019"></canvas>
+      </div>
+      <div style="display:flex; gap:1.5rem; margin-top:0.75rem; font-size:12px; color:var(--text-secondary);">
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:2px;background:#1A4D8F;display:inline-block;border-radius:2px;"></span>IPI — AI capability index</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:2px;background:#C0392B;display:inline-block;border-radius:2px;border-top: 2px dashed #C0392B; background: none;"></span>US CPI (approx.)</span>
+      </div>
+      <p style="font-family:var(--mono);font-size:10px;color:var(--text-tertiary);margin-top:0.5rem;">CPI values approximate. IPI composite is equal-weighted across 6 categories. Both indexed to 1.0 in 2019.</p>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section id="methodology">
+    <p class="section-label">Methodology</p>
+    <div class="method-grid">
+      <div class="method-cell">
+        <p class="method-cell-label">Analogy</p>
+        <p class="method-cell-title">Like the CPI</p>
+        <p class="method-cell-desc">IPI tracks a basket of knowledge-work capabilities over time, weighted by their share of freelance labor demand on platforms like Upwork and Fiverr.</p>
+      </div>
+      <div class="method-cell">
+        <p class="method-cell-label">Benchmarks</p>
+        <p class="method-cell-title">Best-in-class scores</p>
+        <p class="method-cell-desc">Each category uses the frontier model score at each point in time. For lower-is-better metrics (FID, WER), scores are inverted before indexing.</p>
+      </div>
+      <div class="method-cell">
+        <p class="method-cell-label">Baseline</p>
+        <p class="method-cell-title">2019 = 1.0×</p>
+        <p class="method-cell-desc">Scores are normalized to pre-ChatGPT baselines. A value of 3.2× means AI capability has improved 3.2 fold relative to that baseline for that category.</p>
+      </div>
+      <div class="method-cell">
+        <p class="method-cell-label">Status</p>
+        <p class="method-cell-title">Pilot / research prototype</p>
+        <p class="method-cell-desc">Category weights, benchmark selection, and data collection methodology are under active development. Not for production use.</p>
+      </div>
+    </div>
+
+    <table class="cat-table" style="margin-top: 2rem;">
+      <thead>
+        <tr>
+          <th>IPI category</th>
+          <th>Benchmark</th>
+          <th>Fiverr</th>
+          <th>Upwork</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Coding</td><td>HumanEval, SWE-bench</td><td>Programming & Tech</td><td>Development & IT</td></tr>
+        <tr><td>Writing</td><td>AlpacaEval, Chatbot Arena</td><td>Writing & Translation</td><td>Writing & Content</td></tr>
+        <tr><td>Data analysis</td><td>GSM8K, MMLU</td><td>Data, AI Services</td><td>Data & Analytics</td></tr>
+        <tr><td>Translation</td><td>WMT BLEU</td><td>Writing & Translation</td><td>Writing & Content</td></tr>
+        <tr><td>Design</td><td>FID-COCO</td><td>Graphics & Design, Video</td><td>Design & Creative</td></tr>
+        <tr><td>Audio</td><td>Whisper WER</td><td>Music & Audio</td><td>Design & Creative</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <p>Intelligence Price Index · AISmithLab · Research prototype · Data through early 2025</p>
+  <p><a href="https://github.com/AISmithLab/IntelligencePriceIndex" target="_blank">github.com/AISmithLab/IntelligencePriceIndex</a></p>
+</footer>
+
+<script>
+const DATA = [
+  {date:'2019-01-01',benchmark:'humaneval',score:0.0,model:'baseline',category:'coding'},
+  {date:'2021-07-01',benchmark:'humaneval',score:28.7,model:'codex-initial',category:'coding'},
+  {date:'2022-03-01',benchmark:'humaneval',score:47.0,model:'codex-davinci-002',category:'coding'},
+  {date:'2022-12-01',benchmark:'humaneval',score:48.1,model:'chatgpt',category:'coding'},
+  {date:'2023-03-01',benchmark:'humaneval',score:67.0,model:'gpt-4',category:'coding'},
+  {date:'2023-07-01',benchmark:'humaneval',score:72.0,model:'gpt-4-turbo',category:'coding'},
+  {date:'2023-10-01',benchmark:'humaneval',score:84.1,model:'claude-2.1',category:'coding'},
+  {date:'2024-03-01',benchmark:'humaneval',score:86.6,model:'claude-3-opus',category:'coding'},
+  {date:'2024-06-01',benchmark:'humaneval',score:90.2,model:'gpt-4o',category:'coding'},
+  {date:'2024-10-01',benchmark:'humaneval',score:92.7,model:'claude-3.5-sonnet',category:'coding'},
+  {date:'2025-01-01',benchmark:'humaneval',score:93.7,model:'o1',category:'coding'},
+  {date:'2019-01-01',benchmark:'swe_bench',score:0.0,model:'baseline',category:'coding'},
+  {date:'2023-10-01',benchmark:'swe_bench',score:1.3,model:'gpt-4',category:'coding'},
+  {date:'2024-01-01',benchmark:'swe_bench',score:4.8,model:'gpt-4-turbo',category:'coding'},
+  {date:'2024-04-01',benchmark:'swe_bench',score:13.8,model:'devin',category:'coding'},
+  {date:'2024-06-01',benchmark:'swe_bench',score:18.0,model:'claude-3.5-sonnet-v1',category:'coding'},
+  {date:'2024-10-01',benchmark:'swe_bench',score:33.4,model:'amazon-q',category:'coding'},
+  {date:'2024-11-01',benchmark:'swe_bench',score:49.0,model:'claude-3.5-sonnet-v2',category:'coding'},
+  {date:'2025-01-01',benchmark:'swe_bench',score:54.6,model:'o3-mini',category:'coding'},
+  {date:'2025-02-01',benchmark:'swe_bench',score:62.3,model:'claude-3.7-sonnet',category:'coding'},
+  {date:'2018-01-01',benchmark:'wmt_bleu',score:28.0,model:'baseline-nmt',category:'translation'},
+  {date:'2019-01-01',benchmark:'wmt_bleu',score:33.5,model:'transformer-big',category:'translation'},
+  {date:'2020-01-01',benchmark:'wmt_bleu',score:36.0,model:'mbart',category:'translation'},
+  {date:'2021-01-01',benchmark:'wmt_bleu',score:38.0,model:'m2m-100',category:'translation'},
+  {date:'2022-01-01',benchmark:'wmt_bleu',score:40.5,model:'nllb-200',category:'translation'},
+  {date:'2022-12-01',benchmark:'wmt_bleu',score:44.0,model:'chatgpt',category:'translation'},
+  {date:'2023-03-01',benchmark:'wmt_bleu',score:48.5,model:'gpt-4',category:'translation'},
+  {date:'2023-10-01',benchmark:'wmt_bleu',score:51.0,model:'claude-2.1',category:'translation'},
+  {date:'2024-03-01',benchmark:'wmt_bleu',score:53.2,model:'claude-3-opus',category:'translation'},
+  {date:'2024-06-01',benchmark:'wmt_bleu',score:55.0,model:'gpt-4o',category:'translation'},
+  {date:'2025-01-01',benchmark:'wmt_bleu',score:57.0,model:'o1',category:'translation'},
+  {date:'2019-01-01',benchmark:'alpaca_eval',score:0.0,model:'baseline',category:'writing'},
+  {date:'2023-03-01',benchmark:'alpaca_eval',score:15.6,model:'gpt-4',category:'writing'},
+  {date:'2023-06-01',benchmark:'alpaca_eval',score:17.1,model:'claude-1.3',category:'writing'},
+  {date:'2023-10-01',benchmark:'alpaca_eval',score:21.4,model:'gpt-4-turbo',category:'writing'},
+  {date:'2024-01-01',benchmark:'alpaca_eval',score:25.3,model:'claude-2.1',category:'writing'},
+  {date:'2024-03-01',benchmark:'alpaca_eval',score:32.7,model:'claude-3-opus',category:'writing'},
+  {date:'2024-06-01',benchmark:'alpaca_eval',score:40.5,model:'gpt-4o',category:'writing'},
+  {date:'2024-10-01',benchmark:'alpaca_eval',score:51.7,model:'claude-3.5-sonnet',category:'writing'},
+  {date:'2025-01-01',benchmark:'alpaca_eval',score:56.2,model:'o1',category:'writing'},
+  {date:'2019-01-01',benchmark:'chatbot_arena',score:800,model:'baseline',category:'writing'},
+  {date:'2023-05-01',benchmark:'chatbot_arena',score:1118,model:'gpt-4',category:'writing'},
+  {date:'2023-07-01',benchmark:'chatbot_arena',score:1072,model:'claude-1.3',category:'writing'},
+  {date:'2023-10-01',benchmark:'chatbot_arena',score:1153,model:'gpt-4-turbo',category:'writing'},
+  {date:'2024-01-01',benchmark:'chatbot_arena',score:1119,model:'claude-2.1',category:'writing'},
+  {date:'2024-03-01',benchmark:'chatbot_arena',score:1189,model:'claude-3-opus',category:'writing'},
+  {date:'2024-06-01',benchmark:'chatbot_arena',score:1248,model:'gpt-4o',category:'writing'},
+  {date:'2024-10-01',benchmark:'chatbot_arena',score:1268,model:'claude-3.5-sonnet',category:'writing'},
+  {date:'2025-01-01',benchmark:'chatbot_arena',score:1337,model:'o1',category:'writing'},
+  {date:'2025-02-01',benchmark:'chatbot_arena',score:1369,model:'claude-3.7-sonnet',category:'writing'},
+  {date:'2017-01-01',benchmark:'fid_coco',score:94.0,model:'baseline-gan',category:'design'},
+  {date:'2019-01-01',benchmark:'fid_coco',score:34.3,model:'biggan',category:'design'},
+  {date:'2020-01-01',benchmark:'fid_coco',score:27.0,model:'vqvae2',category:'design'},
+  {date:'2021-01-01',benchmark:'fid_coco',score:12.6,model:'dall-e',category:'design'},
+  {date:'2022-04-01',benchmark:'fid_coco',score:10.4,model:'dall-e-2',category:'design'},
+  {date:'2022-08-01',benchmark:'fid_coco',score:8.6,model:'stable-diffusion',category:'design'},
+  {date:'2023-03-01',benchmark:'fid_coco',score:7.3,model:'midjourney-v5',category:'design'},
+  {date:'2023-07-01',benchmark:'fid_coco',score:6.8,model:'sdxl',category:'design'},
+  {date:'2024-02-01',benchmark:'fid_coco',score:5.9,model:'dall-e-3',category:'design'},
+  {date:'2024-06-01',benchmark:'fid_coco',score:5.2,model:'sd3',category:'design'},
+  {date:'2025-01-01',benchmark:'fid_coco',score:4.1,model:'flux-pro',category:'design'},
+  {date:'2019-01-01',benchmark:'gsm8k',score:0.0,model:'baseline',category:'data_analysis'},
+  {date:'2022-01-01',benchmark:'gsm8k',score:35.0,model:'code-davinci-002',category:'data_analysis'},
+  {date:'2022-12-01',benchmark:'gsm8k',score:57.1,model:'chatgpt',category:'data_analysis'},
+  {date:'2023-03-01',benchmark:'gsm8k',score:92.0,model:'gpt-4',category:'data_analysis'},
+  {date:'2023-10-01',benchmark:'gsm8k',score:88.0,model:'claude-2.1',category:'data_analysis'},
+  {date:'2024-03-01',benchmark:'gsm8k',score:95.0,model:'claude-3-opus',category:'data_analysis'},
+  {date:'2024-06-01',benchmark:'gsm8k',score:95.8,model:'gpt-4o',category:'data_analysis'},
+  {date:'2025-01-01',benchmark:'gsm8k',score:96.7,model:'o1',category:'data_analysis'},
+  {date:'2019-01-01',benchmark:'mmlu',score:25.0,model:'baseline-random',category:'data_analysis'},
+  {date:'2022-01-01',benchmark:'mmlu',score:54.9,model:'chinchilla',category:'data_analysis'},
+  {date:'2022-12-01',benchmark:'mmlu',score:70.0,model:'chatgpt',category:'data_analysis'},
+  {date:'2023-03-01',benchmark:'mmlu',score:86.4,model:'gpt-4',category:'data_analysis'},
+  {date:'2023-10-01',benchmark:'mmlu',score:78.5,model:'claude-2.1',category:'data_analysis'},
+  {date:'2024-03-01',benchmark:'mmlu',score:86.8,model:'claude-3-opus',category:'data_analysis'},
+  {date:'2024-06-01',benchmark:'mmlu',score:88.7,model:'gpt-4o',category:'data_analysis'},
+  {date:'2024-10-01',benchmark:'mmlu',score:88.3,model:'claude-3.5-sonnet',category:'data_analysis'},
+  {date:'2025-01-01',benchmark:'mmlu',score:91.8,model:'o1',category:'data_analysis'},
+  {date:'2019-01-01',benchmark:'whisper_wer',score:50.0,model:'baseline',category:'audio'},
+  {date:'2022-09-01',benchmark:'whisper_wer',score:9.7,model:'whisper-large',category:'audio'},
+  {date:'2022-12-01',benchmark:'whisper_wer',score:8.4,model:'whisper-large-v2',category:'audio'},
+  {date:'2023-11-01',benchmark:'whisper_wer',score:6.5,model:'whisper-large-v3',category:'audio'},
+  {date:'2024-06-01',benchmark:'whisper_wer',score:5.1,model:'whisper-large-v3-turbo',category:'audio'},
+];
+
+const LOWER_IS_BETTER = new Set(['fid_coco','whisper_wer']);
+const BENCH_LABELS = {
+  humaneval: 'HumanEval', swe_bench: 'SWE-bench', wmt_bleu: 'WMT BLEU',
+  alpaca_eval: 'AlpacaEval', chatbot_arena: 'Chatbot Arena',
+  fid_coco: 'FID-COCO', gsm8k: 'GSM8K', mmlu: 'MMLU', whisper_wer: 'Whisper WER'
+};
+const BENCH_NOTES = {
+  humaneval: 'Higher = better · % of coding problems solved',
+  swe_bench: 'Higher = better · % of real GitHub issues resolved',
+  wmt_bleu: 'Higher = better · Translation quality (BLEU)',
+  alpaca_eval: 'Higher = better · Win rate vs reference model',
+  chatbot_arena: 'Higher = better · Elo rating from human votes',
+  fid_coco: 'Lower = better · FID image quality score',
+  gsm8k: 'Higher = better · % of math problems solved',
+  mmlu: 'Higher = better · % accuracy across 57 subjects',
+  whisper_wer: 'Lower = better · Word error rate for speech'
+};
+const BENCH_COLORS = {
+  humaneval:'#1A4D8F', swe_bench:'#1D6B44', wmt_bleu:'#8B3A1C',
+  alpaca_eval:'#7B3080', chatbot_arena:'#1A4D8F', fid_coco:'#8B5A00',
+  gsm8k:'#1D6B44', mmlu:'#444', whisper_wer:'#1A5E7A'
+};
+
+const CATS = [
+  {key:'coding', label:'Coding', benches:['humaneval','swe_bench']},
+  {key:'writing', label:'Writing', benches:['alpaca_eval','chatbot_arena']},
+  {key:'data_analysis', label:'Data analysis', benches:['gsm8k','mmlu']},
+  {key:'translation', label:'Translation', benches:['wmt_bleu']},
+  {key:'design', label:'Design', benches:['fid_coco']},
+  {key:'audio', label:'Audio', benches:['whisper_wer']},
+];
+
+function byBench(bench) {
+  return DATA.filter(d => d.benchmark === bench).sort((a,b) => a.date < b.date ? -1 : 1);
+}
+
+function capabilityIndex(bench) {
+  const pts = byBench(bench);
+  const ref = pts.find(p => p.date.startsWith('2019')) || pts[0];
+  const latest = pts[pts.length - 1];
+  if (!ref || !latest || ref.score === 0) return null;
+  return LOWER_IS_BETTER.has(bench)
+    ? ref.score / latest.score
+    : latest.score / ref.score;
+}
+
+function catIndex(cat) {
+  const idxs = cat.benches.map(capabilityIndex).filter(v => v !== null);
+  return idxs.length ? idxs.reduce((a,b) => a+b, 0) / idxs.length : null;
+}
+
+function fillIPI() {
+  const vals = CATS.map(c => ({ ...c, val: catIndex(c) })).filter(c => c.val !== null);
+  const composite = vals.reduce((a,c) => a + c.val, 0) / vals.length;
+
+  document.getElementById('ipi-composite').textContent = composite.toFixed(1) + '×';
+  document.getElementById('ipi-composite-sub').textContent =
+    'Avg capability gain across ' + vals.length + ' categories since 2019';
+
+  const catsEl = document.getElementById('ipi-cats');
+  catsEl.innerHTML = vals.map(c => `
+    <div class="ipi-cat">
+      <p class="ipi-cat-name">${c.label}</p>
+      <p class="ipi-cat-val">${c.val.toFixed(1)}×</p>
+      <p class="ipi-cat-delta">+${((c.val - 1)*100).toFixed(0)}% vs 2019</p>
+    </div>
+  `).join('');
+}
+
+const benches = [...new Set(DATA.map(d => d.benchmark))];
+let activeChart = null;
+
+function buildTabs() {
+  const tabsEl = document.getElementById('bench-tabs');
+  tabsEl.innerHTML = benches.map(b => `
+    <button class="bench-tab${b === 'humaneval' ? ' active' : ''}" data-bench="${b}">
+      ${BENCH_LABELS[b] || b}
+    </button>
+  `).join('');
+  tabsEl.addEventListener('click', e => {
+    const btn = e.target.closest('.bench-tab');
+    if (!btn) return;
+    tabsEl.querySelectorAll('.bench-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderChart(btn.dataset.bench);
+  });
+}
+
+function renderChart(bench) {
+  const pts = byBench(bench);
+  const color = BENCH_COLORS[bench] || '#1A4D8F';
+
+  document.getElementById('chart-title').textContent = BENCH_LABELS[bench] || bench;
+  document.getElementById('chart-note').textContent = BENCH_NOTES[bench] || '';
+
+  document.getElementById('model-trail').innerHTML = pts.map(p =>
+    `<span class="model-pill">${p.date.slice(0,7)} · ${p.model}</span>`
+  ).join('');
+
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  if (activeChart) activeChart.destroy();
+  activeChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: pts.map(p => p.date.slice(0,7)),
+      datasets: [{
+        label: BENCH_LABELS[bench],
+        data: pts.map(p => p.score),
+        borderColor: color,
+        backgroundColor: color + '14',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: color,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: items => pts[items[0].dataIndex].date.slice(0,7),
+            label: item => `${pts[item.dataIndex].model}: ${item.parsed.y.toFixed(1)}`
+          },
+          backgroundColor: '#1A1916',
+          titleColor: '#9E9C96',
+          bodyColor: '#F7F6F2',
+          padding: 10,
+          cornerRadius: 4,
+        }
+      },
+      scales: {
+        x: {
+          ticks: { font: { family: "'IBM Plex Mono'", size: 10 }, color: '#9E9C96', maxRotation: 45 },
+          grid: { color: '#E0DED8' }
+        },
+        y: {
+          ticks: { font: { family: "'IBM Plex Mono'", size: 10 }, color: '#9E9C96' },
+          grid: { color: '#E0DED8' }
+        }
+      }
+    }
+  });
+}
+
+fillIPI();
+buildTabs();
+renderChart('humaneval');
+
+// CPI vs IPI chart
+(function() {
+  const years = [2019, 2020, 2021, 2022, 2023, 2024, 2025];
+
+  // Approximate US CPI indexed to 1.0 in 2019
+  const cpiVals = [1.00, 1.012, 1.047, 1.127, 1.196, 1.231, 1.257];
+
+  // Compute IPI composite per year from benchmark data
+  function ipiAtYear(yr) {
+    const yrStr = yr + '';
+    const vals = CATS.map(cat => {
+      const idxs = cat.benches.map(bench => {
+        const pts = byBench(bench).filter(p => p.date.slice(0,4) <= yrStr);
+        const ref = byBench(bench).find(p => p.date.startsWith('2019')) || byBench(bench)[0];
+        const latest = pts[pts.length - 1];
+        if (!ref || !latest || ref.score === 0) return null;
+        return LOWER_IS_BETTER.has(bench) ? ref.score / latest.score : latest.score / ref.score;
+      }).filter(v => v !== null);
+      return idxs.length ? idxs.reduce((a,b)=>a+b,0)/idxs.length : null;
+    }).filter(v => v !== null);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 1;
+  }
+
+  const ipiVals = years.map(ipiAtYear);
+
+  const ctx = document.getElementById('cpiChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: years.map(String),
+      datasets: [
+        {
+          label: 'IPI (capability)',
+          data: ipiVals,
+          borderColor: '#1A4D8F',
+          backgroundColor: '#1A4D8F18',
+          fill: true,
+          tension: 0.35,
+          pointRadius: 4,
+          pointBackgroundColor: '#1A4D8F',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          borderWidth: 2,
+        },
+        {
+          label: 'US CPI',
+          data: cpiVals,
+          borderColor: '#C0392B',
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.2,
+          pointRadius: 4,
+          pointBackgroundColor: '#C0392B',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          borderWidth: 2,
+          borderDash: [5, 4],
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: item => `${item.dataset.label}: ${item.parsed.y.toFixed(2)}×`
+          },
+          backgroundColor: '#1A1916',
+          titleColor: '#9E9C96',
+          bodyColor: '#F7F6F2',
+          padding: 10,
+          cornerRadius: 4,
+        }
+      },
+      scales: {
+        x: {
+          ticks: { font: { family: "'IBM Plex Mono'", size: 10 }, color: '#9E9C96' },
+          grid: { color: '#E0DED8' }
+        },
+        y: {
+          ticks: {
+            font: { family: "'IBM Plex Mono'", size: 10 },
+            color: '#9E9C96',
+            callback: v => v.toFixed(1) + '×'
+          },
+          grid: { color: '#E0DED8' }
+        }
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

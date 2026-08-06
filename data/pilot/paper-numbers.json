@@ -1,0 +1,159 @@
+{
+  "source": "docs/data.json",
+  "data_generated": "2026-07-31",
+  "base_period": "2020Q1",
+  "window": "2020Q1-2026Q1",
+  "n_quarters": 25,
+  "categories": [
+    {
+      "category": "audio",
+      "label": "Audio",
+      "panel_gigs": 55,
+      "weight": 0.018786,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 322.26,
+      "index_real": 254.2,
+      "delta_nominal_pct": 222.3,
+      "delta_real_pct": 154.2,
+      "se_ln": 0.07108,
+      "band_pct": 13.93168,
+      "ci_level": [
+        280.3508552302136,
+        370.43406739287826
+      ],
+      "meets_5pct": false
+    },
+    {
+      "category": "coding",
+      "label": "Coding",
+      "panel_gigs": 462,
+      "weight": 0.053159,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 250.14,
+      "index_real": 197.32,
+      "delta_nominal_pct": 150.1,
+      "delta_real_pct": 97.3,
+      "se_ln": 0.08716,
+      "band_pct": 17.08336,
+      "ci_level": [
+        210.85847231892086,
+        296.7394144133018
+      ],
+      "meets_5pct": false
+    },
+    {
+      "category": "design",
+      "label": "Design",
+      "panel_gigs": 1466,
+      "weight": 0.705811,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 156.13,
+      "index_real": 123.15,
+      "delta_nominal_pct": 56.1,
+      "delta_real_pct": 23.2,
+      "se_ln": 0.02472,
+      "band_pct": 4.84512,
+      "ci_level": [
+        148.7456489963795,
+        163.88094081725598
+      ],
+      "meets_5pct": true
+    },
+    {
+      "category": "marketing",
+      "label": "Marketing",
+      "panel_gigs": 294,
+      "weight": 0.062545,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 294.31,
+      "index_real": 232.15,
+      "delta_nominal_pct": 194.3,
+      "delta_real_pct": 132.1,
+      "se_ln": 0.03919,
+      "band_pct": 7.681240000000001,
+      "ci_level": [
+        272.5497683557455,
+        317.807557212602
+      ],
+      "meets_5pct": false
+    },
+    {
+      "category": "translation",
+      "label": "Translation",
+      "panel_gigs": 28,
+      "weight": 0.003225,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 299.53,
+      "index_real": 236.26,
+      "delta_nominal_pct": 199.5,
+      "delta_real_pct": 136.3,
+      "se_ln": 0.14889,
+      "band_pct": 29.18244,
+      "ci_level": [
+        223.71886116309597,
+        401.03109962907166
+      ],
+      "meets_5pct": false
+    },
+    {
+      "category": "video",
+      "label": "Video",
+      "panel_gigs": 235,
+      "weight": 0.045872,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 265.61,
+      "index_real": 209.52,
+      "delta_nominal_pct": 165.6,
+      "delta_real_pct": 109.5,
+      "se_ln": 0.06058,
+      "band_pct": 11.87368,
+      "ci_level": [
+        235.87270348670486,
+        299.0963814682208
+      ],
+      "meets_5pct": false
+    },
+    {
+      "category": "writing",
+      "label": "Writing",
+      "panel_gigs": 368,
+      "weight": 0.110601,
+      "terminal_quarter": "2026Q1",
+      "index_nominal": 201.79,
+      "index_real": 159.17,
+      "delta_nominal_pct": 101.8,
+      "delta_real_pct": 59.2,
+      "se_ln": 0.04232,
+      "band_pct": 8.29472,
+      "ci_level": [
+        185.72746414877133,
+        219.24169527982744
+      ],
+      "meets_5pct": false
+    }
+  ],
+  "composite": {
+    "terminal_quarter": "2026Q1",
+    "index_nominal": 178.37,
+    "index_real": 140.7,
+    "delta_nominal_pct": 78.4,
+    "delta_real_pct": 40.7,
+    "se_ln": 0.01907,
+    "band_pct": 3.73772,
+    "ci_level": [
+      171.82608723687375,
+      185.16313449039734
+    ],
+    "meets_5pct": true
+  },
+  "cpi_change_pct": 26.769999999999996,
+  "adequacy_rule_pct": 5.0,
+  "reputation_band": {
+    "raw_pct": 79.0,
+    "adjusted_pct": 39.7,
+    "beta": 0.1068,
+    "beta_se": 0.0201,
+    "beta_t": 5.32,
+    "beta_pooled": true
+  }
+}

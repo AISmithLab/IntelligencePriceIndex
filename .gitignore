@@ -7,9 +7,18 @@ data/cdx-index/*.tmp
 
 # Raw scraped HTML pages
 data/pilot/html/
+data/pilot/html-recent/
+data/pilot/html-recent-test/
+
+# Transient pipeline stdout logs
+data/pilot/*.out
+runs/**/*.out
 
 # Large pilot manifests (small derived CSVs/summaries are kept)
 data/pilot/*-manifest*.tsv
+
+# Scratch / working artifacts (not deliverables)
+scratchpad/
 
 # === Python / OS cruft ===
 __pycache__/

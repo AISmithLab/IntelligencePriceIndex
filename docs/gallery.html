@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intelligence Price Index &middot; Gallery</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M5 11l6 5 4-3 12 7' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg:#f5f6f9; --card:#ffffff; --line:#e8eaf0; --line-2:#eef0f5;
+      --ink:#1c2230; --mut:#6b7280; --faint:#9aa1ad;
+      --accent:#4f46e5; --accent-d:#4338ca; --link:#4f46e5;
+      --up:#15803d; --up-bg:#e9f6ee; --down:#dc2626; --down-bg:#fdecec; --hi:#f5f7fc;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { font: 14px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+           Helvetica, Arial, sans-serif; color: var(--ink); margin: 0;
+           background: var(--bg); -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: 1600px; margin: 0 auto; padding: 0 12px 72px; }
+    a { color: var(--link); }
+
+    /* header ---------------------------------------------------------------- */
+    header { display: flex; flex-direction: column; align-items: center;
+             text-align: center; gap: 12px; padding: 30px 4px 8px; }
+    .logo { width: 44px; height: 44px; border-radius: 11px; flex: none;
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            display: grid; place-items: center;
+            box-shadow: 0 4px 12px -2px rgba(79,70,229,.45); }
+    .logo svg { width: 26px; height: 26px; display: block; }
+    header h1 { font-size: 25px; margin: 0 0 4px; font-weight: 800;
+                letter-spacing: -.02em; line-height: 1.1; }
+    header p { margin: 0; color: var(--mut); font-size: 13.5px; max-width: 64ch; }
+    nav.top { margin-top: 9px; font-size: 13px; }
+    nav.top a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    nav.top a:hover { text-decoration: underline; }
+    .htext { min-width: 0; }
+
+    /* gallery grid ---------------------------------------------------------- */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+            gap: 18px; margin-top: 18px; }
+    @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
+
+    .gcard { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+             box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18);
+             padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; }
+
+    .ghead { display: flex; align-items: center; gap: 10px; margin-bottom: 2px; }
+    .gsw { width: 13px; height: 13px; border-radius: 4px; flex: none; }
+    .gname { font-size: 17px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); }
+    .gbadge { margin-left: auto; font-size: 12px; font-weight: 700;
+              font-variant-numeric: tabular-nums; padding: 3px 10px; border-radius: 999px;
+              background: var(--hi); color: var(--mut); white-space: nowrap; }
+    .gbadge.up { color: var(--up); background: var(--up-bg); }
+    .gbadge.down { color: var(--down); background: var(--down-bg); }
+
+    .gfig { margin: 0; padding: 10px 0 2px; border-top: 1px solid var(--line-2); }
+    .gfig:first-of-type { border-top: none; }
+    .gcap { font-size: 11.5px; color: var(--mut); margin-bottom: 4px; line-height: 1.4; }
+    .gcap a { color: var(--link); font-weight: 600; text-decoration: none; }
+    .gcap a:hover { text-decoration: underline; }
+    .gseller { color: var(--faint); }
+    svg.gsvg { display: block; width: 100%; height: auto; }
+
+    .gleg { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--mut);
+            margin-top: 2px; }
+    .glitem { display: inline-flex; align-items: center; gap: 5px; }
+    .glsw { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
+
+    footer { color: var(--faint); font-size: 12px; margin-top: 26px; padding: 16px 4px 0;
+             border-top: 1px solid var(--line); line-height: 1.6; }
+    footer a { color: var(--link); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer code { background: #eef0f6; padding: 1.5px 6px; border-radius: 5px;
+                  font-size: 11.5px; color: var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M5 11l6 5 4-3 12 7"
+          stroke="white" stroke-width="2.6" stroke-linecap="round"
+          stroke-linejoin="round"/></svg>
+      </div>
+      <div class="htext">
+        <h1>Gallery</h1>
+        <p>A highlight reel of the Intelligence Price Index — for each work category, its
+        price-index trend since 2020 alongside a featured freelancer gig showing how real
+        package prices moved. Ordered by the size of each category&rsquo;s move over the window.</p>
+        <nav class="top"><a href="index.html">&larr; Back to the index</a>
+          &nbsp;&middot;&nbsp; <a href="faq.html">FAQ &amp; methodology &rarr;</a></nav>
+      </div>
+    </header>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>
+      Source: Fiverr gig prices via the Wayback Machine, matched-model index (quarterly,
+      <code>2020Q1 = 100</code>). Category trends use the drift-free GEKS-Jevons
+      estimate in <b>real terms</b>, deflated by CPI-U (US city average, all items, seasonally
+      adjusted), so they match the default view on the index page; the shaded band is its
+      bootstrap 95% confidence interval, which is unchanged by deflation because the deflator
+      carries no sampling error. Featured-gig package prices below are the
+      <b>nominal dollar amounts actually posted</b> on Fiverr and are not deflated.
+      Featured gigs are drawn from the
+      archived price histories of each category&rsquo;s most active sellers; every chart on this
+      page shares the same time axis (<code>2020Q1</code>&ndash;<code>2026Q1</code>), so a gig
+      whose line covers only part of the width was only priced over that stretch. Data generated
+      <span id="gen">—</span>.
+    </footer>
+  </div>
+
+  <script src="gallery.js"></script>
+</body>
+</html>

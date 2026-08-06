@@ -1,7 +1,16 @@
 # Tests: Related Work
 
 **Draft file:** drafts/sections/related-work.md
-**Last reviewed:** 2026-03-21
+**Last reviewed:** 2026-08-06
+
+**2026-08-06 revision:** §2 was not rewritten, but four claim-level passages were corrected so the
+section no longer promises results the paper retracts — the elasticity construct (§2.1), benchmarks as a
+regressor (§2.3), the forecasting component (§2.4), and the positioning table's "Forecasting: Yes" row and
+its following paragraph (§2.5).
+
+**Citations (2026-08-06):** every `[CITE-]` placeholder in the draft now resolves — 63 keys, 63 entries in
+`drafts/references.json`, checked by `code/35-bibliography.py`. Seven entries are **UNVERIFIED** and all
+seven are cited here; see R16, which stays FAIL until they are verified, replaced, or their sentences cut.
 
 ## Reviewer Simulation
 
@@ -40,3 +49,15 @@
 | Q8 | Comparison table present with key dimensions | PASS |
 | Q9 | [CITE-key] placeholders used consistently throughout | PASS |
 | Q10 | Section structure matches model paper pattern (thematic subsections) | PASS |
+
+## Post-retraction consistency (added 2026-08-06)
+
+| # | Critique | Severity | Status | Response |
+|---|----------|----------|--------|----------|
+| R11 | "§2 promises a price elasticity of intelligence that §3.9 retracts." | **blocking** | **PASS** | §2.1 now states the retraction explicitly and points to §3.9's diagnostics, and restates the contribution as the price series plus its bounds. |
+| R12 | "§2.3 frames benchmarks as the paper's continuous capability regressor." | **blocking** | **PASS** | Rewritten: benchmarks are released with the data and used descriptively to mark milestones on figures, and the section is motivated as explaining *why* benchmarks are hard to use as an economic capability measure. |
+| R13 | "§2.4 justifies a forecasting component the paper does not contain." | major | **PASS** | Retitled "Scaling Laws and Why We Do Not Forecast," with an opening paragraph stating the component was dropped because the elasticities it would propagate do not exist, and retained as context for a future powered version. |
+| R14 | "The positioning table claims Forecasting: Yes and a continuous AI measure." | major | **PASS** | The IPI row now reads "None used as a regressor (benchmarks descriptive only; see §3.9)" and "Forecasting: No"; the following paragraph states the contribution without the elasticity or the projections. |
+| R15 | "Does §2 still cite prior work whose findings the paper now contradicts?" | minor | **PASS** | No contradiction: §5.4 reconciles Hui et al. and Demirci et al. by margin (price versus earnings versus postings) rather than disputing them, and §2.2 reports their results unchanged. |
+| R16 | "Your citations are placeholders. Do they resolve to real work, and has anyone checked?" | **blocking** | **FAIL** | Partly closed 2026-08-06 (`code/35-bibliography.py`, `drafts/references.json`). All **63** distinct keys across the eight sections now resolve to a bibliography entry and `drafts/sections/references.md` is generated from it, so nothing is cited that is undefined. **Seven entries remain UNVERIFIED and all seven are in §2** — `ainsworth-nelson-2004` (year/authors unconfirmable; nearest known work is Ainsworth et al. JCDL 2011), `piazzesi-schneider-2016` (published 2020), `guha-2024` (benchmark is NeurIPS 2023), `whalley-2024` (work unidentifiable), and three platform statistics that could not be traced to a citable publication (`fiverr-2025`'s 641%, `upwork-2024`'s 60%/40%, `upwork-freelance-forward`). Each must be verified, replaced, or the sentence it supports cut. The generator marks them in the rendered references list so the flag cannot be lost. |
+| R17 | "Massenkoff & McCrory is cited under an `anthropic-2025` key." | minor | **PASS** | Fixed 2026-08-06: the key is `massenkoff-mccrory-2026` in both the prose and the positioning table. The old key named the data provider rather than the authors, which would have misattributed the work. |
