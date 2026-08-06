@@ -22,7 +22,9 @@ One descriptive fact is worth stating before any index appears, because it sets 
 
 ### 4.2 The Intelligence Price Index, 2020Q1–2026Q1
 
-<!-- FIGURE: Figure 1 — Composite IPI, real (headline) and nominal, with CPI-U reference line and 95% band; AI capability milestones marked on the time axis -->
+![Composite Intelligence Price Index](outputs/figures/fig1-composite.svg)
+
+**Figure 3.** The composite index in real terms (headline) and nominal, with the CPI-U reference line and a 95% band on the real series. Base 2020Q1 = 100. ChatGPT's release is marked for reference only; Section 4.7 reports that we cannot attribute any part of the path to it.
 
 Over 2020Q1–2026Q1 the composite index rises from 100 to **140.7 in real terms (+40.7%)** and to **178.4 in nominal terms (+78.4%)**, against CPI-U of **+26.8%**. The 95% band on the composite is **±3.7%** (nominal level 171.8–185.2), the one series in this paper that meets the ±5% adequacy standard of Section 3.6.
 
@@ -36,7 +38,9 @@ Two features of the path are worth naming.
 
 ### 4.3 Category Trajectories
 
-<!-- FIGURE: Figure 2 — Seven category indices, real terms, each with its 95% band drawn; design plotted with the composite for weight context -->
+![Category indices in real terms](outputs/figures/fig2-categories.svg)
+
+**Figure 4.** The seven category indices in real terms, each drawn with its own 95% band, on a common vertical scale and ordered by review weight. Six of the seven miss the ±5% adequacy criterion of Section 3.6 and are marked. The width of these bands, not the ordering of the lines, is the point of the figure.
 
 | Category | Nominal Δ | Real Δ | Real level 2026Q1 | ±95% | Meets ±5% |
 |---|---:|---:|---:|---:|:--:|
@@ -63,7 +67,9 @@ The composite rises +40.7% in real terms. This section removes what can be remov
 
 **Reputation accumulation is first-order.** Within a gig, price rises **+7.7% per doubling of cumulative reviews** ($\beta = +0.1068$, se 0.0201, $t = 5.32$, gig-clustered, 9,762 transitions across 3,419 gigs). Rebuilding the index on reputation-adjusted prices gives a composite of **+39.7% nominal against +79.0% raw**—a band 39.3 points wide.
 
-<!-- FIGURE: Figure 3 — Composite index, raw and reputation-adjusted, plotted as a band; beta sensitivity strip beneath -->
+![Raw and reputation-adjusted composite](outputs/figures/fig3-reputation-band.svg)
+
+**Figure 5.** The composite published as a band: the raw index above, the reputation-adjusted lower bound below, and beneath them the sensitivity of the full-window change to β. The adjusted line is a bound rather than a correction, and the strip shows why its floor should not be quoted as a single number.
 
 We publish this as a **range, not a correction**, for the reason given in Section 3.8: reviews are cumulative sales, so the adjustment absorbs demand alongside reputation, and if AI suppressed demand it consumes part of what the index is trying to show. The adjustment is largest in the historical segment (writing −27%, translation −26%, marketing −21% at 2024Q3) and small in the recent one (−3% to −4%), simply because seven quarters allow little review accumulation. And the floor is soft: across $\beta$'s own confidence interval the adjusted bound ranges from about +50% to +28%. The honest summary is that **somewhere between a third and all of the real rise may be reputation rather than price**, and this pilot cannot narrow that further.
 

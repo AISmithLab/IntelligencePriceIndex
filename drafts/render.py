@@ -61,6 +61,15 @@ def md_to_html(md: str) -> str:
             list_type = ""
 
     def _inline(t: str) -> str:
+        # images: ![alt](src) — repo-root-relative sources are rewritten to be
+        # relative to drafts/, where the rendered HTML lives.
+        def _img(m: re.Match) -> str:
+            alt, src = m.group(1), m.group(2)
+            if not re.match(r"^(https?:|/|\.)", src):
+                src = f"../{src}"
+            return f'<img src="{src}" alt="{alt}">'
+
+        t = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", _img, t)
         # inline code
         t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
         # bold
@@ -203,6 +212,7 @@ HTML_TEMPLATE = """\
   ul, ol {{ margin: 8px 0; padding-left: 24px; }}
   li {{ margin: 4px 0; }}
   code {{ font-size: 10pt; background: #f5f5f5; padding: 1px 4px; }}
+  img {{ display: block; width: 100%; max-width: 100%; height: auto; margin: 16px auto 4px; }}
   em {{ font-style: italic; }}
   strong {{ font-weight: bold; }}
   .draft-notice {{

@@ -1,0 +1,68 @@
+## References
+
+*63 works cited. Entries marked* **[UNVERIFIED]** *could not be confirmed and must be verified, replaced, or the supported claim cut before submission — see `drafts/references.json`.*
+
+- Acemoglu, D. and Restrepo, P. (2019). *Automation and New Tasks: How Technology Displaces and Reinstates Labor*. Journal of Economic Perspectives 33(2), 3-30.
+- Acemoglu, D. and Restrepo, P. (2020). *Robots and Jobs: Evidence from US Labor Markets*. Journal of Political Economy 128(6), 2188-2244.
+- Acemoglu, D. and Restrepo, P. (2022). *Tasks, Automation, and the Rise in U.S. Wage Inequality*. Econometrica 90(5), 1973-2016.
+- Agrawal, A., Gans, J. and Goldfarb, A. (2018). *Prediction Machines: The Simple Economics of Artificial Intelligence*. Harvard Business Review Press.
+- Ainsworth, S. G. and Nelson, M. L. (2004). *[persistence of archived digital information]*. UNRESOLVED. **[UNVERIFIED]**
+- Austin, J., Odena, A., Nye, M. et al. (2021). *Program Synthesis with Large Language Models (MBPP)*. arXiv:2108.07732.
+- Autor, D. H. (2015). *Why Are There Still So Many Jobs? The History and Future of Workplace Automation*. Journal of Economic Perspectives 29(3), 3-30.
+- Autor, D. H., Levy, F. and Murnane, R. J. (2003). *The Skill Content of Recent Technological Change: An Empirical Exploration*. Quarterly Journal of Economics 118(4), 1279-1333.
+- Autor, D., Chin, C., Salomons, A. and Seegmiller, B. (2024). *New Frontiers: The Origins and Content of New Work, 1940-2018*. Quarterly Journal of Economics 139(3), 1399-1465.
+- Bewley, T. F. (1999). *Why Wages Don't Fall During a Recession*. Harvard University Press.
+- Bresnahan, T. F. and Trajtenberg, M. (1995). *General Purpose Technologies: 'Engines of Growth'?*. Journal of Econometrics 65(1), 83-108.
+- Brynjolfsson, E., Li, D. and Raymond, L. R. (2023). *Generative AI at Work*. NBER Working Paper 31161.
+- Cavallo, A. (2017). *Are Online and Offline Prices Similar? Evidence from Large Multi-channel Retailers*. American Economic Review 107(1), 283-303.
+- Cavallo, A. and Rigobon, R. (2016). *The Billion Prices Project: Using Online Prices for Measurement and Research*. Journal of Economic Perspectives 30(2), 151-178.
+- Chen, M., Tworek, J., Jun, H. et al. (2021). *Evaluating Large Language Models Trained on Code (HumanEval)*. arXiv:2107.03374.
+- Chessa, A. G., Verburg, J. and Willenborg, L. (2017). *A Comparison of Price Index Methods for Scanner Data*. 15th Meeting of the Ottawa Group on Price Indices.
+- Cobbe, K., Kosaraju, V., Bavarian, M. et al. (2021). *Training Verifiers to Solve Math Word Problems (GSM8K)*. arXiv:2110.14168.
+- de Haan, J. (2004). *Direct and Indirect Time Dummy Approaches to Hedonic Price Measurement*. Journal of Economic and Social Measurement 29(4), 427-443.
+- Demirci, O., Hannane, J. and Zhu, X. (2024). *Who Is AI Replacing? The Impact of Generative AI on Online Freelancing Platforms*. Management Science (published online January 2025); CESifo Working Paper 11276.
+- Dubois, Y., Galambosi, B., Liang, P. and Hashimoto, T. B. (2024). *Length-Controlled AlpacaEval: A Simple Way to Debias Automatic Evaluators*. arXiv:2404.04475.
+- Eloundou, T., Manning, S., Mishkin, P. and Rock, D. (2023). *GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models*. arXiv:2303.10130; later Science 384(6702).
+- Epoch AI (2025). *AI capabilities progress has sped up*. https://epoch.ai/data-insights/ai-capabilities-progress-has-sped-up.
+- Epoch AI (2025). *ECI Documentation: Included benchmarks*. https://epoch.ai/data/eci-documentation/data.
+- Epoch AI (2024). *Machine Learning Trends: Training Compute*. https://epoch.ai/trends.
+- Epoch AI (2025). *Epoch Capabilities Index (ECI)*. https://epoch.ai/eci.
+- Epoch AI (2024). *Machine Learning Trends: Hardware and compute price-performance*. https://epoch.ai/trends.
+- Felten, E., Raj, M. and Seamans, R. (2021). *Occupational, Industry, and Geographic Exposure to Artificial Intelligence: A Novel Dataset and Its Potential Uses*. Strategic Management Journal 42(12), 2195-2217.
+- Fiverr (2025). *[business/insights report cited for a 641% rise in searches for 'humanize AI content']*. UNRESOLVED. **[UNVERIFIED]**
+- Frey, C. B. and Osborne, M. A. (2017). *The Future of Employment: How Susceptible Are Jobs to Computerisation?*. Technological Forecasting and Social Change 114, 254-280.
+- Guha, N., Nyarko, J., Ho, D. E. et al. (2023). *LegalBench: A Collaboratively Built Benchmark for Measuring Legal Reasoning in Large Language Models*. NeurIPS 2023 Datasets and Benchmarks. **[UNVERIFIED]**
+- Hendrycks, D., Burns, C., Basart, S. et al. (2021). *Measuring Massive Multitask Language Understanding (MMLU)*. ICLR 2021.
+- Heusel, M., Ramsauer, H., Unterthiner, T., Nessler, B. and Hochreiter, S. (2017). *GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium (FID)*. NeurIPS 2017.
+- Hoffmann, J., Borgeaud, S., Mensch, A. et al. (2022). *Training Compute-Optimal Large Language Models (Chinchilla)*. arXiv:2203.15556.
+- Huang, Z., He, Y., Yu, J. et al. (2024). *VBench: Comprehensive Benchmark Suite for Video Generative Models*. CVPR 2024.
+- Hui, X., Reshef, O. and Zhou, L. (2024). *The Short-Term Effects of Generative Artificial Intelligence on Employment: Evidence from an Online Labor Market*. Organization Science 35(6), 1977-1989.
+- ILO, IMF, OECD, UNECE, Eurostat and World Bank (2004). *Consumer Price Index Manual: Theory and Practice*. International Labour Office, Geneva.
+- International Labour Organization (2021). *World Employment and Social Outlook 2021: The Role of Digital Labour Platforms in Transforming the World of Work*. International Labour Office, Geneva.
+- Ivancic, L., Diewert, W. E. and Fox, K. J. (2011). *Scanner Data, Time Aggregation and the Construction of Price Indexes*. Journal of Econometrics 161(1), 24-35.
+- Jayasumana, S., Ramalingam, S., Veit, A. et al. (2024). *Rethinking FID: Towards a Better Evaluation Metric for Image Generation (CMMD)*. CVPR 2024.
+- Jimenez, C. E., Yang, J., Wettig, A. et al. (2024). *SWE-bench: Can Language Models Resolve Real-World GitHub Issues?*. ICLR 2024.
+- Kaplan, J., McCandlish, S., Henighan, T. et al. (2020). *Scaling Laws for Neural Language Models*. arXiv:2001.08361.
+- Koehn, P. and Monz, C. (2006). *Manual and Automatic Evaluation of Machine Translation between European Languages*. Proceedings of the Workshop on Statistical Machine Translation (WMT).
+- Krsinich, F. (2016). *The FEWS Index: Fixed Effects with a Window Splice*. Journal of Official Statistics 32(2), 375-404.
+- Liu, Y., Cun, X., Liu, X. et al. (2024). *EvalCrafter: Benchmarking and Evaluating Large Video Generation Models*. CVPR 2024.
+- Mas-Colell, A., Whinston, M. D. and Green, J. R. (1995). *Microeconomic Theory*. Oxford University Press.
+- Massenkoff, M. and McCrory, P. (2026). *Labor Market Impacts of AI: A New Measure and Early Evidence*. Anthropic Research, March 2026.
+- Noy, S. and Zhang, W. (2023). *Experimental Evidence on the Productivity Effects of Generative Artificial Intelligence*. Science 381(6654), 187-192.
+- Piazzesi, M., Schneider, M. and Stroebel, J. (2020). *Segmented Housing Search*. American Economic Review 110(3), 720-759. **[UNVERIFIED]**
+- Radford, A., Kim, J. W., Hallacy, C. et al. (2021). *Learning Transferable Visual Models From Natural Language Supervision (CLIP)*. ICML 2021.
+- Rein, D., Hou, B. L., Stickland, A. C. et al. (2023). *GPQA: A Graduate-Level Google-Proof Q&A Benchmark*. arXiv:2311.12022.
+- Rosen, S. (1974). *Hedonic Prices and Implicit Markets: Product Differentiation in Pure Competition*. Journal of Political Economy 82(1), 34-55.
+- Scale AI (2025). *SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?*. arXiv:2509.16941.
+- Schaeffer, R., Miranda, B. and Koyejo, S. (2023). *Are Emergent Abilities of Large Language Models a Mirage?*. NeurIPS 2023.
+- U.S. Bureau of Labor Statistics (2024). *Handbook of Methods, Chapter 17: Consumer Price Index*. https://www.bls.gov/opub/hom/cpi/.
+- U.S. Bureau of Labor Statistics (2018). *Handbook of Methods: Consumer Price Index calculation and item substitution*. https://www.bls.gov/opub/hom/cpi/.
+- U.S. Bureau of Labor Statistics (2024). *Handbook of Methods, Chapter 14: Producer Price Indexes*. https://www.bls.gov/opub/hom/ppi/.
+- Upwork (2023). *Freelance Forward (annual survey)*. UNRESOLVED edition. **[UNVERIFIED]**
+- Upwork Research Institute (2024). *[report cited for AI-related freelance work growth and earnings premium]*. UNRESOLVED. **[UNVERIFIED]**
+- Vendrow, J., Vendrow, E., Beery, S. and Madry, A. (2025). *Do Large Language Model Benchmarks Test Reliability? (GSM8K-Platinum)*. arXiv:2502.03461.
+- Webb, M. (2020). *The Impact of Artificial Intelligence on the Labor Market*. SSRN Working Paper 3482150.
+- Wei, J., Tay, Y., Bommasani, R. et al. (2022). *Emergent Abilities of Large Language Models*. Transactions on Machine Learning Research.
+- Whalley, A. (2024). *UNRESOLVED*. UNRESOLVED. **[UNVERIFIED]**
+- Zheng, L., Chiang, W.-L., Sheng, Y. et al. (2023). *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena*. NeurIPS 2023 Datasets and Benchmarks.
+

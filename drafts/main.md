@@ -15,3 +15,5 @@
 :(sections/limitations.md)
 
 :(sections/conclusion.md)
+
+:(sections/references.md)

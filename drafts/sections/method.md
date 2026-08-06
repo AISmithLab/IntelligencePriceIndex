@@ -101,6 +101,12 @@ GEKS is the appropriate multilateral choice here: we observe posted prices but n
 
 **Known biases, tested rather than assumed.** The principal documented weakness of GEKS is downward bias when disappearing products are dumped at clearance prices, to which TPD is insensitive [CITE-chessa-verburg-willenborg-2017]. We test it: a gig's *final* observed price change averages +0.051 log points against +0.051 for its other transitions ($t = 0.07$, n.s.), with no category showing a significant terminal drop. This is expected structurally, since 99% of gigs cease to be observed mid-panel, making "disappearance" an artifact of crawl attrition rather than seller delisting—which is itself a limitation, treated in Section 6.
 
+**An assumption-free corroboration.** Both alternatives above share our panel construction, so their agreement with GEKS is partly internal consistency. A third check shares none of its machinery: the **direct bilateral Jevons** comparison between the base and terminal quarters, over gigs observed at both endpoints only. It uses no chain, no transitivity correction, no link quarters, no regression and no imputation, so if GEKS were manufacturing the level this would not reproduce it.
+
+On the recent panel, where enough gigs survive both endpoints for the comparison to mean anything, **GEKS agrees with it closely**: writing +1.4% (n = 65 matched gigs), coding +1.9% (n = 58), design +2.7% (n = 275), marketing −4.7% (n = 47), video −5.0% (n = 63), audio +1.7% (n = 6). Median absolute gap **2.7%**.
+
+On the historical panel the same check is uninformative, and instructively so: only **1 to 4 gigs** survive both endpoints per category, and the direct figure accordingly disagrees with GEKS by up to 64% (writing, on a single gig). That is a statement about the direct estimator rather than about GEKS — and it is precisely why GEKS routes through link quarters at all, as well as another view of the sparsity that Section 3.7 shows leaves the historical levels unidentified.
+
 **Implementation validation.** Our implementation reproduces the `PriceIndexCalc` reference exactly (maximum absolute difference 0.0000 index points, correlation 1.0000) on the four categories the reference can process. It fails on the remaining three with a division-by-zero: coding, design and translation contain quarter pairs sharing *zero* matched gigs (25 of translation's pairs, 15%), which the reference assumes cannot occur. Averaging over available link routes only, as we do, is a requirement of this panel's sparsity rather than a stylistic choice.
 
 We report **bootstrap standard errors** (200 replications, resampling gigs with replacement), since the averaged bilaterals admit no closed-form joint variance. Bands are reported as 1.96 × the standard error of the *log* level, expressed as a ±% half-width; the exact interval on the level is asymmetric and we give it where individual cells are compared.
@@ -136,18 +142,24 @@ Two features of this table deserve emphasis because both are easy to misread. Fi
 
 **Why panel gigs are the wrong unit.** Precision is governed by matched gigs *per bilateral*. In the recent panel, design's median quarter pair shares **208** matched gigs and none of its 21 pairs falls below `MIN_MATCH`; coding's median is 58, writing's 48, marketing's 35, video's 32—but **audio's median is 5** (5 of 21 pairs thin) and **translation's is 3** (7 of 21 thin). In the historical panel the divergence is extreme: design has 330 panel gigs but a **median of 1** matched gig per quarter pair, with **67%** of its pairs below `MIN_MATCH`; writing has 229 panel gigs, a median of **0**, and 79% of pairs unusable; translation, 85% unusable. Wherever this paper states a sample size, it states matched gigs per bilateral.
 
-**What "enough" would cost.** We measured the precision-vs-*n* relationship directly by subsampling gigs and re-estimating (60 independent subsamples per point, terminal quarter, recent panel). The curve is a clean $1/\sqrt{n}$ with a log-scale constant of 0.75–1.3:
+**What "enough" would cost.** We measured the precision-vs-*n* relationship directly by subsampling gigs and re-estimating (60 independent subsamples per point, terminal quarter, recent panel).
 
-| Category | n=25 | n=100 | n=200 | n=400 | n=800 |
-|---|---:|---:|---:|---:|---:|
-| Design | ±29.1% | ±18.5% | ±10.4% | ±7.0% | ±4.6% |
-| Coding | ±56.5% | ±33.5% | ±18.2% | ±6.9% | — |
-| Writing | — | ±26.3% | ±11.4% | ±7.4% | — |
-| Video | — | ±29.6% | ±14.2% | ±5.4% | — |
+One correction matters here and is easy to miss. Subsampling *without* replacement has variance $(1 - n/N)$ times the with-replacement variance, so the raw subsample spread understates the precision loss as $n$ approaches the panel size $N$ — at $n = N$ it is zero by construction. Since the published standard errors come from a bootstrap that resamples *with* replacement, we divide the subsample standard deviation by $\sqrt{1 - n/N}$ to put the two on the same footing. The corrected curve is what we report:
 
-<!-- FIGURE: precision-vs-n curve, log-log, all four categories with 1/sqrt(n) reference line and the ±5% and ±10% rules marked -->
+| Category | *N* | n=25 | n=50 | n=100 | n=200 | n=400 | n=800 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Design | 1,466 | ±37.2% | ±24.7% | ±19.5% | ±16.4% | ±9.0% | ±5.9% |
+| Coding | 462 | ±49.3% | ±41.0% | ±38.8% | ±30.4% | — | — |
+| Writing | 368 | ±27.4% | ±21.9% | ±16.4% | ±10.6% | — | — |
+| Video | 235 | ±33.8% | ±22.7% | ±19.7% | — | — | — |
 
-Extrapolating, **±5% requires roughly 850–2,500 matched gigs per category** and ±10% requires 215–650. Extrapolated full-*n* values land in the same range as the published bootstrap standard errors, an independent check on both. This is the concrete design requirement a full-frame collection has to meet, and Section 6 states it as such.
+![Precision versus matched sample size](outputs/figures/fig4-precision-curve.svg)
+
+**Figure 1.** Index precision against sampled gigs, log-log, recent panel at the terminal quarter, with a $1/\sqrt{n}$ reference and the ±5% and ±10% adequacy rules marked. Points are finite-population corrected as described above.
+
+**The curve validates the published standard errors independently.** Extrapolating each corrected curve to its own full *N* gives design **±4.4%**, writing **±7.8%**, video **±12.9%** and coding **±20.0%**, against published bootstrap values of ±4.8%, ±8.3%, ±11.9% and ±17.1%. Two procedures that share no machinery—subsample-and-re-estimate versus resample-with-replacement—agree to within 3 percentage points in every case.
+
+Inverting the fit gives the design requirement: **±5% needs roughly 900 (writing), 1,100 (design) and 1,600 (video) matched gigs**, and ±10% needs 225–390. **Coding is the outlier at roughly 7,400**, because its per-gig information content is far lower—its prices are more dispersed and its matched pairs thinner—which is the same reason it fails the criterion at ±17.1% despite having eight times audio's panel. A full-frame collection should therefore size on the *worst* category rather than the average, and Section 6 states it that way.
 
 **On external benchmarks.** We deliberately do not benchmark our precision against the CPI. BLS collects roughly 94,000 quotes per month and reports a median standard error near 0.1 percentage points on 12-month changes; we are two orders of magnitude away and the comparison is uninformative. We borrow the *rules* instead: the ILO CPI Manual's minimum-relatives requirement and BLS cell-suppression practice [CITE-ilo-cpi-manual-2004, CITE-bls-handbook-2018]. The relevant reference class for precision reporting is online-price measurement—the Billion Prices Project and successors [CITE-cavallo-rigobon-2016, CITE-cavallo-2017]—which reports coverage and matched-item counts, and which we follow.
 
@@ -173,7 +185,9 @@ So the base quarter, the matching threshold and the window are three ways of per
 - The **recent segment is unaffected**: five of seven categories do not move at all under the threshold sweep, and its bilaterals are dense (Section 3.6).
 - The **composite is exempt, and verifiably so**. The splice truncates the historical leg at 2024Q3, so only 2020Q1→2024Q3 of the historical series ever reaches the headline, and that leg's spread across window choices is 4.0% for design, 4.5% for video, 10.7% for writing—against 27.6%, 16.4% and 26.3% over the full historical span. Design, the steadiest, carries 70.6% of the weight. The composite's robustness is a consequence of the splice geometry and the weighting, not evidence that the underlying categories are well identified.
 
-<!-- FIGURE: link-path support per quarter for each category, historical vs recent panel, with the MIN_MATCH=3 threshold marked -->
+![Link-path support per quarter](outputs/figures/fig5-linkpath.svg)
+
+**Figure 2.** The number of populated GEKS link paths supporting each quarter's level, by category, for the historical and recent panels. A quarter resting on a single path is not identified: its level is a property of which path happened to survive. The historical panel spends much of its span near that line; the recent panel does not.
 
 ### 3.8 Measuring the Rival Explanations
 

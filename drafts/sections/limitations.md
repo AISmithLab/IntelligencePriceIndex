@@ -4,7 +4,7 @@ This is a pilot-scale measurement paper, and several of its limitations are quan
 
 ### 6.1 What the sample cannot resolve
 
-**Precision fails the standard we set.** Section 3.6 states a ±5% adequacy criterion and **six of seven categories miss it** at the terminal quarter, from marketing at ±7.7% to translation at ±29.2%. Only design (±4.8%) and the composite (±3.7%) pass, and the composite passes only because design carries 70.6% of the weight. Reaching ±5% across the board would require roughly **850–2,500 matched gigs per category**, against current medians of 208 (design) down to 3 (translation) matched gigs per quarter pair.
+**Precision fails the standard we set.** Section 3.6 states a ±5% adequacy criterion and **six of seven categories miss it** at the terminal quarter, from marketing at ±7.7% to translation at ±29.2%. Only design (±4.8%) and the composite (±3.7%) pass, and the composite passes only because design carries 70.6% of the weight. Reaching ±5% would require roughly **900 matched gigs for writing, 1,100 for design and 1,600 for video—and about 7,400 for coding**, whose per-gig information content is far lower. Current panels run from 1,466 gigs (design) down to 28 (translation), with matched-gigs-per-quarter-pair medians of 208 down to 3. A full-frame collection must be sized on the worst category, not the average.
 
 **No category ranking is supported.** The top three categories' intervals overlap one another completely, so their ordering is not determined by these data. Only design's separation from the top of the distribution is robust. We say this in Section 4.3 and repeat it here because point-estimate orderings are what get quoted onward.
 
