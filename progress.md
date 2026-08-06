@@ -1,5 +1,17 @@
 # Progress Log
 
+## 2026-08-06 — The hedonic regression published in full: §3.8 gets the coefficient table it was summarising
+
+- **User: "so what is the linear regression model you made" → "ok publish these".** Asked where, because the paper and the live site are materially different audiences; **user chose the paper**. §3.8 previously carried the hedonic as prose only — the headline numbers were there but **no reader could check a coefficient**, which is not a defensible way to publish a regression the paper leans on for its design argument.
+- **Added the estimating equation and a three-column table** to `drafts/sections/method.md` §3.8: (1) cross-section, (2) + quarter FE, (3) the volume slope re-estimated within-gig. Every coefficient with its *t*, plus $R^2$, *n* and cluster counts per column. Bold marks $|t| > 1.96$; the caption states that task-type coefficients are price levels relative to design and carry no AI-exposure content, which is the most likely misreading.
+  - Rating **+0.310 (2.76)** → **+0.338 (3.10)** under quarter FE; coding **+0.808 (9.92)**, marketing +0.625, video +0.337, writing +0.153, translation **−0.506 (−2.61)**, audio n.s.; $R^2$ **0.065** → 0.096.
+  - The reversal is now legible as a table row rather than a claim: `ln(1+reviews)` reads **+0.022 (1.64)** in column (1), **−0.001** in (2), and **+0.133 (7.87)** in (3).
+- **Two things the prose had left out and the table forced in.** The **second reading of "prior gigs"** is now reported rather than only mentioned — substituting seller gig counts gives **−0.051 (t = −0.59)** and leaves every other coefficient unchanged, which is the check a reviewer would ask for given the two readings are *negatively* correlated (−0.333). And the **rating-scale sensitivity is given as three numbers** (rescale +0.310 / drop +0.311 / raw +0.302) instead of the assertion that the bug does not matter.
+- **Removed a duplication I created.** The degeneracy caveat (sd 0.26, 41% at exactly 5.0) now sits once, in the paragraph that bounds how the rating slope should be read; the closing parenthetical was trimmed to the scale defect alone, which is the part that concerns *future* row-level use of the field rather than this estimate.
+- **Verified:** `code/32-check-draft-numbers.py` still **PASSES**; `code/35-bibliography.py` still resolves all 63 keys with none unresolved; `drafts/render.py` re-renders with the table as real `<table>` markup. No new numbers were introduced — every figure comes from `scratchpad/hedonic.out`, which re-ran byte-identical on 2026-08-05.
+- **Logged as `method.test.md` U7**, with an explicit note that the user chose the paper over the site when offered both, so the result should not be moved to the live site without asking.
+- **Status: committed.** Paper and tests only; no code, data or site changes.
+
 ## 2026-08-06 — Phase 4 apparatus: five figures, a resolved bibliography, and the assumption-free check — and recomputing the precision curve moved the paper's own design requirement
 
 - **Phase 4 of `plans/active/publication.md`.** Three new scripts (33, 34, 35), five figures, a 63-entry bibliography, and the last method FAIL closed. **Every `<!-- FIGURE -->` placeholder is gone and every `[CITE-]` placeholder now resolves.** Nothing in `data/` or the index pipeline was touched.

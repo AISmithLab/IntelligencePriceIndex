@@ -207,11 +207,35 @@ Three properties of this band must travel with it. First, the adjusted series is
 
 **Composition and survivorship.** The matched-model design holds the gig fixed, so it cannot be explained by entry mix—but it follows *ageing incumbents*. New gigs (≤10 reviews at first capture) enter at flat prices from 2019 to 2025 in design, writing, video and marketing while the incumbent index rises. Section 6 treats this as the paper's most serious unresolved limitation.
 
-**Why a hedonic cross-section would not do this better.** It is natural to ask why we do not simply regress price on observable seller characteristics. We estimated that model—log price on gig rating, cumulative reviews, and task type, on 3,753 gigs at their latest capture with seller-clustered standard errors—and it makes the case for the matched-model design better than argument could. Rating is priced (+3.15% per 0.1 rating point, $t = 2.76$) and task type dominates (coding +124% relative to design, translation −40%), but total $R^2$ is only **0.065**. And the volume coefficient **reverses**: $b(\ln \text{reviews})$ is **+0.022 ($t = 1.64$), statistically indistinguishable from zero across sellers**, but the same slope estimated **within a gig over time is +0.133 ($t = 7.87$)**—a 6.1× difference, reproducing the treadmill estimate above on a different sample cut.
+**Why a hedonic cross-section would not do this better.** It is natural to ask why we do not simply regress price on observable seller characteristics. We estimated that model,
+
+$$\ln p_i = b_0 + b_1 \,\text{rating}_i + b_2 \ln(1 + V_i) + \sum_c \gamma_c \,\text{taskType}_{ic} + \varepsilon_i,$$
+
+on 3,753 gigs taken at their latest capture—one row per gig, so heavily archived gigs do not dominate—with seller-clustered standard errors and design as the omitted category. It makes the case for the matched-model design better than argument could.
+
+| Term | (1) Cross-section | (2) + quarter FE | (3) Within-gig |
+|---|---:|---:|---:|
+| Rating | **+0.310** (2.76) | **+0.338** (3.10) | — |
+| ln(1 + reviews) | +0.022 (1.64) | −0.001 (−0.07) | **+0.133** (7.87) |
+| Coding | **+0.808** (9.92) | **+0.796** (9.68) | — |
+| Marketing | **+0.625** (6.47) | **+0.574** (6.02) | — |
+| Video | **+0.337** (3.66) | **+0.341** (3.76) | — |
+| Audio | +0.179 (1.25) | +0.111 (0.92) | — |
+| Writing | **+0.153** (2.08) | +0.140 (1.91) | — |
+| Translation | **−0.506** (−2.61) | **−0.487** (−2.55) | — |
+| $R^2$ | 0.065 | 0.096 | 0.038 |
+| $n$ | 3,753 gigs | 3,753 gigs | 9,726 transitions |
+| Clusters | 2,745 sellers | 2,745 sellers | 3,415 gigs |
+
+*$t$-statistics in parentheses; bold marks $|t| > 1.96$. Task-type coefficients are price levels relative to design and carry no AI-exposure content. Column (3) re-estimates the volume slope on within-gig first differences with quarter fixed effects, holding the seller fixed.*
+
+Rating is priced—**+3.15% per 0.1 rating point**—and it is the only seller-level variable that is. Task type dominates the fit with a wide spread, coding **+124%** relative to design against translation **−40%**. But total $R^2$ is only **0.065**, so posted price is overwhelmingly *not* explained by these three characteristics. And the volume coefficient **reverses between columns (1) and (3)**: $b(\ln \text{reviews})$ is **+0.022 ($t = 1.64$), statistically indistinguishable from zero across sellers**, but the same slope estimated **within a gig over time is +0.133 ($t = 7.87$)**—a 6.1× difference, reproducing the treadmill estimate above on a different sample cut.
+
+Two features of the data bound how column (1)'s rating slope should be read. `rating` is nearly degenerate at gig level—standard deviation 0.26, interquartile range 4.80–5.00, and 41% of gigs at exactly 5.0—so a "per rating point" coefficient extrapolates far outside the data and we report it per 0.1 point. And "prior gigs" has two readings that are *negatively* correlated (−0.333): distinct gigs a seller offers, which is near-constant at a median of 1, and cumulative reviews, which varies and is the notion the specification intends. The table uses reviews; substituting seller gig counts gives −0.051 ($t = -0.59$) and leaves every other coefficient unchanged.
 
 The cross-section does not inflate a real effect; it **cancels** one. A gig that accumulates orders raises its own price by about 10% per doubling, but across sellers high volume is also what cheap high-throughput sellers have, and the two forces offset. A hedonic reading of this market would conclude that experience is unpriced. It is priced; the cross-section cannot see it. This is a demonstrated, not asserted, argument for matching gigs to themselves.
 
-*(Two data problems surfaced in fitting that model and are recorded here because they affect any future row-level use of these fields. `rating` carries a scale defect—217 historical rows report values in (5, 10] because pre-2019 Fiverr displayed a 10-point scale that the extractor wrote into the same column as the 5-point one. It does not move the result reported above, because only 167 affected rows survive to a gig's latest capture, but it is a real defect. Separately, `rating` is nearly degenerate at gig level: standard deviation 0.26, interquartile range 4.80–5.00, and 41% of gigs at exactly 5.0, so a "per rating point" coefficient is an extrapolation far outside the data and we report the slope per 0.1 point.)*
+*(One data defect surfaced in fitting that model and is recorded here because it affects any future row-level use of these fields. `rating` carries a scale defect—217 historical rows report values in (5, 10] because pre-2019 Fiverr displayed a 10-point scale that the extractor wrote into the same column as the 5-point one. Untreated, a 10.0 reads as twice as good as a 5.0. We report the rescaled treatment; halving those rows, dropping them, and leaving them raw give $b_1 = +0.310$, $+0.311$ and $+0.302$ respectively, so it does not move the result—only 167 affected rows survive to a gig's latest capture—but it is a real defect and it is not yet fixed upstream.)*
 
 ### 3.9 A Regression We Do Not Report, and Why
 
