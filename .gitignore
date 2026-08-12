@@ -28,3 +28,14 @@ __pycache__/
 .ipynb_checkpoints/
 data/pilot/html-balanced/
 data/pilot/html-expanded/
+
+# === Enlarged-collection outputs (2026-08) ===
+# Regenerable from the manifests + code/38, code/41 and the pipeline drivers.
+# 85 MB / 25 MB price files and their logs would exceed GitHub's limits on a
+# public repo; the small pilot-scale equivalents above stay tracked.
+data/pilot/balanced-prices.csv
+data/pilot/expanded-prices.csv
+data/pilot/gig-status-ledger.tsv
+data/pilot/expanded-gig-status.tsv
+data/pilot/*-download-log.tsv
+data/pilot/*-download-checkpoint.txt
