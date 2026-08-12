@@ -16,6 +16,7 @@ Output: data/pilot/html/<username>/<YYYYMMDD>_<slug>.html
 import argparse
 import asyncio
 import aiohttp
+import gzip
 import time
 import csv
 import os
@@ -41,6 +42,15 @@ def parse_args():
     p.add_argument("--max-rate", type=float, default=12.0,
                    help="Max requests per second")
     p.add_argument("--max-retries", type=int, default=3)
+    p.add_argument("--gzip", action="store_true",
+                   help="Store pages gzipped as <name>.html.gz. Measured 5.0x on "
+                        "this corpus (22 GB -> ~4.4 GB per 15k pages); "
+                        "09-extract-prices.py reads both forms transparently.")
+    p.add_argument("--chunk", type=int, default=5000,
+                   help="Schedule this many downloads at a time instead of "
+                        "creating one coroutine per manifest row up front.")
+    p.add_argument("--limit", type=int, default=0,
+                   help="Stop after N new downloads (0 = no limit). For pilots.")
     return p.parse_args()
 
 
@@ -56,12 +66,26 @@ def extract_seller_slug(url):
     return "unknown", "unknown"
 
 
-def build_output_path(html_dir, seller, slug, timestamp):
-    """Build output path: html/<seller>/<YYYYMMDD>_<slug>.html"""
+def build_output_path(html_dir, seller, slug, timestamp, use_gzip=False):
+    """Build output path: html/<seller>/<YYYYMMDD>_<slug>.html[.gz]
+
+    Does NOT create the directory — with ~90k gigs this is called once per
+    manifest row during the existence check, and mkdir on every row is a
+    measurable cost. The writer creates the parent when it actually writes.
+    """
     date = timestamp[:8]
-    out_dir = html_dir / seller
-    out_dir.mkdir(parents=True, exist_ok=True)
-    return out_dir / f"{date}_{slug}.html"
+    return html_dir / seller / f"{date}_{slug}.html{'.gz' if use_gzip else ''}"
+
+
+def existing_path(html_dir, seller, slug, timestamp):
+    """Return an already-downloaded page for this snapshot in either storage
+    form, or None. Lets a gzipped run reuse the plain files from earlier runs
+    instead of re-fetching 15,150 pages that are already on disk."""
+    for gz in (False, True):
+        p = build_output_path(html_dir, seller, slug, timestamp, gz)
+        if p.exists() and p.stat().st_size > 0:
+            return p
+    return None
 
 
 def load_manifest(manifest_path):
@@ -109,15 +133,17 @@ class RateLimiter:
 
 
 async def download_one(session, timestamp, url, html_dir, rate_limiter,
-                       max_retries, log_file, checkpoint_file, stats):
+                       max_retries, log_file, checkpoint_file, stats,
+                       use_gzip=False):
     """Download a single Wayback snapshot."""
     seller, slug = extract_seller_slug(url)
-    out_path = build_output_path(html_dir, seller, slug, timestamp)
 
-    # Skip if already exists on disk
-    if out_path.exists() and out_path.stat().st_size > 0:
+    # Skip if already on disk in either storage form
+    if existing_path(html_dir, seller, slug, timestamp) is not None:
         stats["skipped"] += 1
         return
+
+    out_path = build_output_path(html_dir, seller, slug, timestamp, use_gzip)
 
     wayback_url = WAYBACK_TPL.format(timestamp=timestamp, url=url)
 
@@ -128,8 +154,12 @@ async def download_one(session, timestamp, url, html_dir, rate_limiter,
                 if resp.status == 200:
                     content = await resp.read()
                     out_path.parent.mkdir(parents=True, exist_ok=True)
-                    with open(out_path, "wb") as f:
-                        f.write(content)
+                    if use_gzip:
+                        with gzip.open(out_path, "wb", compresslevel=6) as f:
+                            f.write(content)
+                    else:
+                        with open(out_path, "wb") as f:
+                            f.write(content)
 
                     stats["ok"] += 1
                     size = len(content)
@@ -171,10 +201,15 @@ async def main_async(args):
 
     # Filter out already done
     todo = [(ts, url) for ts, url in entries if f"{ts}\t{url}" not in done]
+    n_pending = len(todo)
+    if args.limit:
+        todo = todo[:args.limit]
 
     print(f"Manifest:    {len(entries):,} snapshots")
-    print(f"Already done:{len(entries) - len(todo):,}")
-    print(f"To download: {len(todo):,}")
+    print(f"Already done:{len(entries) - n_pending:,}")
+    print(f"To download: {len(todo):,}" +
+          (f" (--limit of {n_pending:,} pending)" if args.limit else ""))
+    print(f"Storage:     {'gzip' if args.gzip else 'plain'}")
     print(f"Concurrency: {args.concurrency}")
     print(f"Rate limit:  {args.max_rate} req/s")
     print()
@@ -205,7 +240,8 @@ async def main_async(args):
                 async with sem:
                     await download_one(session, ts, url, args.html_dir,
                                        rate_limiter, args.max_retries,
-                                       log_file, checkpoint_file, stats)
+                                       log_file, checkpoint_file, stats,
+                                       use_gzip=args.gzip)
 
                 # Progress update
                 total_done = stats["ok"] + stats["failed"] + stats["skipped"]
@@ -218,8 +254,12 @@ async def main_async(args):
                           f"skip={stats['skipped']:,} "
                           f"| {rate:.1f}/s | {elapsed:.0f}s")
 
-            tasks = [bounded_download(ts, url) for ts, url in todo]
-            await asyncio.gather(*tasks)
+            # Schedule in chunks. One coroutine per manifest row up front is
+            # fine at 15k rows and not at 100k on a 5 GB box.
+            for i in range(0, len(todo), args.chunk):
+                batch = todo[i:i + args.chunk]
+                await asyncio.gather(*(bounded_download(ts, url)
+                                       for ts, url in batch))
 
     elapsed = time.time() - start_time
     print()
@@ -230,9 +270,11 @@ async def main_async(args):
     print(f"  Skipped: {stats['skipped']:,}")
     print(f"  Retries: {stats['retries']:,}")
 
-    # Check disk usage
-    total_size = sum(f.stat().st_size for f in args.html_dir.rglob("*.html"))
+    # Check disk usage (both storage forms)
+    total_size = sum(f.stat().st_size for f in args.html_dir.rglob("*.html*"))
     print(f"  Disk:    {total_size / 1024 / 1024 / 1024:.2f} GB")
+    if stats["ok"]:
+        print(f"  Rate:    {stats['ok'] / elapsed:.2f} pages/s sustained")
 
 
 def main():

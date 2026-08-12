@@ -16,6 +16,7 @@ Columns: seller, slug, date, year, month,
 """
 
 import csv
+import gzip
 import json
 import os
 import re
@@ -244,8 +245,13 @@ def extract_rating(html):
 
 def process_file(filepath):
     """Extract all data from a single HTML file."""
-    # Parse filename: <YYYYMMDD>_<slug>.html
-    fname = filepath.stem  # e.g., "20230801_write-content-for-your-website"
+    # Parse filename: <YYYYMMDD>_<slug>.html or <YYYYMMDD>_<slug>.html.gz
+    # (.stem on a .html.gz leaves the ".html", which would land in the slug)
+    fname = filepath.name
+    for suffix in (".html.gz", ".html"):
+        if fname.endswith(suffix):
+            fname = fname[:-len(suffix)]
+            break
     seller = filepath.parent.name
 
     parts = fname.split("_", 1)
@@ -255,8 +261,9 @@ def process_file(filepath):
     year = date[:4] if len(date) >= 4 else ""
     month = date[4:6] if len(date) >= 6 else ""
 
+    opener = gzip.open if filepath.name.endswith(".gz") else open
     try:
-        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+        with opener(filepath, "rt", encoding="utf-8", errors="replace") as f:
             html = f.read()
     except Exception:
         return None, "read_error"
@@ -318,7 +325,8 @@ def main():
     print("Extracting prices from downloaded HTML...")
     print(f"  Input: {HTML_DIR}")
 
-    html_files = sorted(HTML_DIR.rglob("*.html"))
+    html_files = sorted(list(HTML_DIR.rglob("*.html")) +
+                        list(HTML_DIR.rglob("*.html.gz")))
     print(f"  Found {len(html_files):,} HTML files")
 
     success = 0

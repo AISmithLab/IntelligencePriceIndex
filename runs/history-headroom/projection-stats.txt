@@ -1,0 +1,5 @@
+rows_scanned	22739659
+rows_kept	15376703
+dropped_non200	0
+dropped_skipcat	7216052
+dropped_reserved	146904

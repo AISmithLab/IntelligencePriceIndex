@@ -1,0 +1,16 @@
+Pass 1: projecting classified index -> (gig, month, ts, cat)...
+  ...2,000,000 rows, 1,388,435 kept
+  ...6,000,000 rows, 4,116,636 kept
+  ...10,000,000 rows, 6,695,038 kept
+  ...14,000,000 rows, 9,398,133 kept
+  ...16,000,000 rows, 10,776,309 kept
+  ...18,000,000 rows, 12,153,590 kept
+  ...22,000,000 rows, 14,871,236 kept
+  scanned 22,739,659; kept 15,376,703; dropped 0 non-200 / 7,216,052 skip-category / 146,904 reserved
+Pass 2: external sort by gig, month, timestamp...
+Pass 3: censusing quarters...
+  ...500,000 gigs
+
+Wrote /home/exouser/IntelligencePriceIndex/runs/history-headroom/history-census.md
+Wrote /home/exouser/IntelligencePriceIndex/runs/history-headroom/quarter-supply.tsv
+Projection retained at /home/exouser/IntelligencePriceIndex/data/cdx-index/gig-month-index.tsv
