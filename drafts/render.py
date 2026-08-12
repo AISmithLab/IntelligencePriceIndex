@@ -76,6 +76,11 @@ def md_to_html(md: str) -> str:
         t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
         # italic
         t = re.sub(r"\*(.+?)\*", r"<em>\1</em>", t)
+        # markdown escape for a literal dollar sign — the sections write `\$10,000`
+        # so the figure is not read as math. Unescape it, or the draft shows the
+        # backslash. LaTeX in this draft never uses `\$`, so this is safe to do
+        # globally. (`code/36-build-paper-page.py` already handled it.)
+        t = t.replace(r"\$", "$")
         return t
 
     i = 0

@@ -111,6 +111,20 @@ is therefore made against a full census of what the archive holds rather than ag
 whatever a crawler reached first, and the sampling frame is a file that can be published
 and re-sampled from by others.
 
+**What the harvest then found, against that estimate** (measured 2026-08-12,
+`runs/index-census/`). The index holds **1,778,505 distinct gig base URLs** carrying
+**22,739,659** deduplicated status-200 captures, totalling **2.474 TB** of archived
+compressed bytes — ≈12 TB raw at this corpus's measured 5.0× ratio. **The estimate was
+1.4× high on URLs and correct on volume.** Both figures belong in the write-up: the
+estimate is what forced the two-phase design, the measurement is what the archive turned
+out to hold.
+
+> **A 3.1× trap in that count.** CDX urlkeys retain query strings, so the file's
+> **5,587,932** distinct urlkeys collapse to 1,778,505 distinct gigs (4.2M of 22.7M rows
+> carry a tracking parameter). Stripping `?…` also breaks the file's sort order —
+> `/a/b-c` sorts between `/a/b` and `/a/b?x` — so `uniq` over-counts and the distinct
+> count needs a hash set.
+
 ### 1.6 Two crawls, not one
 
 | crawl | selected for | window | rule |
