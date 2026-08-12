@@ -104,15 +104,15 @@ Two alternatives were probed as fallbacks and both were worse, each for a measur
 
 #### What that gate did not establish
 
-That gate established that the source is *parseable and longitudinal*. It established nothing about whether it is dense enough to identify an index, which is a separate question, is answered in Sections 3.6 and 3.7, and is answered largely in the negative. A feasibility criterion cleared at 20 pages is a weak instrument and we treat it as one throughout.
+That gate established that the source is *parseable and longitudinal*. It established nothing about whether it is dense enough to identify a price index, which is a separate question, is answered in Sections 3.6 and 3.7, and is answered largely in the negative. A feasibility criterion cleared at 20 pages is a weak instrument and we treat it as one throughout.
 
 #### How the collection was scoped
 
 A size estimate run over the archive before any bulk download returned roughly **2.5 million distinct gig URLs and 4–20 TB of raw HTML** — beyond what we could retrieve or store, and beyond what it would be polite to request.
 
-Rather than crawl opportunistically and stop when the disk filled, we split the collection in two: **download the index first**, which is cheap and complete, and build the manifest offline; then download only the pages the manifest names. Every sampling decision below is therefore made against a full census of what the archive holds rather than against whatever a crawler reached first, and **the sampling frame is a file we can publish and others can re-sample from**.
+Rather than crawl opportunistically and stop when the disk filled, we split the collection in two: **download the archive's *capture index* first**, which is cheap and complete, and build the manifest offline; then download only the pages the manifest names. The capture index is the Wayback Machine's catalogue of what it holds — one row per archived page giving its URL, the timestamp it was saved, the HTTP status the server returned, a content hash and the stored record size, but no page content. Throughout Sections 3.1 and 3.2 "index" unqualified means this catalogue; from Section 3.3 onward it means the price index we estimate. Every sampling decision below is therefore made against a full census of what the archive holds rather than against whatever a crawler reached first, and **the sampling frame is a file we can publish and others can re-sample from**.
 
-The harvest that followed lets us replace the estimate with a measurement, and we report both because only the first was available when the design decision was made. Across the letter-prefix harvest the index holds **1,778,505 distinct gig URLs** carrying **22.7 million** deduplicated status-200 captures, whose archived (compressed) bytes total **2.47 TB** — roughly 12 TB of raw HTML at the 5.0× compression ratio we later measured on this corpus. The estimate was thus 1.4× high on URLs and correct on volume, and the two-phase design it forced was the right one on either figure.
+The harvest that followed lets us replace the estimate with a measurement, and we report both because only the first was available when the design decision was made. Across the letter-prefix harvest the capture index holds **1,778,505 distinct gig URLs** carrying **22.7 million** deduplicated status-200 captures, whose archived (compressed) bytes total **2.47 TB** — roughly 12 TB of raw HTML at the 5.0× compression ratio we later measured on this corpus. The estimate was thus 1.4× high on URLs and correct on volume, and the two-phase design it forced was the right one on either figure.
 
 #### Two crawls, not one
 
@@ -131,11 +131,11 @@ We constructed the dataset through a multi-stage pipeline. Scripts are cited inl
 
 *A note on terminology, because three exercises in this project carry the word* pilot. *The 20-page* feasibility probe *of Section 3.1 chose the source. The* 500-seller pilot crawl *described in this section produced every historical figure in this paper. A 1,946-page* extraction pilot *was run in August 2026 ahead of an enlarged collection and is described at the end of this section. Unqualified, "the pilot" means the second.*
 
-#### Stage 1: Build the index, not the corpus (`code/01-download-cdx-index.py`)
+#### Stage 1: Retrieve the capture index, not the pages (`code/01-download-cdx-index.py`)
 
 We queried the Wayback Machine's CDX API once per first-letter prefix (`fiverr.com/a*` through `z*`), paginating each prefix to exhaustion, at a maximum of three concurrent queries with exponential backoff on failure. The CDX API returns a catalogue — URL, timestamp, status code, content digest and record size — without fetching any page, which is what makes the two-phase design cheap.
 
-This yields **60 million raw index entries** covering the full archival history.
+This yields **60 million raw capture-index entries** covering the full archival history.
 
 #### Stage 2: Narrow 60 million records to eligible sellers (`code/02`–`05`)
 
@@ -246,7 +246,7 @@ Three limits are properties of the archive rather than of our budget, and no lar
 
 #### Two enlarged collections, which contribute no number to this paper
 
-Censusing the existing index showed the binding constraint was never the archive but our own selection rule: the recent window holds **91,849 distinct gigs** where the shipped panel uses **2,930 (3.2%)**, and the full history holds **786,717**, of which the historical pilot uses **0.24%**.
+Censusing the capture index we already held showed the binding constraint was never the archive but our own selection rule: the recent window holds **91,849 distinct gigs** where the shipped panel uses **2,930 (3.2%)**, and the full history holds **786,717**, of which the historical pilot uses **0.24%**.
 
 Two enlarged collections were therefore run, both complete as of August 2026 and both writing to separate files. The first is a no-survivor re-selection of the recent window (≥2 distinct quarters anywhere in the window), yielding **25,051 gigs** and 82,966 priced rows. The second is a historical crawl quota-sampled on (category, adjacent quarter pair) rather than on gigs, covering 2018Q3–2026Q1 and yielding **39,933 gigs** and 292,447 priced rows against a manifest of 298,009 pages. That second collection was preceded by a 1,946-page extraction pilot stratified to over-weight the oldest page layouts, which cleared extraction at 99.5% and surfaced a pre-2017 parsing path that no page in the modern corpus exercises.
 
