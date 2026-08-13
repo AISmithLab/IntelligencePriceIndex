@@ -1,5 +1,27 @@
 # Progress Log
 
+## 2026-08-13 — Section 3 gains a collection roadmap
+
+- **User: "I'm still confused by the data collection process in method.md"** → walked the
+  pipeline step by step in conversation, then **"make this timeline extra clear in method.md
+  so I know what to write in my paper."**
+- **New "The collection in order" roadmap opens Section 3**, before §3.1: six phases —
+  0 choose the source, 1 census the archive, 2 build the manifest offline, 3 download,
+  4 read the prices, 5 build the panel — each pointing to the subsection that details it.
+- **Three things the old text left implicit are now stated.** That phases 1–2 finish before
+  any page is downloaded (the design decision the whole two-phase argument rests on); that
+  the two crawls and the five revisions cut *across* the phase order rather than extending
+  it; and the two terminology collisions (*index* = capture index vs price index, *pilot* =
+  the 500-seller crawl vs the 20-page probe), hoisted into one fixed place at the head of
+  the section.
+- **§3.2's stage table gains a Phase column** so the eight stages map onto the roadmap, plus
+  a sentence noting Stages 1–3 touch the capture index only, Stage 4 is the first request
+  for a page, and both crawls share Stages 4–8.
+- Net +383 words on a section U12 had compressed 22%; the now-redundant inline terminology
+  sentence in §3.1 was removed in exchange. No figure added, moved or restated —
+  `code/32-check-draft-numbers.py` PASS, HTML re-rendered. Recorded as U13 in
+  `tests/method.test.md`.
+
 ## 2026-08-13 — The enlarged collections analysed: one worked, one largely did not
 
 - **User: "can you make a results.md showing the results of the new data."** New
