@@ -102,7 +102,7 @@ target 1200**, not 78 GB — against 95 GB free.
 - [x] Re-extract over the combined corpus → `balanced-prices.csv` — **DONE 2026-08-10.**
       293,943 files → **292,447 rows, 1,496 `no_price_found` (0.51%)**, no other error class.
 - [x] Re-measure matched gigs per bilateral per category against the ±5% requirement —
-      **DONE 2026-08-13**, `code/43-enlarged-results.py` → `results.md` §2. Matched gigs per
+      **DONE 2026-08-13**, `code/43-enlarged-results.py` → `drafts/sections/results.md` §2. Matched gigs per
       bilateral rise **32× to 112×** (design 25 → 1,056, translation 2 → 224), and terminal
       bands fall 3–7×: coding **±61.1% → ±13.1%**, video ±75.8% → ±11.5%, audio ±118.6% →
       ±31.5%. **No category reaches ±5%**, but the historical segment moves from

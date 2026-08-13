@@ -48,7 +48,7 @@ what validates the census.
       82,967 files (67,377 new + 15,150 original + 440 pilot) → **82,966 rows, 1
       `no_price_found`**.
 - [x] Re-measure matched gigs per bilateral per category against the ±5% requirement —
-      **DONE 2026-08-13**, `code/43-enlarged-results.py` → `results.md` §2. Rule B raises
+      **DONE 2026-08-13**, `code/43-enlarged-results.py` → `drafts/sections/results.md` §2. Rule B raises
       panel gigs 8.6× (2,908 → 25,014) but matched gigs per bilateral only **1.2–2.0×**,
       because most gigs it adds are short-lived and enter few bilaterals. Design's median
       goes 208 → 300, still short of the 1,100 the ±5% rule needs; six of seven categories

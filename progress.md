@@ -2,8 +2,10 @@
 
 ## 2026-08-13 — The enlarged collections analysed: one worked, one largely did not
 
-- **User: "can you make a results.md showing the results of the new data."** New `results.md`
-  at the project root, from two new scripts — `code/43-enlarged-results.py` (panels, matched
+- **User: "can you make a results.md showing the results of the new data."** New
+  `drafts/sections/results.md` (placed there on request; it is **not** included by
+  `drafts/main.md` and is not scanned by the frozen-numbers checker, so it sits alongside
+  the paper sections without entering the paper), from two new scripts — `code/43-enlarged-results.py` (panels, matched
   gigs per bilateral, GEKS with 200-replication bootstrap) and `code/44-entry-price-series.py`.
   Both import panel construction and the estimator from `21`/`19` rather than reimplementing
   them, so any difference from the paper is the data and not the code. Validated: run on the

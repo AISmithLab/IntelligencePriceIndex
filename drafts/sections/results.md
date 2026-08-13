@@ -4,10 +4,16 @@
 **Scripts:** `code/43-enlarged-results.py`, `code/44-entry-price-series.py`
 **Data:** `data/pilot/enlarged-results.json`, `data/pilot/entry-price-series.json`
 
-> **These are not paper figures.** The paper is governed by the frozen table
-> `data/pilot/paper-numbers.md` and is built from the original two crawls only (§3.2).
-> Everything here comes from the two enlarged collections, which are paper 2's frame.
-> Nothing below has been written into any draft section.
+> **These are not paper figures, and this file is not part of the paper.** It sits in
+> `drafts/sections/` alongside the paper's sections but is deliberately **not** included by
+> `drafts/main.md`, so it never enters a rendered draft, and it is outside the set
+> `code/32-check-draft-numbers.py` governs. The paper is built from the original two crawls
+> only (§3.2) and its figures are frozen in `data/pilot/paper-numbers.md`. Everything below
+> comes from the two enlarged collections, which are **paper 2's** frame. Nothing here has
+> been written into any draft section.
+>
+> If any of this is ever promoted into the paper, it must go through the frozen-table
+> route — `code/30-freeze-numbers.py` — not by copying figures out of this file.
 
 Both `plans/active/expanded-collection.md` and `plans/active/balanced-history.md` stopped
 at the same unstarted step — *"re-measure matched gigs per bilateral per category against
