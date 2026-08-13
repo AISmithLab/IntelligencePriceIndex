@@ -1,5 +1,31 @@
 # Progress Log
 
+## 2026-08-13 — A combined plain-language walkthrough: methods + results in one file
+
+- **User, after five rounds of edits: "I am still not clear what the data collection process
+  looked like, nor the results"** → then asked for a combined methods-and-results document
+  that is "super extra clear" on collection and on what changed to address limitations.
+- **Diagnosis of why the earlier edits failed.** Every previous attempt rewrote the *paper's*
+  prose, which is compressed, cross-referenced and hedged by design. The register was the
+  problem, not the wording. What finally landed in conversation was a **worked example on
+  real rows**, so that is what the new document is built around.
+- **New `drafts/methods-and-results.md`** (2,879 words), at the drafts root rather than in
+  `sections/`, so it is explicitly not a paper section and is outside the frozen-numbers
+  checker. Seven parts: what we measure and why it is hard → the six collection steps with
+  the funnel → **one real gig traced end to end** → how gigs become an index number → every
+  problem and what we changed → the results → what we still cannot do.
+- **Two things in it are computed live from the data rather than quoted from prose**, and
+  both are new to the project's documentation: the gig
+  `nickkonstan/transcribe-your-favorite-track-to-midi-data` with its actual quarterly
+  medians ($10 in 2020Q1 → $80 in 2024Q4, from 66 captures in 2018Q3 alone), and a real
+  bilateral — 2024Q3→2024Q4 on the recent panel, **1,132 matched gigs, 95 raised, 61 cut,
+  976 unchanged, +0.83%**. The last of those makes a point no prose had: **most gigs do not
+  change price in a quarter**; the index moves because a minority re-price.
+- **The eight-row problem/change table is written with a "did it work?" column**, including
+  the honest **no** on the 2017–2018 gap, which is a permanent loss rather than a repair.
+- **Verified**: all 15 headline figures cross-checked against `data/pilot/paper-numbers.md`;
+  the two computed figures verified against the CSVs; paper checker still PASS.
+
 ## 2026-08-13 — results.md states the final model
 
 - **User: "in the results, talk about the final model we used."** `results.md` named
