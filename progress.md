@@ -1,5 +1,28 @@
 # Progress Log
 
+## 2026-08-13 — results.md rewritten in plain language
+
+- **User: "I do not get what results.md means, can you make the language super clear."**
+  The file was written for someone already fluent in the project's vocabulary — *bilateral*,
+  *rule B*, *frame*, *not identified*, *shipped* — none of which it defined.
+- **New §0 "What this file is, in plain terms"** opens it: the one question the file answers,
+  a **table defining the eight terms** the rest of it uses (gig, panel gigs, quarter pair,
+  matched gigs per pair, band, the ±5% requirement, index points, not identified), a table
+  naming the **three data sets being compared** (shipped / expanded / balanced) and what
+  distinguishes them, the four findings in four sentences, and a note on how to read the rest.
+- **Every section's prose de-jargoned.** "Bilateral" → "quarter pair" with the reason it is
+  the binding unit stated in words; "band" → "margin of error" at first use in each section;
+  "the survivor filter" → an explicit sentence on what the paper's recent sample excludes and
+  why that matters; §4's window-sensitivity result restated as "growth over a fixed span
+  changes depending on where you start estimating, which ought to be impossible"; §5 opens
+  with a plain statement of what the survivorship threat actually is before measuring it.
+- **No figure changed.** Verified by diffing every numeric token against the previous
+  version: all present, three references restored after the first pass dropped them (the
+  `19 → 21 → 23 → 18` rebuild chain, the 403 wall cross-reference to §5.2, and the
+  500-seller pilot as the contrast frame in §3).
+- File remains outside the paper — not included by `drafts/main.md`, not scanned by
+  `code/32-check-draft-numbers.py`, no HTML re-render needed. Pushed to `origin/mockup`.
+
 ## 2026-08-13 — Section 3 gains a collection roadmap
 
 - **User: "I'm still confused by the data collection process in method.md"** → walked the
