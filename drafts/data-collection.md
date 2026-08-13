@@ -12,9 +12,151 @@ governed by the frozen table (`data/pilot/paper-numbers.md`, enforced by
 `code/32-check-draft-numbers.py`); this file is not, and it deliberately carries
 operational figures that are not paper figures.
 
-**Structure.** Follows `drafts/templates/data-collection-section.md`.
+**Structure.** Follows `drafts/templates/data-collection-section.md`, preceded by a
+plain-language account (§0) written for a reader with no background in index construction.
 
-**Last updated:** 2026-08-10. Collection status as of this date is in §6.
+**Last updated:** 2026-08-13. Collection status is in §6.
+
+---
+
+## 0. The collection in plain terms
+
+*This section tells the whole story of the data in ordinary language, before the rest of
+this document gives the detail a replicator would need. A reader who wants only the gist
+can stop at the end of it. It was previously §3.0 of `method.md` and was moved here on
+2026-08-13 when that section was compressed to conventional paper form; nothing in it
+has been changed.*
+
+### What we are trying to measure, and what we measure it with
+
+We want to know what it costs to buy a piece of thinking work — a written article, a logo,
+a translation, a few hundred lines of code — and whether that cost has changed as AI
+systems have become able to do more of it.
+
+To answer that, you need real prices that people actually posted, over many years, for
+tasks specific enough to compare with each other. We get them from **Fiverr**, an online
+marketplace where freelancers advertise fixed, standardized jobs called "gigs" at a listed
+price. A gig is a well-defined offer — "write a 1000-word blog post," "design a minimalist
+logo" — and the price is printed on the page. Nobody had to be surveyed or asked to
+estimate anything.
+
+Fiverr's website today only shows today's prices, so to see the past we use the **Wayback
+Machine**, the Internet Archive's long-running project that periodically saves copies of
+web pages. It has been saving Fiverr pages since 2011. Each saved copy is a *snapshot*:
+what one gig's page looked like on one day, including its price.
+
+The measurement idea is simple. Find the same gig at two different dates, compare its price
+to its own earlier price, and repeat over thousands of gigs. Because we compare a gig only
+to itself, differences between gigs — one seller being better than another, one task being
+harder than another — cancel out.
+
+### The first problem: we could not download it all
+
+Before writing any collection code, we checked on twenty pages whether this would work at
+all: is there enough history, can a price actually be read off the page, and can the same
+seller be followed over time? All three passed, and two rival platforms were checked and
+rejected — Upwork negotiates prices privately so the archived page often has none, and
+Freelancer.com is barely archived.
+
+Then we hit the size problem. The archive holds roughly **1.8 million distinct Fiverr gig
+pages** and about **22.7 million saved snapshots** of them, which would come to something
+like 12 terabytes of downloaded pages. That is more than we could store, and more than it
+would be reasonable to ask the Internet Archive's servers for.
+
+So we split the job in two. The Internet Archive publishes a **catalogue** — a plain list
+of every page it has saved and when, without the pages themselves. Downloading the
+catalogue is cheap and, importantly, *complete*. We downloaded all 60 million catalogue
+entries first, decided offline exactly which pages we wanted, and only then fetched those.
+
+This ordering matters more than it sounds. It means our sample was chosen against a full
+inventory of what exists, rather than against whatever a crawler happened to grab before we
+ran out of room.
+
+### How we chose which pages to download
+
+We needed gigs that could be followed over time, so we first found sellers who had at least
+one gig saved at least five times over at least two years. **48,643 sellers** met that bar.
+From those we picked **500 at random**, and took every saved snapshot of every gig they
+offered, thinned down to one per month.
+
+We picked *sellers* rather than picking *gigs* directly, and it is worth saying what that
+cost. Picking gigs would have covered more of the marketplace for the same download budget.
+Picking sellers means we can follow one person's whole shop over years, which some of the
+later analysis needs. We chose the second, deliberately.
+
+That gave us a shopping list of **26,603 pages**. We downloaded them politely, a few per
+second, and got **22,632** of them. We were able to read a price off **every single one**.
+
+### Why the final number is so much smaller
+
+From those 22,632 pages come **1,908 distinct gigs**. But a gig is only useful to us if we
+can see it at two different times — a single sighting tells you nothing about a price
+*change*. After keeping only gigs seen in at least two different quarters, **1,066 remain**
+in the historical sample.
+
+That drop, from 1.8 million gigs in the archive down to about a thousand we can actually
+use, is the honest shape of this kind of research. The Wayback Machine saves pages when it
+happens to save them, not on a schedule designed for us. Most gigs were photographed once
+and never again.
+
+### Five things we got wrong and then changed
+
+None of the changes below were planned. Each was forced by something the data showed us,
+which is why we report them rather than describing the final pipeline as if we had designed
+it that way from the start.
+
+1. **We changed how we picked sellers.** Our first rule favoured sellers whose pages the
+   archive had saved most often. That turns out to measure how popular a page is with the
+   Internet Archive's crawler, not how useful it is to us. We switched to picking at random
+   from everyone with a long enough history.
+
+2. **We added a second, separate collection.** Sellers chosen for having *long* histories
+   are exactly the sellers who go quiet at the end of the window — an old shop still on the
+   site is not a busy one. Our first collection therefore could not see the most recent
+   years at all. So we ran a second one with a different rule aimed at 2024 onward. The two
+   are kept apart and analysed separately, and a surprising amount of this paper's
+   structure follows from that split.
+
+3. **We slowed down our downloading.** One run requested 20 pages a second and had **45% of
+   its requests fail** and need retrying. A later run at 10 a second had *none* fail — and
+   finished at the same actual speed. The fast setting bought nothing; it just converted
+   successes into retries. We had not been blocked, and we did not know any of this until
+   we measured it.
+
+4. **We started compressing what we stored.** Compression turned out to shrink these pages
+   fivefold on this corpus — the difference between 93 GB and 17.6 GB of disk.
+
+5. **We found pages that were not gigs at all, and had to throw them out.** Fiverr has some
+   of its own directory pages whose web addresses look exactly like a gig's. Our
+   price-reader could not find a real price on them, so it fell back to grabbing the first
+   dollar amount on the page — which happened to be the default setting of a budget slider.
+   When Fiverr changed that default from \$1,000 to \$500 in early 2025, it looked to us
+   like every category had suddenly halved in price.
+
+   This is the only mistake that changed a published result. We had previously reported
+   that as a real 2025 fall in the price of cognitive labor. **It was not real, we retract
+   it, and §4.6 of the paper shows the numbers before and after rather than quietly
+   printing the corrected ones.** Removing those pages cost us 10.2% of our observations.
+
+### Three things no amount of extra collecting would fix
+
+**We cannot tell when a gig dies.** When a seller takes a listing down, the archive simply
+stops saving it. It does not record a death. So a gig that was removed and a gig the
+archive merely lost interest in look identical to us. Only watching the live site on a
+fixed schedule, going forward, would tell them apart.
+
+**We cannot see the last few months.** Fiverr now refuses the Internet Archive's crawler,
+so the archive is nearly empty from 2025 onward. Saved pages fall from 280,779 in September
+2024 to **66** in March 2026. Asking for more does not help; the pages were never saved.
+
+**We cannot go back before mid-2018.** Four separate quarters in 2017 and 2018 contain no
+saved gig pages at all. Because our method needs to see the *same* gig on both sides of a
+gap, and almost none survive those gaps, the chain of comparisons is broken there. That is
+a property of the archive, not a budget decision, and it is why our published figures start
+in 2020.
+
+The rest of this document gives all of this precisely: the exact filters, the parameters
+needed to re-run each step, and the counts entering and leaving every stage.
 
 ---
 
