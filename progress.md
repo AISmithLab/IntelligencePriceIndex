@@ -1,5 +1,28 @@
 # Progress Log
 
+## 2026-08-13 — results.md states the final model
+
+- **User: "in the results, talk about the final model we used."** `results.md` named
+  GEKS-Jevons once, in a provenance note about which script it imports, and never said what
+  the model actually does or why it beat the alternatives.
+- **New "The final model, and why it is the one we use"** opens the analysis, in the same
+  plain register as §0: what a matched-model index does (a gig against its own earlier
+  price, so seller, quality and task difficulty cancel — none of which *can* be measured
+  from an archived page); what the Jevons and GEKS halves each contribute, with GEKS
+  explained as averaging over routes rather than multiplying a chain; the exact
+  specification (full window, ≥3 gigs per quarter, ≥2 quarters per gig, `MIN_MATCH = 3`,
+  gig-quarter medians, price guard, 200 bootstrap replications at seed 7, 1.96 × log-level
+  SE, weighted geometric mean); and an explicit note that **all levels in this file are
+  nominal**, the CPI-U deflation being a paper step not applied here.
+- **The three rejected models are now stated as a table** with the reason for each — chained
+  Jevons (irregular captures, +283.0% against +78.4%), time-product-dummy (agrees at
+  $r = 0.996$ but imputes ~85% of cells on a 14.9%-filled panel), and the direct
+  base-to-terminal comparison (kept as an independent check, too thin historically to be an
+  index). Weighted multilaterals noted as never available, since an archived page shows a
+  price but never a sale.
+- Reading guide updated to point at the new block. No figure changed; `results.md` is
+  outside the frozen table, and the paper checker still passes.
+
 ## 2026-08-13 — Section 3 cut to 3,996 words; Appendix A created
 
 - **User: "can you make method.md under 4,000 words."** From 9,050 — a 56% cut.

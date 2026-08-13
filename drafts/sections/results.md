@@ -60,19 +60,59 @@ The rest of this file uses eight terms in a specific way. They are defined here 
 
 ### How to read the rest
 
-Sections 1–4 are about accuracy and whether the index moves. Section 5 is a separate
-investigation into the paper's biggest known weakness. Sections 6–7 say what to do next.
+The next block states the model these numbers come from. Sections 1–4 are then about accuracy
+and whether the index moves; Section 5 is a separate investigation into the paper's biggest
+known weakness; Sections 6–7 say what to do next.
 
 ---
+
+## The final model, and why it is the one we use
+
+Every number below comes from the same estimator the paper uses: a **matched-model index
+estimated by GEKS-Jevons**. It is worth stating plainly what that is, because four candidate
+models were tried and three were rejected.
+
+**What the model does.** It never compares one gig to another. It takes a single gig, looks
+at its price in two different quarters, and records the ratio — how much *that gig's own*
+price changed. Because the comparison is a gig against itself, everything permanently true
+of that gig cancels out: who the seller is, how good they are, how hard the task is, how
+much quality is bundled in. None of that has to be measured, which matters enormously here,
+since none of it *can* be measured from an archived web page.
+
+For one pair of quarters, the category's price change is the geometric mean of all such
+ratios across the gigs present in both. That is the **Jevons** part. The **GEKS** part fixes
+a problem that arises next: with archived data, the gigs bridging 2021Q1→2021Q2 are a
+different set from those bridging 2021Q2→2021Q3, so the comparisons do not automatically
+agree with each other. GEKS makes them consistent by computing each quarter's level as an
+average over every available *route* through an intermediate quarter, rather than by
+multiplying consecutive links into a chain.
+
+**The exact specification.** Full window rather than rolling. A quarter needs ≥3 distinct
+gigs, a gig needs to appear in ≥2 quarters, and any single quarter-pair comparison needs
+**≥3 matched gigs** (`MIN_MATCH = 3`). Prices are gig-quarter medians, guarded to
+0 < *p* ≤ \$10,000. Margins of error are bootstrapped over **200 replications resampling
+gigs with replacement**, seed 7, reported as 1.96 × the standard error of the log level.
+Categories combine into the composite as a weighted geometric mean using the paper's
+existing weights. **All levels in this file are nominal** — the paper deflates by CPI-U for
+its headline, and that step is not applied here.
+
+**The three models we did not use.**
+
+| Rejected | Why |
+|---|---|
+| **Chained Jevons** — multiply consecutive quarter-to-quarter links | Archived captures are irregular, so 24–35% of a gig's links skip quarters. A chain books a multi-quarter change as if it happened in one quarter, and the errors compound. It gives +283.0% where the drift-free estimate gives +78.4%. |
+| **Time-product-dummy** (two-way fixed effects) | Also drift-free and it broadly agrees ($r = 0.996$), but it works by *imputing* the missing cells. Our panel is 14.9% filled, so it would be inventing roughly 85% of the data. GEKS declines to impute. |
+| **Direct base-to-terminal comparison** | Uses only gigs alive at both ends of the window. On the recent data it agrees with GEKS closely, so we keep it as an independent **check**; but historically only 1–4 gigs survive both endpoints, which is too few to be an index. |
+
+Weighted multilateral methods (GEKS-Törnqvist, Geary–Khamis) were never available: they
+need quantities or expenditure shares, and an archived page shows a price but never a sale.
 
 ## How these numbers were produced
 
 Panel construction, the GEKS-Jevons estimator and the bootstrap are imported from
 `code/21-geks-index.py` (which imports `19-tpd-index.py`), so nothing is reimplemented —
 only the input file and the category source differ. That is deliberate: **any difference
-from the paper's numbers must come from the data, not from the code.** Bootstrap is 200
-replications resampling gigs with replacement, `MIN_MATCH = 3`, seed 7 — the paper's
-conventions throughout.
+from the paper's numbers must come from the data, not from the code.**
 
 **Proof that this is the paper's own machinery.** Run on the paper's shipped historical
 data, this code returns coding **312.8 at ±61.1%** and translation **227.8** — exactly the
