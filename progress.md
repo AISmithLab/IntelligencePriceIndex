@@ -1,5 +1,30 @@
 # Progress Log
 
+## 2026-08-13 — Section 3 cut to 3,996 words; Appendix A created
+
+- **User: "can you make method.md under 4,000 words."** From 9,050 — a 56% cut.
+- **Nothing was deleted.** Detail went to two homes: a **new `drafts/sections/appendix-a.md`**
+  (2,277 words) for the estimation diagnostics, and `drafts/data-collection.md` — which
+  already held the collection detail — for the pipeline narrative and operational figures.
+- **Appendix A** carries: the chained-index decomposition; the extraction-method share table;
+  the `MIN_MATCH` sweep; the precision-vs-*n* table with its finite-population correction and
+  the independent validation of the bootstrap SEs; the window/base/threshold decomposition
+  and the 7,400-vs-6,142 coding ceiling; the full hedonic table with its caveats and the
+  per-category reputation elasticities; the five retracted-elasticity diagnostics; and the
+  six-row corrections table. Wired into `drafts/main.md` and `code/36`'s `ORDER`.
+- **§3 keeps** every claim, both figures, the weights table, the adequacy table, the two GEKS
+  equations, and all 23 checker-required figures.
+- **Verified**: checker PASS; every numeric token from the previous version accounted for
+  across method + appendix. The first pass silently dropped ~15 figures — the extraction
+  shares, the coding ceiling, the reputation SE and *n*, the base-quarter log SEs — caught by
+  the token diff and restored into Appendix A. HTML re-rendered (11 tables); inline math
+  confirmed converting, no raw LaTeX leaking.
+- **Two prominence changes flagged, both reversible:** the U7 hedonic table now sits in
+  Appendix A rather than §3.8 — still in the paper, which is what U7 required, but out of the
+  body — and §3.9/§3.10 keep their claims and retraction language in the body while their
+  tables move back. Restoring either to §3 costs the word budget something of equal size.
+- Recorded as U16.
+
 ## 2026-08-13 — §3.1–3.2 rewritten to follow the collection as it actually happened
 
 - **User: "Rewrite the entire method.md to follow the true data collection process."** Fifth

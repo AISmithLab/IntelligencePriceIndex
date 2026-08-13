@@ -34,6 +34,7 @@ OUT = BASE / "drafts" / "paper-page.html"
 ORDER = [
     "abstract", "introduction", "related-work", "method",
     "findings", "discussion", "limitations", "conclusion", "references",
+    "appendix-a",
 ]
 
 # --------------------------------------------------------------------------

@@ -17,3 +17,5 @@
 :(sections/conclusion.md)
 
 :(sections/references.md)
+
+:(sections/appendix-a.md)
