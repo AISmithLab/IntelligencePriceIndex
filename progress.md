@@ -1,5 +1,49 @@
 # Progress Log
 
+## 2026-08-13 — The enlarged collections analysed: one worked, one largely did not
+
+- **User: "can you make a results.md showing the results of the new data."** New `results.md`
+  at the project root, from two new scripts — `code/43-enlarged-results.py` (panels, matched
+  gigs per bilateral, GEKS with 200-replication bootstrap) and `code/44-entry-price-series.py`.
+  Both import panel construction and the estimator from `21`/`19` rather than reimplementing
+  them, so any difference from the paper is the data and not the code. Validated: run on the
+  shipped historical panel the harness returns coding **312.8 ±61.1%** and translation
+  **227.8**, the figures §3.7 and §3.4 already report.
+- **The finding: sampling on gigs bought nothing; sampling on bilaterals bought a lot.** The
+  expanded recent collection (rule B) raised the panel 8.6× (2,908 → 25,014) and matched
+  gigs per bilateral only **1.2–2.0×**, leaving the bands unmoved. The balanced historical
+  collection, quota-sampled on (category × adjacent quarter pair), raised the panel 37× and
+  matched gigs per bilateral **32–112×**, cutting bands 3–7× — coding ±61.1% → ±13.1%. This
+  is the strongest confirmation the project has of §3.6's claim that panel gigs are the
+  wrong unit, and it is the design rule for any full-frame collection.
+- **Both blocked plans are now decided.** `expanded-collection.md`: **do not rebuild** — the
+  recent composite moves +0.8 points on a ±4.5% band. `balanced-history.md`: **rebuild** —
+  three not-identified series become reportable and four category levels move by more than
+  a third. Checkboxes closed and decision-log entries written in both.
+- **A comparison error caught before it was written down.** The shipped historical
+  categories terminate at seven *different* quarters (translation 2024Q3 … design 2025Q4),
+  so comparing each panel at its own terminal quarter compares 2025Q1 with 2026Q1 and reads
+  the gap as a panel effect. Struck at a common 2024Q3 instead, the pattern reverses for
+  coding — 206.0 → 234.5, not 312.8 → 229.1 — and the real signature emerges: the thinnest
+  categories fall hardest, the densest rise.
+- **§3.7's window defect is reduced but not eliminated by density.** Audio's 76-point spread
+  between a 2018Q3 and a 2020Q1 start collapses to **2.8** on the balanced panel, but
+  coding, translation, marketing and video still move 45–57 points. §3.7's central claim
+  survives the enlarged collection and should not be softened.
+- **Entry prices, and a contamination check that changed the answer.** §6.2 asks for the
+  entry series to be built inside one crawl; the balanced collection is that frame. But
+  `review_count` is only reliable where `packageList` supplies it — the 2018 "new gig"
+  cohort is **16% packageList** and returns a median entry price of \$395 against \$10 for
+  established gigs, which is a parse artifact, not a price. Restricted to 2020+, where
+  packageList supplies ≥95%: entry prices **double, \$10 → \$20 (2020–2024)**, against an
+  incumbent composite of 184.5 — so entry is *not* flat, which would weaken the survivorship
+  threat. But it splits where it matters: coding entry rises 8× while **design entry is flat
+  at \$10**, and design carries 70.6% of the weight. Reported as preliminary with four
+  stated reasons it must not enter the paper yet; the right next step is a matched
+  entry-cohort index rather than a median.
+- **Nothing here touches the paper.** Every figure comes from the enlarged panels, which are
+  paper 2's frame; the frozen table and all draft sections are untouched.
+
 ## 2026-08-13 — Section 3 compressed to paper form; the plain account moves to the appendix
 
 - **User: "update method.md and make it more concise in research paper form, there is a lot of content making it hard to digest."** Section 3 goes from **10,116 to 7,987 words (−22%)** and 463 to 322 lines. No figure was cut: a token-level diff of every number in the old and new versions confirms the only absences are four operational figures relocated to the appendix and superseded prose. `code/32-check-draft-numbers.py` PASS before and after.

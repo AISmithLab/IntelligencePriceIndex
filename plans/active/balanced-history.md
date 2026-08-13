@@ -101,11 +101,29 @@ target 1200**, not 78 GB — against 95 GB free.
       against the year-weighted estimate of 35.1 GB.
 - [x] Re-extract over the combined corpus → `balanced-prices.csv` — **DONE 2026-08-10.**
       293,943 files → **292,447 rows, 1,496 `no_price_found` (0.51%)**, no other error class.
-- [ ] Re-measure matched gigs per bilateral per category against the ±5% requirement ← here
-- [ ] Decide whether to rebuild 19 → 21 → 23 → 18 on the enlarged panel
+- [x] Re-measure matched gigs per bilateral per category against the ±5% requirement —
+      **DONE 2026-08-13**, `code/43-enlarged-results.py` → `results.md` §2. Matched gigs per
+      bilateral rise **32× to 112×** (design 25 → 1,056, translation 2 → 224), and terminal
+      bands fall 3–7×: coding **±61.1% → ±13.1%**, video ±75.8% → ±11.5%, audio ±118.6% →
+      ±31.5%. **No category reaches ±5%**, but the historical segment moves from
+      uninterpretable to merely imprecise.
+- [x] Decide whether to rebuild 19 → 21 → 23 → 18 on the enlarged panel — **YES, decided
+      2026-08-13.** See the Decision Log entry below.
 
 ## Decision Log
 
+- **2026-08-13: rebuild paper 2's index on this panel.** Bands fall 3–7× in every category;
+  the three series §3.7 marks **not identified** (coding, translation, audio) become
+  reportable with finite intervals; and the point estimates move enough to matter. Compared
+  at a common 2024Q3 — necessary because the shipped categories terminate at seven different
+  quarters — the composite goes 166.4 → 184.3, and the pattern is the one §3.7 predicts:
+  **the thinnest categories came down hardest** (audio −103.4 index points, video −87.2,
+  translation −87.1, marketing −56.9) while the densest went *up* (design +29.0, coding
+  +28.5). Two findings to carry forward: §3.7's window defect is **reduced but not
+  eliminated** — audio's 76-point spread collapses to 2.8, but coding, translation,
+  marketing and video still move 45–57 points between a 2018Q3 and a 2020Q1 start — and
+  §3.6's matched-gig requirements are **window-specific**, since design reaches the stated
+  1,100 and still bands at ±6.8% over 25 quarters.
 - **2026-08-09: floor at 2018Q3, and treat it as archive-imposed.** Not a budget
   choice. A chain cannot pass through a 1-matched-gig link.
 - **2026-08-09: quota per gig-quarter, not gig-month.** 2× cheaper and matches

@@ -47,11 +47,29 @@ what validates the census.
       `data/pilot/expanded-prices.csv` (**not** over `recent-prices.csv`, which is untouched).
       82,967 files (67,377 new + 15,150 original + 440 pilot) → **82,966 rows, 1
       `no_price_found`**.
-- [ ] Re-measure matched gigs per bilateral per category against the ±5% requirement ← here
-- [ ] Decide whether the enlarged panel changes the recent index enough to warrant rebuilding 19 → 21 → 23 → 18
+- [x] Re-measure matched gigs per bilateral per category against the ±5% requirement —
+      **DONE 2026-08-13**, `code/43-enlarged-results.py` → `results.md` §2. Rule B raises
+      panel gigs 8.6× (2,908 → 25,014) but matched gigs per bilateral only **1.2–2.0×**,
+      because most gigs it adds are short-lived and enter few bilaterals. Design's median
+      goes 208 → 300, still short of the 1,100 the ±5% rule needs; six of seven categories
+      still miss, and coding's band widens slightly (±20.7% → ±21.8%).
+- [x] Decide whether the enlarged panel changes the recent index enough to warrant
+      rebuilding 19 → 21 → 23 → 18 — **NO, decided 2026-08-13.** Every category moves less
+      than 1.5 index points except translation (−7.7), and the composite moves **+0.8 on a
+      ±4.5% band**. See the Decision Log entry below.
 
 ## Decision Log
 
+- **2026-08-13: do not rebuild the index on rule B — but the collection was still worth
+  running.** The precision case for it did not materialise: sampling on *gigs* raised the
+  panel 8.6× and the binding unit only 1.4×, so the recent bands are essentially unchanged
+  and no published figure would move. What the collection does deliver is two things the
+  shipped panel could not: it **demonstrates that the survivor filter did not distort the
+  recent level** (composite +0.8 points, every category inside its band), which retires a
+  worry §6.3 could only state; and it supplies the entry-price sample. Contrast
+  `balanced-history.md`, which quota-sampled on the bilateral itself and cut bands 3–7×.
+  **The design lesson for any full-frame collection is to quota on adjacent quarter pairs,
+  not on gigs.**
 - **2026-08-09: rule B, not C or D.** C adds 9,407 gigs seen in ≥2 months but
   only one quarter, which contribute nothing to a *quarterly* matched-model
   index; D adds singletons, which cannot yield a price relative at all. B is
