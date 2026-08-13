@@ -1,5 +1,32 @@
 # Progress Log
 
+## 2026-08-13 — §3.1–3.2 rewritten to follow the collection as it actually happened
+
+- **User: "Rewrite the entire method.md to follow the true data collection process."** Fifth
+  request in a row about this section, after four incremental patches failed to make it land.
+- **Root cause identified: the collection was being described four times** — the U13 phase
+  roadmap, the eight-stage table, the U14 change table, and prose — none of them the story of
+  what actually happened. That quadruple-telling, not the wording, is why it kept not landing.
+- **§3.2 rebuilt around "The collection as it happened"**: seven dated steps, each forced by
+  what the previous one revealed. The pipeline table is retitled "The pipeline as it now
+  stands" and demoted from spine to replication reference.
+- **§3.1 reordered for truth.** The archive's sparsity was stated *before* how the source was
+  chosen, implying we knew and picked Fiverr anyway. It now follows the scoping decision as
+  "What the census then revealed" — those figures are measured over the capture index and
+  could not have existed before it. A 20-page probe cannot detect them; the text now says so.
+- **The U13 roadmap table was deleted** as the redundant telling. Its intent survives in the
+  narrative and a short "How this section is organised" paragraph; the phase mapping survives
+  in the stage table's Phase column. Three prose paragraphs absorbed into the narrative.
+- **Section numbering preserved deliberately** — 91 cross-references to `§3.x` across 13
+  files, with §3.6 and §3.7 referenced 16 times each. Nothing was renumbered.
+- Net **+650 words** on §3: this trades length for a structure that matches reality. No
+  numeric token lost, checker PASS, HTML re-rendered. Recorded as U15.
+- **Not done, and stated rather than quietly skipped:** §3.3–3.10 were not rewritten. They
+  are estimator, precision, identification, rival explanations and corrections — not data
+  collection — and §3's macro order is already collect → estimate → assess → test → correct.
+  The open question from the earlier structural diagnosis (split §3 into method vs. how-well-
+  it-worked, ~8,400 words across two sections) remains unanswered and unactioned.
+
 ## 2026-08-13 — §3.2: one limitation-and-response record instead of four scattered ones
 
 - **User: "In method, describe the entire data collection process and what changes we made
