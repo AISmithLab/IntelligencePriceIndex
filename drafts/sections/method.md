@@ -105,27 +105,32 @@ Extraction succeeded on **100% of downloaded files** (22,632/22,632 historical; 
 
 We therefore drop all observations whose leading path segment is a reserved section: **3,846 of 37,782 observations (10.2%)**, falling entirely within the recent crawl. Two properties of the rule matter. We **audited for siblings before applying it**: two independent tests — reserved leading path segment, and a page title that is not gig-shaped — agree exactly across both crawls and find no third family. And the rule **keys on the URL family, not on the extraction method**, because the dollar fallback also recovers genuine prices from pre-2017 pages where no other method applies (**2,527 of 2,531** historical dollar-fallback rows are valid, clustered at \$5, Fiverr's original price floor); a rule keyed on `dollar_fallback` would have destroyed them. The rule lives in `code/gigfilter.py` and is applied on all seven price-reading paths, including the crawl manifest builder, so the URLs are never fetched again. Section 4.6 reports the effect on the index; it is large.
 
-#### What the shape of this crawl caused
+#### The limitations the collection ran into, and what we changed in response
 
-Two features of the paper follow from the pilot's design rather than from any analytical choice, and we state them here so they are not read as post-hoc. **It cannot measure the recent period, which is why the paper has a splice**: sellers selected for long histories are precisely those whose captures thin at the trailing edge. **It cannot reach before 2018Q3, which is why the window starts where it does**, on the counts given in Section 3.1.
+The pipeline above is the collection as it now stands, not as it was first built. **Every change below was forced by something the data revealed rather than chosen in advance**, and we report the sequence for two reasons: it is evidence about what archival price collection actually costs, and it lets a reader verify that no change was made in order to obtain a result. Changes 2, 3, 5, 6 and 7 are the five pipeline revisions; 1, 4 and 8 are design responses of the same kind, made at other points in the project and collected here so the whole record sits in one place.
 
-#### How the collection changed
-
-The pipeline above is the collection as it now stands, not as it was first built. It was revised five times, and because each revision was forced by something the data revealed rather than chosen in advance, the sequence is itself evidence about what archival price collection costs.
-
-| # | When | Change | What forced it |
+| # | Limitation the data revealed | Change made in response | Effect |
 |---|---|---|---|
-| 1 | Mar 2026 | Sampling rule: sellers stratified by capture count → sellers qualifying on longitudinal depth, then drawn uniformly | Stratifying on capture count selects on the archive's crawl intensity, not on panel usefulness |
-| 2 | Jun 2026 | Second crawl added, anchored at 2024Q3 | The historical pilot goes sparse after 2024Q4 and cannot support a trailing index |
-| 3 | Jul–Aug 2026 | Request rate reduced from 20/s to 10/s | The 20/s run failed 45% of attempts; 10/s fails none at the same sustained throughput |
-| 4 | Aug 2026 | Storage moved to gzip | Measured 5.0× on this corpus; the difference between 93 GB and 17.6 GB |
-| 5 | Aug 2026 | Non-gig section pages excluded (Stage 5b) | A parsing defect that had put a false −50% step into every category |
+| 1 | The archive is far larger than we could fetch or store — **1,778,505 gig URLs**, roughly 12 TB of raw HTML | Split collection in two: harvest the capture index first, then download only what an offline manifest names (§3.1) | Sampling runs against a census rather than against whatever a crawler reached first, and the frame is a publishable file |
+| 2 | Stratifying sellers by capture count selects on the archive's crawl intensity, not on panel usefulness *(Mar 2026)* | Sellers qualify on longitudinal depth, then are drawn uniformly at random | Removed a selection effect that had no relation to the quantity being measured. The earlier description was also wrong, and is corrected in §3.10 |
+| 3 | The historical crawl goes sparse after 2024Q4 and cannot support a trailing index *(Jun 2026)* | Second crawl added, anchored at 2024Q3, requiring a capture in the trailing window | Recovered the recent period — and is the reason the paper has a splice at all |
+| 4 | Four quarters of 2017–2018 hold no captures; adjacent quarter pairs there share as little as **1** matched gig | Window floored at **2018Q3** by the data, and reported from **2020Q1** once §3.7 showed 2018Q3–2020Q1 too fragile to publish | The pre-2020 period is given up entirely. This is a loss, not a repair |
+| 5 | Requesting at 20/s failed **45%** of attempts *(Jul–Aug 2026)* | Rate reduced to 10 concurrent / 10 per second | Zero failures at the same sustained throughput. Nothing was lost, but only because failures are un-checkpointed |
+| 6 | 93 GB of raw HTML on disk *(Aug 2026)* | Storage moved to gzip | 5.0× measured on this corpus: 93 GB → 17.6 GB |
+| 7 | Fiverr's own section pages satisfy the gig URL rule, and the extractor recorded a budget-slider default as their price *(Aug 2026)* | Exclude reserved leading path segments at every price-reading path (`code/gigfilter.py`, Stage 5b) | Removed a spurious −50% step from every category. **The only change that altered a published result** — §3.10 and §4.6 |
+| 8 | Panel gigs are not what governs precision; matched gigs per *quarter pair* are, and the two diverge by orders of magnitude | Two enlarged collections, the historical one quota-sampled on (category × adjacent quarter pair) rather than on gigs | Complete as of August 2026 and **contributing no number to this paper**; see below and §6 |
 
-Two deserve more than a table row. **The second crawl** — anchor at 2024Q3, require a capture in the trailing window — gives 15,309 snapshots over 3,589 gigs at far higher density than the historical pilot achieves anywhere. Nearly every asymmetry in this paper's results, including which categories are identified at all (Section 3.7), traces to one crawl being selected for depth and the other for density. **The rate lesson** cost us nothing but was luck: the recent crawl at 20 concurrent requests and 20/second logged **12,336 transient failures against 15,150 successes** — a 45% per-attempt failure rate, absorbed only because failures are un-checkpointed — while a later pilot at 10 and 10/second logged **zero** at the same sustained 5.71 pages/second. Exactly **3** of both crawls' 38,000-odd logged responses were 403s, so we have no evidence of being blocked; the correct reading is that we were running well past diminishing returns and did not know it until it was measured. Revision 5 is treated in Section 3.10, as the only one that changed a published result.
+Three deserve more than a table row.
 
-#### What the collection cannot fix
+**The second crawl, and why the paper has a splice.** This is a consequence of the pilot's design rather than an analytical choice, and we state it so it is not read as post-hoc: sellers selected for *long histories* are precisely those whose captures thin at the trailing edge, so the historical crawl cannot measure the recent period however it is analysed. The second crawl — anchored at 2024Q3, requiring a capture in the trailing window — gives 15,309 snapshots over 3,589 gigs at far higher density than the historical pilot achieves anywhere. Nearly every asymmetry in this paper's results, including which categories are identified at all (§3.7), traces to one crawl being selected for depth and the other for density.
 
-Three limits are properties of the archive rather than of our budget, and no larger crawl reaches them.
+**The rate lesson, which cost nothing but was luck.** The recent crawl at 20 concurrent requests and 20/second logged **12,336 transient failures against 15,150 successes** — a 45% per-attempt failure rate, absorbed only because failures are un-checkpointed — while a later pilot at 10 and 10/second logged **zero** at the same sustained 5.71 pages/second. Exactly **3** of both crawls' 38,000-odd logged responses were 403s, so we have no evidence of being blocked; the correct reading is that we were running well past diminishing returns and did not know it until it was measured.
+
+**The exclusion that retracted a finding.** Change 7 is the only one that moved a published number rather than the machinery around it, and §3.10 treats it as such. Its detection is the part worth carrying: the defect is obvious in hindsight, from the price spikes reported under Stage 5b above, but it survived every check we had until the extraction-method *share* table made it visible. That is why Stage 5 reports the share table and not merely the 100% success rate — a success rate would have shown nothing wrong.
+
+#### What no change could fix
+
+Three limits are properties of the archive rather than of our budget, and no revision above and no larger crawl reaches them.
 
 **Exit is unmeasurable.** Streaming all 60M CDX records for the recent window's gigs across **509,339 captures returns `n_404 = 0`**. The archive stops re-requesting a delisted URL rather than recording its death, so a takedown and a lapse in crawling are indistinguishable; only a live forward crawl on a fixed schedule could separate them. *(This is the origin status recorded at capture time, a different quantity from the replay failures our download logs record. Only the first bears on gig exit.)*
 
@@ -133,9 +138,9 @@ Three limits are properties of the archive rather than of our budget, and no lar
 
 **The chain is severed before 2018Q3**, as Section 3.1 reports.
 
-#### Two enlarged collections, which contribute no number to this paper
+#### Change 8: two enlarged collections, which contribute no number to this paper
 
-Censusing the capture index showed the binding constraint was never the archive but our own selection rule: the recent window holds **91,849 distinct gigs** where the shipped panel uses **2,930 (3.2%)**, and the full history holds **786,717**, of which the historical pilot uses **0.24%**. Two enlarged collections were therefore run, both complete as of August 2026 and both writing to separate files: a no-survivor re-selection of the recent window (≥2 distinct quarters anywhere in the window) yielding **25,051 gigs** and 82,966 priced rows, and a historical crawl quota-sampled on (category, adjacent quarter pair) rather than on gigs, covering 2018Q3–2026Q1 and yielding **39,933 gigs** and 292,447 priced rows.
+The last change is the largest and the only one whose result the paper does not use. Censusing the capture index showed the binding constraint was never the archive but our own selection rule: the recent window holds **91,849 distinct gigs** where the shipped panel uses **2,930 (3.2%)**, and the full history holds **786,717**, of which the historical pilot uses **0.24%**. Two enlarged collections were therefore run, both complete as of August 2026 and both writing to separate files: a no-survivor re-selection of the recent window (≥2 distinct quarters anywhere in the window) yielding **25,051 gigs** and 82,966 priced rows, and a historical crawl quota-sampled on (category, adjacent quarter pair) rather than on gigs, covering 2018Q3–2026Q1 and yielding **39,933 gigs** and 292,447 priced rows.
 
 **Every number in this paper comes from the frozen table of the original two crawls.** Section 6 states what the enlarged panels are expected to resolve — with one ceiling they will not: coding requires roughly 7,400 matched gigs per pair and the entire index supplies at most 6,142.
 

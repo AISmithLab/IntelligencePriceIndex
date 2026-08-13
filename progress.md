@@ -1,5 +1,30 @@
 # Progress Log
 
+## 2026-08-13 — §3.2: one limitation-and-response record instead of four scattered ones
+
+- **User: "In method, describe the entire data collection process and what changes we made
+  to address limitations."** The process was already there (roadmap + stage table, U13); the
+  *responses to limitations* were scattered across four places — a five-row revision table,
+  a two-sentence orphan paragraph on what the crawl's shape caused, §3.1's two-phase
+  scoping argument, and a standalone subsection on the enlarged collections.
+- **Consolidated into one eight-row table**: limitation the data revealed → change made →
+  effect. Three responses that were never in the change log are now rows in it — the
+  catalogue-first two-phase design (response to the archive's size), the 2018Q3 window floor
+  (response to the severed chain), and the enlarged collections (response to matched gigs
+  per pair being the binding unit). Rows are marked so a reader can tell the five pipeline
+  revisions from the three design responses.
+- **Prose kept only for the three with consequences**: the second crawl and why the paper
+  has a splice, the rate lesson, and the Stage 5b retraction. The retraction paragraph now
+  makes the *detection* the point — the defect survived every check until the extraction
+  *share* table exposed it, which is the argument for reporting shares over a success rate.
+- **"What the collection cannot fix" → "What no change could fix"**, so it reads as the
+  boundary of the change log rather than an unrelated topic.
+- Net −5 words on §3.2's back half while adding three responses and an effect column. No
+  numeric token lost (diffed against previous version), checker PASS, HTML re-rendered.
+  Recorded as U14.
+- **Boundary held:** none of `results.md`'s measured figures for the enlarged collections
+  entered the paper — they are outside the frozen table and belong to paper 2.
+
 ## 2026-08-13 — results.md rewritten in plain language
 
 - **User: "I do not get what results.md means, can you make the language super clear."**
