@@ -141,18 +141,38 @@ Registered at `plans/active/transaction-volume-prereg.md`, built by
       observations** (HIGH 61,737 + LOW 67,641). The per-category split also reproduces the
       plan's 36,336 gigs / 242,468 observations exactly, so the frame is verified.
 
-### Phase 0 — re-run the existing diagnostics on the balanced frame (no new data)
-- [ ] Generalise `code/24-margin-diagnostics.py` to take a frame argument so it can run on
-      `balanced-prices.csv` + `balanced-manifest-1200.tsv` instead of the shipped panels.
-- [ ] Re-run M1 (demand rate + 2022Q4 break), M2 (dormancy), M3 (entry) on 242,468
-      observations; report the new MDE per category next to step 24's.
-- [ ] **Decision gate:** if the breaks are still null at ~±5%, that is a publishable
-      negative result and the study's headline. If they are non-null, Phase 2 becomes the
-      main event. Either way, write the outcome into the decision log before proceeding.
+### Phase 0 — re-run the existing diagnostics on the balanced frame — **DONE 2026-08-17**
+`code/46-balanced-demand.py` → `runs/phase0-demand.out`. 236,535 accrual observations,
+35,888 gigs, 2018Q1–2024Q4. Implemented as a new step rather than by editing step 24, so
+step 24 stays intact as the underpowered comparison the result is measured against.
+- [x] Re-run the demand-rate break on the balanced frame; report the new MDE per category
+      next to step 24's. **MDE is 4.7×–9.4× tighter (±4.2% to ±7.0%, was ±23% to ±66%).**
+- [x] **Decision gate resolved — and it resolved to neither branch the plan anticipated.**
+      The breaks are **not null**: all seven categories fall significantly, −13.1% (design)
+      to −42.9% (writing), every |t| > 6.6. But they fall *together*, including the two
+      lowest-exposure categories, so the finding is a **platform-wide** decline and Phase 2
+      does **not** become the main event — the differential is not identified (see below).
+- [x] Parallel trends: **FAILED** the pre-registered gate, 6 of 16 pre-period interactions
+      significant. DiD reported as dead per §5; synthetic control is the authorised fallback.
+- [x] Step-29 battery: **failed two of four.** The trend horse race collapses HIGH × POST
+      from −7.9% (t −4.14) to −0.8% (t −0.30) while HIGH × trend is significant (t −2.98),
+      and the **CPI-U placebo is significant** (−3.6%, t −2.93). Placebo window passes
+      (t −0.17); Durbin–Watson 2.26, so unlike step 29 the SEs are not the defect — the
+      effect is not there. Collapsed Newey–West series: post +0.0041, t 0.13, wrong-signed.
+- [x] Descriptive check: Spearman ρ between pre-registered exposure and break size is
+      **+0.429** over seven categories, against the ~0.79 needed for p < 0.05. **audio is
+      least exposed of the seven and has the third-largest fall; design has the smallest.**
 
 ### Phase 1 — establish `review_count` as a transaction proxy, or bound it
+**PROMOTED 2026-08-17 to the study's critical path.** Phase 0 found a *platform-wide*
+accrual fall of 13–43%, which is exactly the signature of review-propensity drift — buyers
+reviewing a smaller share of purchases over time, with no change in sales whatsoever.
+The confound now threatens the headline number, not merely the differential. **The −13% to
+−43% must not be described as a demand decline until this phase runs.**
 - [ ] Monotonicity, coverage and censoring audit (0.58% negative deltas is the starting point).
-- [ ] Review-propensity drift test — the one confound with no current answer.
+- [ ] Review-propensity drift test — the one confound with no current answer. Test the
+      *global* level first (Phase 0 makes it the binding threat), then the *differential*
+      by exposure arm (which is what would revive the DiD).
 - [ ] Cross-check accrual against the price panel's own gigs where both exist.
 - [ ] Write a short "what one review means" note; every downstream number inherits it.
 
@@ -254,8 +274,27 @@ finding, not a failure.
   (rank 4 vs rank 1) and marketing (3 vs 5), so the primary contrast uses only the four
   categories they agree on and coding is reported separately.
 
+- 2026-08-17: **Phase 0 result — the AI attribution is not identified, and the
+  pre-registration is what established that rather than a reviewer.** Recorded as a decision
+  because it redirects the study: the differential question moves to the synthetic-control
+  fallback, and **Phase 1 becomes the critical path** ahead of Phase 2. The reason is that
+  Phase 0's finding is platform-wide (all seven categories, including the two least exposed),
+  and a platform-wide accrual fall is indistinguishable from review-propensity drift on
+  present evidence. **Fiverr Inc.'s reported GMV is promoted with it**: an accrual fall the
+  company's own books do not show would be close to proof of propensity drift, which makes
+  Phase 4's external validation a test of the headline rather than a nice-to-have.
+- 2026-08-17: **The −7.9% DiD estimate is recorded here as a near-miss, deliberately.** It
+  had t = −4.14, a 95% CI of [−11.4, −4.2], and a realised MDE of ±3.96% that *meets* the
+  project's ±5% adequacy standard. Everything about its surface presentation was publishable.
+  It died on the trend horse race and the CPI-U placebo. Kept in the log so the next
+  specification that looks this clean gets the same battery rather than the benefit of doubt.
+
 ## Progress
 
+- 2026-08-17: Phase 0 ran. See the Phase 0 checklist above and the 2026-08-17 entry in
+  `progress.md` for the full result. Headline: step 24's seven nulls were an artefact of
+  power (MDE 4.7–9.4× tighter), all seven categories broke significantly, they broke
+  *together*, and the AI-differential does not survive its own pre-registered tests.
 - 2026-08-17: Phase −1 closed. Ranking built and locked, specification pre-registered, power
   computed pre-outcome (129,378 observations in the primary contrast). No outcome was
   estimated. **Phase 0 is now unblocked and needs no new data collection.**

@@ -1,5 +1,91 @@
 # Progress Log
 
+## 2026-08-17 — Phase 0 RAN. Step 24's null was underpowering; the AI attribution is not identified
+
+`code/46-balanced-demand.py` → `runs/phase0-demand.out`. Ran the specification locked
+in the pre-registration hours earlier, against 236,535 accrual observations on 35,888
+gigs, 2018Q1–2024Q4. **The pre-registration earned its keep on the first run: it caught
+a −7.9% "AI effect" with a tight CI and t = −4.14 that is not real.**
+
+### 1. Step 24's seven nulls were an artefact of power. All seven categories broke hard.
+
+MDE is now **4.7× to 9.4× tighter**, and every category shows a large, highly
+significant fall in review accrual at 2022Q4 (gig FE + linear trend, gig-clustered SEs):
+
+| category | arm | obs | break | t | MDE now | MDE step 24 |
+|---|---|---:|---:|---:|---:|---:|
+| writing | **HIGH** | 39,129 | **−42.9%** | −23.00 | ±4.9% | ±31% |
+| translation | **HIGH** | 19,766 | **−37.2%** | −13.48 | ±7.0% | ±66% |
+| audio | **LOW** | 29,977 | **−35.5%** | −15.28 | ±5.8% | ±52% |
+| coding | mid | 35,755 | −35.2% | −17.63 | ±4.9% | ±23% |
+| video | **LOW** | 35,513 | −28.6% | −14.49 | ±4.7% | ±38% |
+| marketing | mid | 25,947 | −23.7% | −8.49 | ±6.5% | ±44% |
+| design | mid | 44,699 | −13.1% | −6.65 | ±4.2% | ±27% |
+
+So the 2026-08-14 premise was right — the shipped-panel nulls excluded almost nothing —
+but the result it revealed is **not** the one the study was designed to find.
+
+### 2. Every category fell, including the least AI-exposed ones. That is the problem.
+
+**audio is 7th of 7 on pre-registered exposure (β 0.248) and has the 3rd largest fall.**
+**design is mid-exposure and has the smallest (−13.1%).** Spearman ρ between exposure
+rank and break size is **+0.429** over seven categories — |ρ| must exceed ~0.79 for
+p < 0.05, so it neither supports nor refutes the ranking. A fall that hits low-exposure
+categories as hard as high-exposure ones is what a **platform-wide** shock looks like.
+
+### 3. Parallel trends FAILED, so the DiD is dead — as pre-committed, not as an excuse.
+
+Event study, HIGH vs LOW, 2022Q3 omitted: **6 of 16 pre-period interactions significant
+at 5%** (2019Q1 +2.48, 2019Q4 +2.14, 2020Q2 −2.08, 2020Q3 −5.13, 2021Q1 −2.62,
+2021Q2 −2.61). The gate's pre-registered rule is *no* significant pre-period coefficient,
+so it fails. Per §5 the consequence was fixed in advance: **the DiD is reported as dead
+and the only authorised fallback is synthetic control on the LOW categories.**
+
+### 4. The DiD estimate is exactly the trap the battery exists to catch.
+
+Had the gate not been pre-committed, the headline would have been
+**HIGH × POST = −7.9% [−11.4, −4.2], t = −4.14**, on a realised MDE of **±3.96%** —
+which *meets* the project's ±5% adequacy standard. It is tight, significant, correctly
+signed, and wrong. **Two of the four step-29 tests kill it:**
+
+- **Linear-trend horse race.** Adding HIGH × trend collapses HIGH × POST from −0.0822
+  (t −4.14) to **−0.0078 (t −0.30)**, while HIGH × trend is itself significant
+  (−0.0083, t −2.98). The "break at ChatGPT" is a **differential trend that predates it**.
+- **CPI-U placebo.** HIGH × CPI-U — a series with no AI content — is **significant
+  (−3.6%, t −2.93)**. The design is not isolating AI.
+- Newey–West on the collapsed HIGH-minus-LOW quarterly series: post = **+0.0041
+  (t 0.13)**, null and wrong-signed. **Durbin–Watson 2.26**, so unlike step 29
+  (0.22–1.08) the SEs here are not the problem — the effect simply isn't there.
+- First differences passes by construction: the outcome *is* a difference, not a level.
+- **Placebo window passes** (2018Q3–2019Q4, false break 2019Q2): −1.5%, t −0.17.
+
+Three independent routes — failed pre-trends, the trend horse race, and the CPI-U
+placebo — say the same thing, and the collapsed series shows no break at all.
+
+### 5. What is and is not established
+
+- **Established:** review accrual per surviving gig fell sharply and platform-wide after
+  2022, by 13% to 43% depending on category, now bounded to ±4.2–7.0% rather than
+  ±23–66%. This is **Q1** — do surviving gigs sell less — not platform volume.
+- **Not established:** that AI caused it, or that it hit AI-exposed categories harder.
+  The differential is a pre-existing trend and is reproduced by an AI-free series.
+- **Leading rival explanation, and it is now urgent rather than a caveat.** A
+  *platform-wide* accrual decline of this size is precisely what **review-propensity
+  drift** looks like — buyers reviewing a smaller share of purchases over time, with no
+  change in sales at all. That confound has never been tested (Phase 1) and it now
+  threatens the headline number, not just the differential. **The −13% to −43% must not
+  be described as a demand decline until Phase 1 runs.**
+
+### 6. Next
+
+Phase 1 (review-propensity drift) is promoted ahead of everything else, because it
+governs whether Phase 0's platform-wide finding is about sales or about reviewing.
+Synthetic control is the authorised fallback for the differential question. Fiverr Inc.'s
+reported GMV becomes materially more valuable: a platform-wide accrual fall that the
+company's own books do *not* show would be close to proof of propensity drift.
+
+No paper section, figure or frozen number was touched.
+
 ## 2026-08-17 — Pre-registered the transaction-volume study (Phase −1); Phase 0 unblocked
 
 - **The plan from 2026-08-14 existed but was unstarted** — no `code/45+`, no pre-registration

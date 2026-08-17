@@ -210,8 +210,20 @@ placebo is reported with its n.
 
 ## 9. Declared deviations
 
-*(None. Any post-Phase-0 change to §2–§7 is appended here with a date and a reason,
-and the affected estimate is re-reported both ways.)*
+- **2026-08-17, clarification, no substantive change.** §3 said "treatment period 2022Q4
+  – 2024Q4, **eight quarters**", which is internally loose: 2022Q4–2024Q4 inclusive is
+  nine quarters. The implementation (`code/46-balanced-demand.py`) sets
+  `POST = 1` for quarters *strictly after* 2022Q4, i.e. **2023Q1–2024Q4 = eight
+  quarters**, which matches the stated length and matches step 24's convention so the
+  two studies remain comparable. ChatGPT shipped 2022-11-30, so 2022Q4 is
+  predominantly a pre-treatment quarter and belongs in the control period. Recorded
+  here because the ambiguity was in the registered text, not because the estimate moved.
+
+- **2026-08-17, no deviation — the design failed its own gate and was reported as
+  failing.** §5's parallel-trends gate returned FAIL and §6's battery failed two of four
+  tests. Per §5 and §6 the DiD is therefore reported as dead rather than published, and
+  the fallback is synthetic control. Reporting a pre-committed failure is the
+  pre-registration working, not a deviation from it.
 
 ## 10. What counts as a result
 
