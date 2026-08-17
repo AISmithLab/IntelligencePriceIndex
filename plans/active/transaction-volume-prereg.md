@@ -219,6 +219,17 @@ placebo is reported with its n.
   predominantly a pre-treatment quarter and belongs in the control period. Recorded
   here because the ambiguity was in the registered text, not because the estimate moved.
 
+- **2026-08-17, DECLARED DEVIATION — expanded synthetic-control donor pool.** §5 specified
+  synthetic control on "the LOW categories," which is two donors and therefore a
+  one-parameter weight. `code/48-category-impact.py` runs that registered form as **C3**
+  and additionally reports an expanded pool of LOW + MID (five donors) as **C4**, plus
+  in-space placebos over all seven categories as **C5**. Reason: two donors cannot match a
+  pre-period path well enough for the pre-RMSPE to mean anything, and inference needs a
+  placebo distribution. C4 is reported *alongside* C3, never instead of it, and both are
+  shown for both HIGH categories. **The deviation does not rescue the finding — it makes it
+  worse**, so it cannot be read as specification-searching toward a result: translation's
+  gap moves from −2.2% (C3) to **+1.4%, wrong-signed** (C4).
+
 - **2026-08-17, no deviation — the design failed its own gate and was reported as
   failing.** §5's parallel-trends gate returned FAIL and §6's battery failed two of four
   tests. Per §5 and §6 the DiD is therefore reported as dead rather than published, and

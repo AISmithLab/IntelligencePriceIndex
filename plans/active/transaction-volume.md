@@ -299,8 +299,28 @@ finding, not a failure.
   It died on the trend horse race and the CPI-U placebo. Kept in the log so the next
   specification that looks this clean gets the same battery rather than the benefit of doubt.
 
+- 2026-08-17: **Category-level identification abandoned on evidence, not on effort.**
+  `code/48-category-impact.py` ran the authorised synthetic-control fallback and the
+  category-specific-trend DiD. Four independent designs have now failed: parallel trends,
+  the trend horse race, the CPI-U placebo, and synthetic control with in-space placebos.
+  The decisive fact is internal contradiction — **translation, the single most AI-exposed
+  category by the pre-registered measure, ranks LAST of seven on |gap|/RMSPE (p = 1.000)
+  and flips to a wrong-signed +1.4% when the donor pool widens**, while writing ranks first
+  at p = 0.143 with **audio, the least-exposed category, second**. Two HIGH categories at
+  opposite ends of the placebo distribution is not an AI signal. Also structural: with seven
+  categories the smallest attainable one-sided p is **1/7 = 0.143**, so category-level
+  placebo inference cannot reach 5% regardless of the data.
+  **Consequence: the study's category question moves to the gig-level continuous-exposure
+  design in the Backlog**, which is now materially cheaper because today's vendored Eloundou
+  occupation file is exactly the external measure that item said it needed to replace the
+  hand-built lexicon.
+
 ## Progress
 
+- 2026-08-17: Step 48 ran the fallback. Category-level impact is not identifiable; see the
+  2026-08-17 entry in `progress.md` for the placebo table and the three things that would
+  change it. Also caught a data caution: all seven categories drop steeply into 2024Q4
+  (design 3.46 → 2.08), which is the trailing edge thinning rather than a demand event.
 - 2026-08-17: Phase 0 ran. See the Phase 0 checklist above and the 2026-08-17 entry in
   `progress.md` for the full result. Headline: step 24's seven nulls were an artefact of
   power (MDE 4.7–9.4× tighter), all seven categories broke significantly, they broke

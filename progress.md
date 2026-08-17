@@ -1,5 +1,80 @@
 # Progress Log
 
+## 2026-08-17 — The category question is exhausted at category level: the two HIGH categories land at OPPOSITE ends of the placebo distribution
+
+`code/48-category-impact.py` → `runs/category-impact.out`. Ran the pre-registration's
+only authorised fallback (synthetic control) plus the specification that directly
+addresses why the DiD failed. **Answer: no, category-level impact cannot be
+identified on this data, and the reason is now specific rather than a shrug.**
+
+### C2 — category-specific trends kill it outright
+
+Step 46's failure was a differential *trend*, so the textbook fix is to give every
+category its own. Doing that: **HIGH × POST = −0.4% (t −0.17)**, gone. Meanwhile
+audio's own trend is +2.7%/quarter (t 7.87) and translation's +2.6% (t 8.57) — the
+categories genuinely do trend differently, and once that is allowed there is no
+differential break left to attribute.
+
+### C3/C4 — synthetic control, and the internal contradiction
+
+| target | exposure | registered (LOW donors) | expanded (LOW+MID) |
+|---|---:|---|---|
+| **translation** | **0.840** (most exposed) | −2.2%, ratio 0.14 → **within noise** | **+1.4%, wrong-signed**, ratio 0.10 |
+| **writing** | 0.686 | −12.4%, ratio 1.08 | −15.6%, ratio 1.81 |
+
+`ratio` = |mean post gap| / pre-period RMSPE. **The single most AI-exposed category of
+the seven shows essentially no deviation from its synthetic control, and it flips sign
+when the donor pool widens.** Writing does fall. The two HIGH categories therefore
+disagree with each other, which is fatal to an AI reading — the measure that ranks
+translation top is the same measure the study pre-registered.
+
+### C5 — in-space placebos: writing 1st of 7, translation LAST of 7
+
+| category | arm | exposure | post gap | pre RMSPE | ratio |
+|---|---|---:|---:|---:|---:|
+| **writing** | **HIGH** | 0.686 | −0.1695 | 0.0935 | **1.81** |
+| audio | **LOW** | 0.248 | +0.0879 | 0.0516 | 1.70 |
+| marketing | mid | 0.624 | +0.1840 | 0.1102 | 1.67 |
+| video | **LOW** | 0.402 | −0.0969 | 0.0717 | 1.35 |
+| coding | mid | 0.588 | +0.1388 | 0.1035 | 1.34 |
+| design | mid | 0.508 | −0.1799 | 0.2236 | 0.80 |
+| **translation** | **HIGH** | 0.840 | +0.0138 | 0.1394 | **0.10** |
+
+Writing ranks **1 of 7** → one-sided p = **0.143**; translation ranks **7 of 7** →
+p = **1.000**. And **audio, the least-exposed category, is second**. Known before
+running and stated in the script: with seven categories the smallest attainable
+one-sided p-value is 1/7 = 0.143, so **this test cannot reach 5% no matter what the
+data say.** That ceiling is a property of having seven categories, not of the result.
+
+### Verdict, and what would actually change it
+
+Four independent designs have now failed to identify a category-level AI effect:
+the DiD (parallel trends), the trend horse race, the CPI-U placebo, and now synthetic
+control with in-space placebos. **The category-level design space is exhausted.** The
+honest statement is that per-category *breaks* are measured precisely (−13% to −43%,
+±4.2–7.0%) but their *differences* cannot be attributed to AI exposure.
+
+Three things would change it, in order of value:
+
+1. **Finer exposure variation.** Seven categories caps inference at p = 0.143 by
+   construction. Fiverr has hundreds of subcategories; the fix is the **gig-level
+   continuous-exposure design already in the backlog**, which needs an external
+   task-exposure measure mapped to gigs rather than the hand-built lexicon. The
+   Eloundou occupation file vendored today is exactly that measure, so this is now
+   materially cheaper than when the backlog item was written.
+2. **Reach past 2024Q4.** The treatment window is eight quarters and stops before the
+   2025–26 agentic period. Needs the live forward crawl.
+3. **Sub-category or gig-population data**, since per-gig accrual and platform orders
+   differ by a factor the archive cannot resolve (exit unmeasurable).
+
+One data caution surfaced by C1: **every category drops steeply into 2024Q4**
+(design 3.46 at 2023Q3 → 2.08). That is the trailing edge thinning, not a demand
+event, and it is a reason the window boundary is 2024Q4 rather than later.
+
+Declared as a prereg deviation (§9): C4's expanded donor pool. It is declared because
+it deviates, and noted as *worsening* the finding — translation goes from −2.2% to
++1.4% wrong-signed — so it cannot be read as searching toward a result.
+
 ## 2026-08-17 — Fiverr Inc.'s reported transactions: buyers −36%, orders −18% to −39%. Phase 0's decline is REAL, not a review artefact
 
 `code/47-fiverr-inc-external.py` → `runs/fvrr-external.out`, off a new
