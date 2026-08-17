@@ -198,10 +198,20 @@ The confound now threatens the headline number, not merely the differential. **T
       live forward crawl on a fixed schedule"). A weekly/monthly re-fetch of a fixed gig
       cohort gives what the archive structurally cannot: a real exit hazard and a live
       2026 trailing edge. Needs a rate-limit and robots decision before any fetching.
-- [ ] **External validation.** Fiverr Inc. is public and reports GMV, active buyers and
-      spend-per-buyer quarterly. Nothing in this repo uses them. Compare our category-
-      aggregated demand path to the reported series — it is the only independent check on
-      whether the proxy tracks real transactions at all, and it costs one afternoon.
+- [x] **External validation — DONE 2026-08-17**, `code/47-fiverr-inc-external.py` →
+      `runs/fvrr-external.out`, `data/fiverr-inc-metrics.csv`. **Buyers peaked at 4.20M in
+      2021 and are 2.70M (TTM 2026Q2) — −35.7%.** GMV peaked in 2023 and is only −12.8%,
+      because spend per buyer rose every year ($119 in 2017 → $368). Fewer, larger buyers.
+      Deriving `orders = real GMV / real IPI price` gives **implied orders −18.0% vs 2020
+      and −38.6% from the 2021 peak** — the study's first actual transaction-count estimate,
+      and an **upper bound** on the decline, because the IPI prices the listed basic package
+      rather than realised order value. **Buyer growth hit exactly +0.0% in 2022** and has
+      fallen 12–14% a year since; the era is right for ChatGPT and equally right for
+      post-pandemic normalisation, so timing is suggestive, not evidence.
+      **This substantially discharges the review-propensity threat**: Fiverr's buyer and GMV
+      series have nothing to do with reviewing behaviour and they fall too, so Phase 0's
+      direction is externally corroborated. Fiverr publishes no category split, so the
+      category question is untouched by this and stays not identified.
 
 ## 7. Decisions taken (2026-08-14)
 

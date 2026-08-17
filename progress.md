@@ -1,5 +1,85 @@
 # Progress Log
 
+## 2026-08-17 — Fiverr Inc.'s reported transactions: buyers −36%, orders −18% to −39%. Phase 0's decline is REAL, not a review artefact
+
+`code/47-fiverr-inc-external.py` → `runs/fvrr-external.out`, off a new
+`data/fiverr-inc-metrics.csv`. **The first actual transaction data in this project.**
+The archive has none — `review_count` is a proxy — so the only route to real
+quantities is Fiverr Inc. (NYSE: FVRR), which nothing in this repo had used.
+
+### 1. What the company reports
+
+Fiverr defines spend per buyer as TTM GMV / active buyers, so **GMV = buyers ×
+spend per buyer is an identity, not an estimate**. It reproduces every independently
+reported GMV to within rounding (2022: 4.2M × $262 = $1,100M vs $1,090M reported).
+Revenue is *not* a substitute — 2024 revenue / GMV = 36% against a 27.6% take rate,
+because revenue also carries Pro, subscriptions, ads and acquired services.
+
+| period | buyers (M) | $/buyer | GMV ($M) | buyers YoY |
+|---|---:|---:|---:|---:|
+| 2020 | 3.40 | 205 | 699 | +44.7% |
+| 2021 | **4.20** | 242 | 1,020 | +23.5% |
+| 2022 | 4.20 | 262 | 1,090 | **+0.0%** |
+| 2023 | 4.10 | 278 | **1,140** | −2.4% |
+| 2024 | 3.60 | 302 | 1,087 | −12.2% |
+| 2025 | 3.10 | 342 | 1,060 | −13.9% |
+| 2026 TTM-Q2 | **2.70** | 368 | 994 | −12.9% |
+
+**Buyers peaked at 4.20M in 2021 and are 2.70M — −35.7%.** GMV peaked in 2023 and is
+only −12.8%. The whole gap is spend per buyer, which rose *every single year* from
+$119 (2017) to $368. **Fewer, larger buyers.** Any "transactions are falling" claim
+has to handle that composition shift first, and the buyer series is the cleanest
+quantity the company publishes.
+
+**The inflection is 2022.** Buyer growth ran +44.7% and +23.5% in 2020–21, hit
+**exactly +0.0% in 2022**, and has fallen 12–14% a year since. That is the right era
+for ChatGPT — and also for post-pandemic normalisation, the rate shock and the tech
+downturn, none of which this series can separate. Timing is suggestive, not evidence.
+
+### 2. The transaction count, derived
+
+`orders = GMV / price per order`. Deflating GMV by CPI-U and dividing by the IPI real
+composite (both indexed 2020 = 100, so only the ratio is used):
+
+- real GMV **+11.3%** vs 2020
+- real IPI price **+35.8%**
+- **implied orders −18.0% vs 2020, and −38.6% from the 2021 peak**
+
+### 3. This kills the leading rival explanation for Phase 0
+
+Phase 0's platform-wide 13–43% accrual fall was equally consistent with (a) real
+transaction decline and (b) review-propensity drift, and nothing internal to the crawl
+could separate them. **Fiverr's buyer and GMV series have nothing to do with reviewing
+behaviour, and they fall too.** So the *direction* of Phase 0 is externally
+corroborated: **fewer transactions is real, not a reviewing artefact.** That was the
+threat flagged this morning as urgent enough to block calling Phase 0 a demand
+decline; it is now substantially discharged, though Phase 1 should still bound the
+magnitude.
+
+Magnitudes don't match (−18% platform vs −13% to −43% per surviving gig) and that gap
+is informative rather than fatal: per-gig accrual falls faster than platform orders if
+the listing population grew, slower if it shrank. Sign agreement is the result; the
+level gap is a gig-population question the archive cannot answer, since exit is
+unmeasurable (`n_404 = 0` across 509,339 captures).
+
+### 4. Caveats that bound the number
+
+1. **The IPI measures listed basic-package prices, not realised order value.** If
+   buyers shifted to higher tiers or Pro — which the spend-per-buyer path and Fiverr's
+   stated upmarket push both suggest — realised price rose faster than the IPI and the
+   implied order decline is **overstated**. Treat −18% / −38.6% as an **upper bound**
+   on the fall.
+2. Active buyers is trailing-twelve-month, so it smooths any break and **cannot date
+   an event to a quarter**.
+3. GMV from 2024 is derived (Fiverr stopped reporting it directly).
+4. Orders per buyer is unobserved; buyers −36% says most of the fall is fewer buyers.
+5. **Platform-wide only (Q3).** Fiverr publishes no category split, so this says
+   nothing about which categories. **The category question stays where step 46 left
+   it: not identified.**
+
+Discharges the Phase 4 external-validation item. No paper section, figure or frozen
+number was touched.
+
 ## 2026-08-17 — Phase 0 RAN. Step 24's null was underpowering; the AI attribution is not identified
 
 `code/46-balanced-demand.py` → `runs/phase0-demand.out`. Ran the specification locked

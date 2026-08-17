@@ -1,0 +1,11 @@
+year,period,active_buyers_m,spend_per_buyer_usd,gmv_usd_m,gmv_source,revenue_usd_m,take_rate_pct,notes
+2017,FY,1.79,119,213.0,reported,52.1,,buyers derived as gmv/spend
+2018,FY,2.02,145,293.5,reported,75.5,,buyers derived as gmv/spend
+2019,FY,2.35,170,401.0,reported,107.0,,buyers reported 2352 thousand in FY2019 20-F
+2020,FY,3.40,205,699.3,reported,189.0,,buyers derived; consistent with +23% YoY to 4.2M in 2021
+2021,FY,4.20,242,1020.0,reported,297.0,,buyers reported 4.2M (+23% YoY)
+2022,FY,4.20,262,1090.0,reported,337.4,,buyers reported 4.2M; gmv/spend implies 4.16M
+2023,FY,4.10,278,1140.0,reported,361.4,27.4,buyers reported 4.1-4.2M; gmv/spend implies 4.10M
+2024,FY,3.60,302,1087.2,derived,391.5,27.6,buyers reported 3.6M (-10% YoY); gmv = buyers x spend
+2025,FY,3.10,342,1060.2,derived,430.9,27.7,buyers reported 3.1M (-13.6% YoY)
+2026,TTM-Q2,2.70,368,993.6,derived,,,trailing twelve months to 2026Q2
