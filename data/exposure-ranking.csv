@@ -1,0 +1,8 @@
+rank_primary,category,exposure_primary,rank_robust,exposure_robust,exposure_primary_sens,exposure_robust_sens,n_occupations,soc_codes,occupations
+1,translation,0.84,2,0.88,0.84,0.88,1,27-3091.00,Interpreters and Translators
+2,writing,0.6858,3,0.8153,0.6858,0.8153,5,27-3043.00;27-3043.05;27-3041.00;27-3042.00;43-9081.00,"Writers and Authors; Poets, Lyricists and Creative Writers; Editors; Technical Writers; Proofreaders and Copy Markers"
+3,marketing,0.6243,5,0.5467,0.6243,0.5467,3,13-1161.00;13-1161.01;27-3031.00,Market Research Analysts and Marketing Specialists; Search Marketing Strategists; Public Relations Specialists
+4,coding,0.5884,1,0.917,0.5884,0.917,3,15-1251.00;15-1252.00;15-1254.00,Computer Programmers; Software Developers; Web Developers
+5,design,0.5084,4,0.6111,0.4209,0.5,3,27-1024.00;27-1011.00;15-1255.00,Graphic Designers; Art Directors; Web and Digital Interface Designers
+6,video,0.4019,7,0.4863,0.4019,0.4863,4,27-4032.00;27-4031.00;27-1014.00;27-2012.00,"Film and Video Editors; Camera Operators, Television, Video, and Film; Special Effects Artists and Animators; Producers and Directors"
+7,audio,0.2478,6,0.4955,0.2478,0.4955,4,27-2042.00;27-2041.00;27-4014.00;27-4011.00,Musicians and Singers; Music Directors and Composers; Sound Engineering Technicians; Audio and Video Technicians

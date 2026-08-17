@@ -1,5 +1,121 @@
 # Progress Log
 
+## 2026-08-17 — Pre-registered the transaction-volume study (Phase −1); Phase 0 unblocked
+
+- **The plan from 2026-08-14 existed but was unstarted** — no `code/45+`, no pre-registration
+  file. Phase −1 was the only thing standing between it and a run, because the study is
+  causal from the start: Phase 0 reveals per-category demand breaks, and an exposure ranking
+  built after seeing those is not pre-registered in any meaningful sense. That is the same
+  objection that sank the elasticity table in step 29.
+- **Exposure ranking sourced, not recalled.** User chose Eloundou et al. (2023) over Felten
+  AIOE — Eloundou is LLM-specific and matches the 2022Q4 break the study actually dates.
+  Pulled the authors' occupation-level file from their public replication repository
+  (`openai/GPTs-are-GPTs`, `data/occ_level.csv`) and vendored it to
+  `data/eloundou-2023-occ-level.csv` (923 O\*NET-SOC occupations) so the ranking reproduces
+  offline. `code/45-exposure-ranking.py` maps the seven Fiverr categories onto SOC codes by
+  task content, equally weighted, and emits `data/exposure-ranking.csv`.
+
+  | rank | category | human β | rank (dv) | dv β |
+  |---:|---|---:|---:|---:|
+  | 1 | **translation** | 0.840 | 2 | 0.880 |
+  | 2 | **writing** | 0.686 | 3 | 0.815 |
+  | 3 | marketing | 0.624 | **5** | 0.547 |
+  | 4 | coding | 0.588 | **1** | 0.917 |
+  | 5 | design | 0.508 | 4 | 0.611 |
+  | 6 | **video** | 0.402 | 7 | 0.486 |
+  | 7 | **audio** | 0.248 | 6 | 0.495 |
+
+- **The two annotators disagree about coding, and finding that now rather than later is the
+  main value of doing Phase −1 at all.** GPT-4 ranks coding the most exposed of the seven
+  (β 0.917); human labellers rank it fourth (0.588). Marketing moves the other way (3rd →
+  5th). So the primary contrast is built only from the four categories both annotators agree
+  on — **HIGH = {translation, writing}, LOW = {video, audio}** — and **coding is quarantined**
+  and reported separately. Had this surfaced after Phase 0, any assignment of coding to an
+  arm would have read as arm-picking.
+- **Human annotation is primary, GPT-4 is declared robustness.** `dv_rating_*` is a model
+  scoring its own labour-market reach; that circularity is an obvious reviewer target and the
+  study should not depend on it.
+- **Specification locked** in `plans/active/transaction-volume-prereg.md`: outcome =
+  within-gig `ln(1 + review accrual per quarter)`, window 2018Q1–2024Q4, single pre-specified
+  break at **2022Q4**, gig + quarter fixed effects, **SEs clustered on gig** (step 22's
+  published SE was unclustered and 1.93× too small — a second occurrence would be
+  indefensible), placebo window 2018Q3–2019Q4 with a false break at 2019Q2, parallel trends
+  as a **pass/fail gate** with synthetic control named as the *only* authorised fallback, and
+  the step-29 battery (first differences, linear-trend horse race, CPI-U placebo,
+  Newey–West) required to pass **all four** or the result is labelled descriptive rather than
+  causal. §10 records in advance that a tightly-bounded null is the headline, not a
+  disappointment, so it cannot later be reframed as one.
+- **Power computed pre-outcome** (sample sizes are not outcomes). Primary contrast:
+  **129,378 accrual observations** — HIGH 61,737 (writing 40,038 + translation 21,699) and
+  LOW 67,641 (video 36,485 + audio 31,156) — against step 24's 10,275 across all seven
+  categories. The per-category split also reproduces the 2026-08-14 totals of **36,336 gigs /
+  242,468 observations** exactly, which verifies the frame independently.
+- **Nothing was estimated.** No demand outcome was computed on the balanced frame, and no
+  paper section, figure or frozen number was touched. Phase 0 — generalise
+  `code/24-margin-diagnostics.py` to take a frame argument and re-run M1/M2/M3 — is now
+  unblocked and needs no new data collection.
+
+## 2026-08-14 — Planned the transaction-volume study; measured its feasibility first
+
+- **User question: "is the number of transactions on Fiverr decreasing along with AI
+  development? what are the impacts across different categories?"** → new plan at
+  `plans/active/transaction-volume.md`. Nothing was run beyond feasibility probes; no
+  paper section, figure or frozen number was touched.
+- **The plan's central finding is that we already ran this study and it was underpowered.**
+  `code/24-margin-diagnostics.py` reported null demand breaks in all seven categories, but
+  on the *shipped* panels: **5,403 (historical) + 4,872 (recent) = 10,275** review-accrual
+  observations, MDE **±23% (coding) to ±66% (translation)**. Measured today,
+  `balanced-prices.csv` supplies **242,468 accrual observations across 36,336 gigs — 23.6×**,
+  which on 1/√n is roughly **±4.7%** and **±14%**. Re-running step 24 against the balanced
+  frame needs **no new collection** and is the plan's Phase 0, with an explicit decision gate:
+  a null that tight is itself the publishable result.
+
+  | frame | gigs w/ reviews | gigs ≥2 quarters | accrual obs |
+  |---|---:|---:|---:|
+  | shipped historical | 1,373 | 997 | 5,403 |
+  | shipped recent | 2,596 | 2,537 | 4,872 |
+  | expanded (rule B) | 19,651 | 19,245 | 22,967 |
+  | **balanced** | **36,700** | **36,336** | **242,468** |
+
+- **`review_count` checks out as a cumulative-sales proxy on the balanced frame**: **95.5%**
+  row coverage (92.6–98.1% per year through 2024, 71.8% in 2025) and only **1,395 of 242,468
+  consecutive deltas negative — 0.58%**.
+- **The window closes at 2024Q4, and this is now quantified.** Accrual observations per
+  quarter run ~9,300–12,000 from 2019Q1 to 2024Q3, then **7,774 (2024Q4) → 1,605 (2025Q1) →
+  598–847** thereafter. Per category it is worse: at 2026Q1, audio has 13 observations and
+  translation 10. So the study covers ChatGPT (2022Q4), GPT-4 and the 2023–24 diffusion, but
+  **not the 2025–26 agentic period** — consistent with the earlier finding that 2026Q2 Fiverr
+  gig captures are ~all 403. Only a live forward crawl extends it.
+- **Two design decisions taken up front rather than discovered later.** (1) "Transactions" is
+  decomposed into per-gig demand (measurable), gig population (entry partly; **exit not at
+  all** — `n_404 = 0` across 509,339 captures, so dormancy is the labelled proxy), and
+  platform total (not measurable from the crawl), so no number is ever reported without its
+  margin. (2) **Regressing a trending demand series on an AI score is ruled out before it is
+  written** — step 29 retracted exactly that design for the price series on four tests, and a
+  demand series is if anything more trending. The estimand is a cross-category DiD on a
+  **pre-registered** exposure ranking, with the first-differences / linear-trend /
+  CPI-U-placebo / Newey–West battery run on every specification.
+- **Two gaps found that nothing in the repo currently addresses.** **Review-propensity drift**
+  has never been tested — if buyers review less over time, accrual falls with no change in
+  sales, and this contaminates the outcome directly. And **no Fiverr Inc. (NYSE: FVRR)
+  reported GMV / active-buyer / spend-per-buyer data appears anywhere in the project**
+  (grepped `drafts/`, `code/`, `plans/`, `data/`, `tests/`), despite being the only
+  independent check on whether the proxy tracks real transactions at all.
+- **User answered all three framing decisions the same day: causal from the start, a
+  separate third paper, and the forward crawl deferred until after Phase 0.** The causal
+  choice has one non-obvious consequence, now written into the plan as §8 and a new
+  **Phase −1 that gates Phase 0**: Phase 0 re-runs step 24 and therefore *reveals the
+  per-category demand breaks*, so an exposure ranking constructed afterwards is not
+  pre-registered in any sense a reviewer would accept — it is the same objection that sank
+  the elasticity table. The ranking and the full specification (outcome, break date, fixed
+  effects, clustering, placebo window, battery pass/fail rule) must be sourced externally,
+  dated and committed **before** the re-run. Causal framing also promotes **parallel trends**
+  from an assumption to a required exhibit, with synthetic control on the low-exposure
+  categories named in advance as the fallback, and converts **review-propensity drift** from
+  a caveat into a threat to identification — the test that matters is *differential* drift by
+  category, not drift as such. The 2024Q4 boundary becomes substantive rather than
+  administrative: the treatment period is eight quarters, 2022Q4–2024Q4.
+
 ## 2026-08-13 — A combined plain-language walkthrough: methods + results in one file
 
 - **User, after five rounds of edits: "I am still not clear what the data collection process
