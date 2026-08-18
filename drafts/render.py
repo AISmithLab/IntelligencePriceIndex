@@ -4,6 +4,8 @@
 Usage:
     python3 drafts/render.py              # renders drafts/draft-YYYY-MM-DD.html
     python3 drafts/render.py --out foo.html  # renders to a custom path
+    python3 drafts/render.py --main drafts/structure/main.md
+                                          # renders drafts/structure-draft-YYYY-MM-DD.html
 """
 
 import re
@@ -237,10 +239,20 @@ HTML_TEMPLATE = """\
 """
 
 
-def render(out_path: Path | None = None) -> Path:
+def render(out_path: Path | None = None, main_path: Path | None = None) -> Path:
+    """Assemble `main_path` (default drafts/main.md) into dated HTML.
+
+    A second paper lives in its own subtree (e.g. drafts/structure/main.md) with
+    its own sections/. Includes resolve relative to the main file's directory,
+    but the rendered HTML is always written into drafts/ so the `../`-relative
+    image rewriting in _inline() keeps working."""
     today = datetime.date.today().isoformat()
-    main_md = (DRAFTS_DIR / "main.md").read_text()
-    assembled = resolve_includes(main_md, DRAFTS_DIR)
+    if main_path is None:
+        main_path = DRAFTS_DIR / "main.md"
+    main_path = Path(main_path).resolve()
+    base = main_path.parent
+    main_md = main_path.read_text()
+    assembled = resolve_includes(main_md, base)
     body_html = md_to_html(assembled)
 
     # Extract title from first H1
@@ -258,7 +270,8 @@ def render(out_path: Path | None = None) -> Path:
     html = HTML_TEMPLATE.format(title=title, body=body_html)
 
     if out_path is None:
-        out_path = DRAFTS_DIR / f"draft-{today}.html"
+        prefix = "" if base == DRAFTS_DIR else f"{base.name}-"
+        out_path = DRAFTS_DIR / f"{prefix}draft-{today}.html"
     out_path.write_text(html)
     return out_path
 
@@ -266,6 +279,8 @@ def render(out_path: Path | None = None) -> Path:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Render paper draft to HTML")
     parser.add_argument("--out", type=Path, default=None, help="Output path")
+    parser.add_argument("--main", type=Path, default=None,
+                        help="Master document (default: drafts/main.md)")
     args = parser.parse_args()
-    result = render(args.out)
+    result = render(args.out, args.main)
     print(f"Rendered: {result}")

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What Generative AI Did Not Do to a Freelance Market</title>
+<style>
+  @media print {
+    body { font-size: 10pt; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    table { page-break-inside: avoid; }
+  }
+  body {
+    font-family: "Times New Roman", Times, Georgia, serif;
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    font-size: 12pt;
+  }
+  h1 {
+    font-size: 18pt;
+    text-align: center;
+    margin-bottom: 30px;
+    line-height: 1.3;
+  }
+  h2 { font-size: 14pt; margin-top: 28px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { font-size: 12pt; margin-top: 20px; }
+  h4 { font-size: 11pt; margin-top: 16px; }
+  p { margin: 8px 0; text-align: justify; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+  th, td {
+    border: 1px solid #999;
+    padding: 4px 8px;
+    text-align: left;
+  }
+  th { background-color: #f0f0f0; font-weight: bold; }
+  ul, ol { margin: 8px 0; padding-left: 24px; }
+  li { margin: 4px 0; }
+  code { font-size: 10pt; background: #f5f5f5; padding: 1px 4px; }
+  img { display: block; width: 100%; max-width: 100%; height: auto; margin: 16px auto 4px; }
+  em { font-style: italic; }
+  strong { font-weight: bold; }
+  .draft-notice {
+    text-align: center;
+    color: #c00;
+    font-size: 10pt;
+    margin-bottom: 20px;
+    padding: 8px;
+    border: 1px solid #c00;
+  }
+</style>
+</head>
+<body>
+<h1 id="what-generative-ai-did-not-do-to-a-freelance-market">What Generative AI Did Not Do to a Freelance Market</h1>
+<div class="draft-notice">WORKING DRAFT — 2026-08-18 — Not for distribution</div>
+
+<p><em>Prices, competitive structure, and six failed identification designs on six years of archived Fiverr listings</em></p>
+<h2 id="abstract">Abstract</h2>
+<p>Generative AI is expected to commoditise the market for routine cognitive labour: prices fall, quantities rise, the cheap end widens, price competition intensifies, and sales concentrate on whoever automates first. We test those five predictions on <strong>257,208 archived listing-quarter observations covering 37,888 Fiverr listings and 29,835 sellers, 2019Q3–2024Q4</strong>, joined to a matched-model price index running to 2026Q1 and to the platform operator's own reported transaction data.</p>
+<p><strong>Four of the five predictions are rejected in sign, and the fifth is rejected on timing.</strong> Real listed prices rose <strong>+40.7%</strong> (±3.7%) over 2020Q1–2026Q1 against CPI-U of +26.8%. Quantities fell: the platform's active buyers are <strong>−36%</strong> from their 2021 peak and implied real order count is <strong>−18%</strong> against 2020. Price competition did not intensify — the share of listing-quarters with any price change <strong>fell</strong> from 23.6% to 18.3%, and the fall is <strong>entirely fewer price increases</strong>, with cuts flat at 5–6%. Sales did not concentrate: the Gini of quarterly sales proxies among trading units is flat both across listings (0.64 → 0.61) and across sellers (0.637 → 0.618). The cheap end did hollow out — the $5 tier fell from 27.3% to 10.3% of listings — but its steepest decline is <strong>2021Q2</strong>, eighteen months before ChatGPT was released, and the decline <em>slows</em> afterwards. Meanwhile product lines deepened (three-tier share 82% → 91%).</p>
+<p>We then report, rather than bury, <strong>six identification designs that all fail to attribute any of this to AI exposure</strong> — including one pre-registered before estimation with five gates and fixed failure consequences, which is the first to pass parallel trends and dies instead on a trend horse race and a CPI-U placebo. Their joint diagnosis is specific and is our second contribution: <strong>there is an exposure-correlated differential trend that predates ChatGPT, and there is no break at ChatGPT.</strong></p>
+<p>The market visible in these data is being <strong>repositioned upmarket</strong> — fewer and larger buyers, higher prices, deeper menus, no price war, unchanged concentration — not commoditised. We state which rival explanations archival data of this kind cannot separate from AI (post-pandemic normalisation, the 2022 rate shock, and the platform's own upmarket strategy, which predicts the 2021 timing better than AI does), and which collection-design changes — recording 404s on a fixed schedule, manifests not selected on survival, richer task-level exposure text — would be needed to identify what this one cannot.</p>
+<h2 id="1-introduction">1. Introduction</h2>
+<p>The standard prediction for what generative AI does to a market for routine cognitive labour is a commoditisation story, and it is specific enough to test. If a technology sharply lowers the cost of producing writing, translation, graphic design or code, then in the market where that output is sold: prices should fall, transacted quantities should rise, the low-price tier should widen as marginal work becomes profitable, price competition should intensify as sellers pass through their own cost reductions, and sales should concentrate on whichever sellers adopt first.</p>
+<p>This paper takes those five predictions to an online freelancer market across the diffusion window, using the largest archival panel of listed service prices we are aware of: <strong>257,208 listing-quarter observations on 37,888 Fiverr listings from 29,835 sellers, 2019Q3–2024Q4</strong>, reconstructed from the Internet Archive, joined to a matched-model price index that runs to 2026Q1 [CITE-ipi] and to the platform operator's reported buyer and GMV series.</p>
+<p><strong>Four of the five predictions are rejected in sign; the fifth is rejected on timing.</strong> §3 gives the descriptive record. What the data show instead is a market moving upmarket: prices up, buyers fewer and larger, the commodity tier hollowed out on a schedule that starts before generative AI was publicly available, product menus deeper, no price war, and no change in who captures the sales.</p>
+<p>The second half of the paper is a negative result reported as a result. §4 documents <strong>six identification designs that all fail</strong> to attribute the observed change to AI exposure. They are not a catalogue of our mistakes; they are a map of what archival marketplace data of this shape can and cannot support, and their failures are structured. Four die on having only seven categories, which caps the attainable one-sided p-value at 1/7 = 0.143 by construction. One dies on mean reversion in a price-rank treatment proxy. The sixth — <strong>pre-registered before any outcome was estimated</strong>, with five gates whose failure consequences were fixed in advance — is the first to pass parallel trends, and dies on a trend horse race in which the treatment interaction changes sign, and on a CPI-U placebo significant at t = −2.86.</p>
+<p>Their joint diagnosis is the paper's second contribution and is more useful than another point estimate: <strong>there is an exposure-correlated differential trend that predates ChatGPT, and there is no break at ChatGPT.</strong> Two independent descriptive series agree — the commodity tier's steepest decline is 2021Q2 and the repricing break is 2021Q3.</p>
+<p>We make three contributions.</p>
+<ol>
+<li><strong>A structural record.</strong> Eight descriptive claims about the price</li>
+<p>distribution, product-line depth and seller repricing conduct across the diffusion window, each read off a balanced panel with searched rather than assumed break dates, and each pre-registered before further specification search [CITE-lock].</p>
+<li><strong>Six rejected predictions, and six failed designs, reported in full</strong> —</li>
+<p>including the pre-registration, the gate card, and the specifications that <em>would</em> have produced a publishable-looking AI effect had the gates not been committed in advance. One of them — a clean sign reversal at exactly 2022Q3/Q4, monotone afterwards, every coefficient significant — is mean reversion.</p>
+<li><strong>Design requirements.</strong> The specific properties archival data must have for</li>
+<p>this question to be answerable: 404s recorded on a fixed schedule, manifests not selected on survival, and exposure measures built from task-level rather than title-level text.</p>
+</ol>
+<p><strong>Scope.</strong> This is one platform, listed prices rather than realised order value, and a sales proxy rather than sales. §2 states each limit and §5 states which rival explanations we cannot separate from AI. We claim a description of what happened and a demonstration of what cannot be identified from it — not a causal estimate of AI's effect, which we explicitly fail to produce.</p>
+<h2 id="2-data">2. Data</h2>
+<h3 id="2-1-the-panel">2.1 The panel</h3>
+<p>The frame is a longitudinal archive of Fiverr listing pages retrieved from the Internet Archive and parsed into listed package prices. After applying the listing filter and dropping unpriced captures, the working panel is:</p>
+<table>
+<tr><th></th><th></th></tr>
+<tr><td>listing-quarter observations, 2019Q3–2024Q4</td><td><strong>257,208</strong></td></tr>
+<tr><td>distinct listings</td><td><strong>37,888</strong></td></tr>
+<tr><td>distinct sellers</td><td><strong>29,835</strong></td></tr>
+<tr><td>listings observed both before and after 2022Q4 ("fixed panel")</td><td>16,206</td></tr>
+<tr><td>listings in ≥80% of quarters 2020Q3–2023Q4 ("balanced panel")</td><td>2,765</td></tr>
+</table>
+<p><strong>Terminology.</strong> We say <strong>listing</strong> for what the platform calls a <em>gig</em> (a single priced service offering, which a seller may hold several of) and <strong>sales proxy</strong> for cumulative review count, which is what the archive records in place of transactions. The analysis scripts use the platform's own word, <code>gig</code>.</p>
+<p>One observation per listing-quarter, taking the latest capture in the quarter. Each observation carries the basic, standard and premium package prices, the displayed rating, and the cumulative review count.</p>
+<p>The price index used for the level results in §4.1 is a matched-model GEKS-Jevons index estimated on the same archive over 2020Q1–2026Q1 [CITE-ipi]; this paper takes its published figures as given rather than re-estimating them.</p>
+<h3 id="2-2-window-and-why-it-is-not-longer">2.2 Window, and why it is not longer</h3>
+<p><strong>Start 2019Q3.</strong> Price extraction is 100% <code>packageList</code> from that quarter onward. Before it the frame is a three-way mix of parse paths whose three-tier detection rates differ by 19 percentage points, so any versioning series crossing that seam is a parser artefact rather than a fact about menus.</p>
+<table>
+<tr><th>quarter</th><th>packageList</th><th>old JSON</th><th>dollar fallback</th></tr>
+<tr><td>2018Q3</td><td>11.8%</td><td>40.7%</td><td>47.4%</td></tr>
+<tr><td>2019Q1</td><td>41.8%</td><td>26.1%</td><td>32.0%</td></tr>
+<tr><td>2019Q2</td><td>75.5%</td><td>10.9%</td><td>13.6%</td></tr>
+<tr><td><strong>2019Q3</strong></td><td><strong>99.8%</strong></td><td>0.0%</td><td>0.1%</td></tr>
+</table>
+<p>From 2019Q3 on, the <code>packageList</code> share never falls below 99.7%.</p>
+<p><strong>End 2024Q4.</strong> Captures per quarter collapse from roughly 9,300 to roughly 700 after it, and every category's measured sales proxy drops steeply into the edge. Results that appear only in 2024 are treated as trailing-edge artefacts until shown otherwise — which is what disposes of the apparent concentration result in §4.5.</p>
+<h3 id="2-3-two-sampling-properties-that-determine-how-every-number-must-be-read">2.3 Two sampling properties that determine how every number must be read</h3>
+<p><strong>The manifest is quota-sampled</strong> on (category, adjacent quarter pair). A within-quarter cross-section is therefore <em>not</em> a random sample of live listings, and counts such as listings per seller are properties of the sample rather than of the platform. Every claim about change over time is read off a fixed or balanced panel, and both columns are printed throughout.</p>
+<p><strong>Listing fixed effects do not protect against composition.</strong> This is not a formality: the quota manifest adds roughly 1,250 net listings at 2022Q3 and the added ones are cheaper. On all listings the ≤$10 share <strong>jumps +5.7pp at 2022Q3</strong> — one quarter before the break of interest — and a level-shift search then reports a significant <em>positive</em> break at 2022Q4. On a strictly balanced panel of 3,106 listings present in all seven quarters 2021Q4–2023Q2, the same series falls monotonically, 19.8% → 19.1% → 18.6%, with no jump at all.</p>
+<h3 id="2-4-external-transaction-data">2.4 External transaction data</h3>
+<p>The archive contains no transactions. The one source of realised quantities is the platform operator's reported metrics, where GMV = active buyers × spend per buyer is an accounting identity rather than an estimate: it reproduces every independently reported GMV figure to within rounding (2022: 4.2M × $262 = $1,100M against $1,090M reported). Revenue is not a substitute, because it also carries Pro, subscriptions, advertising and acquired services — 2024 revenue over GMV is 36% against a 27.6% take rate.</p>
+<h3 id="2-5-exposure-measure">2.5 Exposure measure</h3>
+<p>AI exposure is external to our data by construction: occupation-level exposure ratings from [CITE-eloundou2023] (923 O\*NET-SOC occupations), used two ways — as a pre-registered ranking of the seven categories, and as a continuous gig-level score built by TF-IDF cosine similarity between cleaned listing titles and occupation titles, taking the similarity-weighted mean of the top K = 3 matches (§5.6). <strong>36.8% of listings get a zero match</strong>, and the dropped listings accrue 23.7% more pre-period sales proxy than the kept ones — a selection threat declared in the pre-registration before estimation, not discovered afterwards.</p>
+<h3 id="2-6-what-these-data-cannot-measure-at-any-effort">2.6 What these data cannot measure, at any effort</h3>
+<ul>
+<li><strong>Entry and exit.</strong> <code>n_404 = 0</code> across 509,339 captures: the crawl records no</li>
+<p>removals. Nothing in this paper is labelled entry or exit. For a competitive structure question this is the single largest gap, because entry is where a commoditising shock would usually appear first.</p>
+<li><strong>Realised order value.</strong> The index reads listed basic-package prices. The</li>
+<p>buyer-mix evidence in §4.2 suggests realised prices rose <em>faster</em>, so every quantity figure derived by dividing spend by price is an <strong>upper bound on the quantity decline</strong>.</p>
+<li><strong>Sales.</strong> <code>review_count</code> is a proxy for sales, not sales.</li>
+<li><strong>Category detail in the external data.</strong> The operator publishes no category</li>
+<p>split, so §4.2 is platform-wide only.</p>
+<li><strong>Anything after 2024Q4</strong> on the structural margins.</li>
+</ul>
+<h2 id="3-the-five-predictions-tested">3. The five predictions, tested</h2>
+<p>We state the commoditisation hypothesis as five directional predictions and take each to the data in turn. Every claim below is read off a fixed or balanced panel; every break date is <strong>searched, not assumed</strong>; and each candidate finding was run against a guard capable of destroying it, in the same script that produced it. Across the two analysis scripts, <strong>eleven candidate findings were generated and seven were killed by their own guards</strong> [CITE-lock].</p>
+<table>
+<tr><th>#</th><th>prediction</th><th>verdict</th><th>evidence</th></tr>
+<tr><td>P1</td><td>prices fall</td><td><strong>rejected in sign</strong></td><td>real listed prices <strong>+40.7%</strong> (±3.7%)</td></tr>
+<tr><td>P2</td><td>quantities rise</td><td><strong>rejected in sign</strong></td><td>buyers <strong>−36%</strong> from peak; implied orders −18% vs 2020</td></tr>
+<tr><td>P3</td><td>the cheap tier widens</td><td><strong>rejected in sign; and mis-timed</strong></td><td>$5 tier 27.3% → 10.3%, steepest decline <strong>2021Q2</strong></td></tr>
+<tr><td>P4</td><td>price competition intensifies</td><td><strong>rejected in sign</strong></td><td>repricing 23.6% → 18.3%, <em>entirely</em> fewer increases</td></tr>
+<tr><td>P5</td><td>sales concentrate</td><td><strong>rejected</strong></td><td>Gini flat among trading listings <strong>and</strong> trading sellers</td></tr>
+</table>
+<h3 id="3-1-p1-prices-rose-in-real-terms-in-every-category">3.1 P1 — Prices rose, in real terms, in every category</h3>
+<p>Matched-model index, 2020Q1 = 100, terminal 2026Q1 [CITE-ipi]:</p>
+<table>
+<tr><td>series</td><td>nominal</td><td>real</td><td>real Δ</td><td>±95%</td></tr>
+<tr><td><strong>composite</strong></td><td>178.4</td><td>140.7</td><td><strong>+40.7%</strong></td><td>±3.7%</td></tr>
+<tr><td>design</td><td>156.1</td><td>123.2</td><td>+23.2%</td><td>±4.8%</td></tr>
+<tr><td>writing</td><td>201.8</td><td>159.2</td><td>+59.2%</td><td>±8.3%</td></tr>
+<tr><td>marketing</td><td>294.3</td><td>232.2</td><td>+132.1%</td><td>±7.7%</td></tr>
+<tr><td>coding</td><td>250.1</td><td>197.3</td><td>+97.3%</td><td>±17.1%</td></tr>
+<tr><td>video</td><td>265.6</td><td>209.5</td><td>+109.5%</td><td>±11.9%</td></tr>
+<tr><td>audio</td><td>322.3</td><td>254.2</td><td>+154.2%</td><td>±13.9%</td></tr>
+<tr><td>translation</td><td>299.5</td><td>236.3</td><td>+136.3%</td><td>±29.2%</td></tr>
+</table>
+<p>CPI-U over the same window is +26.8%.</p>
+<p><strong>The categories may not be ranked.</strong> Six of seven miss the ±5% precision standard the index paper sets, and the top three intervals overlap completely. Translation — the <em>most</em> AI-exposed category on the pre-registered measure (β 0.840) — carries a ±29.2% band on 28 panel listings. Any claim of the form "AI hit translation hardest" is unsupported by these data whichever way it points.</p>
+<p><strong>What the rise is made of.</strong> Roughly half the nominal increase is general inflation. A large further share is reputation accumulation: within a listing, price rises <strong>+7.7% per doubling of cumulative reviews</strong>, and rebuilding the index on reputation-adjusted prices gives a composite band of <strong>+39.7% to +79.0%</strong> whose floor is itself imprecise (moving between about +50% and +28% across β's own confidence interval). The residual is not attributed; see §4.</p>
+<h3 id="3-2-p2-quantities-fell-and-the-decline-is-externally-corroborated">3.2 P2 — Quantities fell, and the decline is externally corroborated</h3>
+<table>
+<tr><th>period</th><th>buyers (M)</th><th>$/buyer</th><th>GMV ($M)</th><th>buyers YoY</th></tr>
+<tr><td>2020</td><td>3.40</td><td>205</td><td>699</td><td>+44.7%</td></tr>
+<tr><td>2021</td><td><strong>4.20</strong></td><td>242</td><td>1,020</td><td>+23.5%</td></tr>
+<tr><td>2022</td><td>4.20</td><td>262</td><td>1,090</td><td><strong>+0.0%</strong></td></tr>
+<tr><td>2023</td><td>4.10</td><td>278</td><td><strong>1,140</strong></td><td>−2.4%</td></tr>
+<tr><td>2024</td><td>3.60</td><td>302</td><td>1,087</td><td>−12.2%</td></tr>
+<tr><td>2025</td><td>3.10</td><td>342</td><td>1,060</td><td>−13.9%</td></tr>
+<tr><td>2026 TTM-Q2</td><td><strong>2.70</strong></td><td>368</td><td>994</td><td>−12.9%</td></tr>
+</table>
+<p>Buyers peaked in 2021 and are <strong>−36%</strong>; GMV is only −12.8% from its peak. The entire gap is spend per buyer, which rose <em>every single year</em> from $119 (2017) to $368. <strong>Fewer, larger buyers.</strong> Deflating GMV by CPI-U and dividing by the real index gives real GMV +11.3% against real price +35.8%, hence implied <strong>orders −18.0% versus 2020 and −38.6% from the 2021 peak</strong> — an upper bound on the decline, per §2.6.</p>
+<p>Within the archive, quarterly review accrual per listing breaks sharply at 2022Q4 in <strong>all seven categories</strong> (listing FE + linear trend, listing-clustered SEs): writing −42.9% (t −23.00), translation −37.2%, audio −35.5%, coding −35.2%, video −28.6%, marketing −23.7%, design −13.1% (t −6.65). Note already that the <em>least</em> exposed category of the seven (audio, β 0.248) has the third largest fall — §4 returns to this.</p>
+<p>The two sources are independent in the way that matters: a fall in the archive's review accrual could have been reviewing behaviour rather than transactions, whereas the operator's buyer and GMV series have nothing to do with reviewing. They fall together, so the <strong>direction</strong> is corroborated. The magnitudes differ (−18% platform-wide against −13% to −43% per surviving listing), which is informative rather than fatal: per-listing accrual falls faster than platform orders if the listing population grew. That population question is unanswerable here, because exit is unmeasurable (§2.6).</p>
+<h3 id="3-3-p3-the-cheap-tier-did-empty-but-the-timing-rejects-an-ai-account">3.3 P3 — The cheap tier did empty, but the timing rejects an AI account</h3>
+<p>Share of listings at each price point, fixed panel:</p>
+<table>
+<tr><th></th><th>2019Q3</th><th>2024Q4</th></tr>
+<tr><td>$5 tier</td><td><strong>27.3%</strong></td><td><strong>10.3%</strong></td></tr>
+<tr><td>$100+</td><td>15.6%</td><td>22.4%</td></tr>
+<tr><td>median listed price</td><td>$15</td><td>$30</td></tr>
+</table>
+<p>On all listings the $5 tier runs 32.0% → 11.4%. This is the one prediction whose <em>sign</em> is right: the commodity end of the market genuinely hollowed out.</p>
+<p><strong>The date is wrong for AI.</strong> With the break date searched rather than assumed, on the balanced panel:</p>
+<ul>
+<li>the steepest trend break is <strong>2021Q2</strong>;</li>
+<li>the ChatGPT quarter carries the <strong>opposite sign</strong>;</li>
+<li>the decline <strong>slows</strong> after 2022Q4.</li>
+</ul>
+<p>Assuming 2022Q4 returns a significant coefficient and would have produced exactly the headline the hypothesis predicts. The form matters as much as the date: the series is a decline whose slope changes, not a step, so a level-shift search reports curvature and picks an endpoint (2023Q1) while a trend-break search answers the question asked. Both are reported.</p>
+<h3 id="3-4-p4-sellers-stopped-raising-prices-they-did-not-start-cutting">3.4 P4 — Sellers stopped raising prices; they did not start cutting</h3>
+<p>Consecutive-quarter pairs for the same listing, balanced panel, pre (2020Q4–2022Q3) against post (2022Q4–2023Q4):</p>
+<table>
+<tr><th></th><th>pre</th><th>post</th></tr>
+<tr><td>any price change</td><td><strong>23.6%</strong></td><td><strong>18.3%</strong></td></tr>
+<tr><td>…an increase</td><td><strong>18.1%</strong></td><td><strong>12.4%</strong></td></tr>
+<tr><td>…a cut</td><td>5.4%</td><td>5.9%</td></tr>
+<tr><td>mean Δlog price per quarter</td><td><strong>+0.0565</strong></td><td><strong>+0.0239</strong></td></tr>
+<tr><td>mean \</td><td>Δlog price\</td><td>given change</td><td>0.454</td><td>0.405</td></tr>
+</table>
+<p><strong>The entire fall in repricing is a fall in price increases.</strong> Cuts are flat. The engine that produced the nominal index throttled back after 2022 without reversing: downward nominal rigidity in a market with falling demand, not a price war.</p>
+<p><strong>This is not thinning capture coverage.</strong> The 80%-coverage panel still permits a listing to be missing in up to 3 of 14 quarters, so the fall could in principle be a measurement artefact. On a <strong>strict panel of 936 listings present in every quarter of the window</strong>, where coverage cannot vary, the same pattern holds: any change 24.1% → 18.1%, increases 18.5% → 12.0%, cuts 5.6% → 6.1%. Observed pairs per listing move −1.9% across the break, which is far too small to generate a 5.3-point fall.</p>
+<p>And again the timing is not ChatGPT's. Searching the break date on the balanced panel, the best break for "any change" is <strong>2021Q3</strong> (coefficient −0.0429, t −5.23), while the ChatGPT quarter is insignificant and <em>positively</em> signed (t 1.90). For price cuts the best break is 2022Q3 — one quarter <em>before</em> ChatGPT — and the ChatGPT-quarter coefficient is −0.0005.</p>
+<p>A companion measure points the same way and is reported as <em>not</em> independent evidence: the Spearman correlation of a listing's within-category price rank across four quarters <strong>rises</strong> (0.898 → 0.940, balanced panel), i.e. the price ordering became <em>more</em> rigid, the opposite of a technology reshuffling who can charge what. Because a listing that never reprices cannot change rank except through what others do, this is the repricing fact restated rather than a second one.</p>
+<h3 id="3-5-p5-sales-did-not-concentrate-at-listing-level-or-at-seller-level">3.5 P5 — Sales did not concentrate, at listing level or at seller level</h3>
+<p>The Gini of quarterly review accrual across listings rises 0.63 → 0.75, which looks like a winner-take-all result and is not one. The Gini <strong>among listings with any accrual</strong> is flat: 0.64 (2021) → 0.61 (2023). The entire rise is the zero-accrual share, and that rises only in 2024 — the trailing edge where captures collapse from ~9,300 to ~700 per quarter. It is dormancy at the edge of the crawl.</p>
+<p>The obvious objection is that this is the wrong unit: a seller may run several listings, so listing-level concentration would understate seller-level concentration. Aggregating accrual to the seller (29,835 sellers) changes nothing:</p>
+<table>
+<tr><th></th><th>2021</th><th>2022</th><th>2023</th><th>2024</th></tr>
+<tr><td>Gini across all sellers</td><td>0.666</td><td>0.660</td><td>0.646</td><td>0.713</td></tr>
+<tr><td>Gini among <strong>trading</strong> sellers</td><td>0.637</td><td>0.625</td><td><strong>0.618</strong></td><td>0.651</td></tr>
+<tr><td>top-decile share of seller accrual</td><td>51.5%</td><td>50.6%</td><td>50.5%</td><td>56.4%</td></tr>
+<tr><td>listings per seller (in frame)</td><td>1.14</td><td>1.15</td><td>1.09</td><td>1.11</td></tr>
+</table>
+<p>Same flat series, same 2024-only rise, same trailing-edge explanation. A null that survives its strongest objection is a result, and is reported as one.</p>
+<h3 id="3-6-what-did-change-product-lines-got-deeper">3.6 What did change: product lines got deeper</h3>
+<p>Two structural facts move, and neither is predicted by commoditisation. Fixed panel, 2019Q3 → 2024Q4: the share of listings offering three tiers rises <strong>82.1% → 90.6%</strong>, while the premium/basic ratio among three-tier listings compresses <strong>4.06× → 3.80×</strong>. Sellers version more, and spread their own menu less widely.</p>
+<p>Price dispersion falls and then partly recovers — sd of log price 1.428 (2019Q3) → 1.150 (2023Q3) → 1.233 (2024Q4). This is <strong>descriptive only</strong>: the attempt to convert it into a price-convergence result is one of the six failures in §4.</p>
+<h3 id="3-7-one-lead-we-decline-to-report-as-a-finding">3.7 One lead we decline to report as a finding</h3>
+<p>The within-listing price return to reputation is <strong>+11.3% per doubling of reviews before 2022Q4 and +18.5% after</strong> on the balanced panel (difference +0.091, t 2.04), and it clears a placebo split at a false 2021Q2 break (−0.012, t −0.54). If real, it would be the most economically interesting claim available here: incumbency becoming more valuable exactly as output became cheap to produce.</p>
+<p><strong>On all 37,888 listings the same difference is +0.0060 (t 0.79) — a precise zero.</strong> A result that appears on 2,750 listings and vanishes on the frame that contains them is a lead, not a finding. Its promotion rule is fixed in advance [CITE-lock]: it becomes reportable only if significant on a frame not selected on panel balance.</p>
+<h2 id="4-six-identification-designs-and-why-each-fails">4. Six identification designs, and why each fails</h2>
+<p>Nothing in §3 is attributed to generative AI, because on these data nothing can be. This section reports the six designs that tried, in the order they were run, with the diagnostic that kills each. We report them in full for two reasons. First, five of the six produce a <strong>significant, correctly signed, plausibly sized AI effect</strong> before their guards are applied — so the guards, not the estimates, are the content. Second, their failures are structured, and the structure is itself the finding (§4.7).</p>
+<table>
+<tr><th>#</th><th>design</th><th>killed by</th></tr>
+<tr><td>I1</td><td>category DiD, HIGH vs LOW exposure</td><td>parallel trends: 6 of 16 pre-period coefficients significant</td></tr>
+<tr><td>I2</td><td>trend horse race</td><td>HIGH × POST collapses −7.9% → −0.8% once HIGH × trend enters</td></tr>
+<tr><td>I3</td><td>CPI-U placebo</td><td>significant (−3.6%, t −2.93): the design tracks any smooth series</td></tr>
+<tr><td>I4</td><td>synthetic control with in-space placebos</td><td>the most-exposed category ranks <strong>last of 7</strong>; p-floor 1/7 = 0.143</td></tr>
+<tr><td>I5</td><td>within-category price-tier DiD</td><td>parallel trends: 10 of 11 pre-period coefficients significant</td></tr>
+<tr><td>I6</td><td>gig-level continuous exposure (<strong>pre-registered</strong>)</td><td>trend horse race (sign flip) and CPI-U placebo (t −2.86)</td></tr>
+</table>
+<h3 id="4-1-i1-i3-the-category-difference-in-differences">4.1 I1–I3 — the category difference-in-differences</h3>
+<p>Seven categories split into HIGH and LOW exposure arms on a ranking pre-registered from [CITE-eloundou2023], outcome log1p quarterly review accrual, listing FE, break at 2022Q4.</p>
+<p>Had the gate not been committed in advance, the headline would have been <strong>HIGH × POST = −7.9% [−11.4, −4.2], t = −4.14</strong> on a realised MDE of ±3.96% — tight, significant, correctly signed, and meeting the project's stated precision standard. It is wrong, and three checks say so:</p>
+<ul>
+<li><strong>Parallel trends fails.</strong> Event study with 2022Q3 omitted: 6 of 16 pre-period</li>
+<p>interactions significant at 5%. The pre-registered rule was zero, so the DiD is reported dead.</p>
+<li><strong>Trend horse race.</strong> Adding HIGH × trend collapses HIGH × POST to −0.0078</li>
+<p>(t −0.30) while HIGH × trend is itself significant (−0.0083, t −2.98). The "break at ChatGPT" is a differential trend that predates it.</p>
+<li><strong>CPI-U placebo.</strong> HIGH × CPI-U — a series with no AI content — is significant</li>
+<p>(−3.6%, t −2.93).</p>
+</ul>
+<p>Two further checks pass and are reported for completeness: a placebo window (false break 2019Q2) returns −1.5% (t −0.17), and Newey–West on the collapsed HIGH-minus-LOW series returns +0.0041 (t 0.13) with Durbin–Watson 2.26 — so unlike an earlier retracted result in this project, the standard errors are not the problem here. The effect simply is not there.</p>
+<p>The deeper problem is visible without any regression: <strong>every category fell, including the least exposed.</strong> Spearman ρ between exposure rank and break size is +0.429 across seven categories, where |ρ| > 0.79 is needed for p < 0.05.</p>
+<h3 id="4-2-i4-synthetic-control-and-an-internal-contradiction">4.2 I4 — synthetic control, and an internal contradiction</h3>
+<p>The pre-registration's only authorised fallback. Each HIGH category is matched to a synthetic control built from LOW-exposure donors.</p>
+<table>
+<tr><th>target</th><th>exposure</th><th>registered donors</th><th>expanded donors</th></tr>
+<tr><td><strong>translation</strong></td><td><strong>0.840</strong> (most exposed)</td><td>−2.2%, ratio 0.14 → within noise</td><td><strong>+1.4%, wrong-signed</strong></td></tr>
+<tr><td>writing</td><td>0.686</td><td>−12.4%, ratio 1.08</td><td>−15.6%, ratio 1.81</td></tr>
+</table>
+<p>(<code>ratio</code> = mean absolute post gap over pre-period RMSPE.) <strong>The single most AI-exposed category shows essentially no deviation from its synthetic control, and flips sign when the donor pool widens.</strong> The two HIGH categories disagree with each other, which is fatal on its own: the measure that ranks translation top is the measure the study pre-registered.</p>
+<p>In-space placebos make the ceiling explicit. Writing ranks 1 of 7 (one-sided p = 0.143); translation ranks <strong>7 of 7</strong> (p = 1.000); and audio, the <em>least</em> exposed category, ranks second. <strong>With seven units the smallest attainable one-sided p-value is 1/7 = 0.143, so this test cannot reach 5% no matter what the data say.</strong> That is a property of the design space, not of the result — and it applies to I1–I4 alike.</p>
+<h3 id="4-3-i5-abandoning-categories-for-within-category-price-rank">4.3 I5 — abandoning categories for within-category price rank</h3>
+<p>Rank listings by pre-period price <em>within</em> category, let category × quarter fixed effects absorb every platform-wide shock, and ask whether cheap listings lost more demand. This replaces 7 units with 16,526 ranked listings.</p>
+<p>The event study fails: <strong>10 of 11 pre-period coefficients significant</strong>, pre-period mean −0.18 against post-period −0.25 — no break, a wandering gradient. The point estimate (−0.109, t −3.56) is in any case wrong-signed for the hypothesis.</p>
+<p><strong>The companion specification is the cautionary tale of this paper.</strong> The same design run on <em>prices</em> returns the most publishable-looking shape we produced: a clean sign reversal at exactly 2022Q3/Q4, monotone afterwards, every coefficient significant. It is <strong>mean reversion</strong>. Moving the ranking window moves the whole pattern with it — 3 of 3 windows peak inside their own ranking window and decay away from it in both directions — and dropping the ranking window from the estimation sample changes nothing, which locates the bias in rank measurement error rather than in sample overlap.</p>
+<h3 id="4-4-i6-the-pre-registered-continuous-exposure-design">4.4 I6 — the pre-registered continuous-exposure design</h3>
+<p>The final design was <strong>locked before any outcome was estimated</strong> [CITE-prereg], with the exposure measure, sample, window, break, specification, robustness grid and five gates fixed in advance, each gate's failure consequence stated so it could not be renegotiated. Full disclosure of what had been seen beforehand (a feasibility pilot on coverage and ranking agreement only) is recorded in the lock, as is a <strong>prior belief of low</strong>: five designs had already failed, and the lock's stated purpose was to make a sixth failure interpretable rather than discardable.</p>
+<p>Specification: <code>y = β·(exposure × POST) + listing FE + (category × quarter) FE</code>, listing-clustered SEs, on 121,414 observations across 20,966 listings. The category × quarter term is the whole point — it absorbs the platform-wide demand fall that I1–I4 kept mistaking for treatment.</p>
+<p><strong>Gate card, as recorded:</strong></p>
+<table>
+<tr><th>gate</th><th>result</th></tr>
+<tr><td>selection audit</td><td><strong>threat declared</strong> — dropped (zero-match) listings accrue <strong>+23.7%</strong> more pre-period, past the 10% tolerance</td></tr>
+<tr><td>G1 parallel trends</td><td><strong>PASS</strong> — Wald χ²(11) = 9.99, <strong>p = 0.53</strong>; 0 of 11 pre-period coefficients significant</td></tr>
+<tr><td>G2 not-a-price-proxy</td><td><strong>PASS</strong> — −0.1692 (t −2.43) controlling for price rank × quarter</td></tr>
+<tr><td>G3 placebo window</td><td><strong>PASS</strong> — false break at 2020Q3 returns −0.036 (t −0.45)</td></tr>
+<tr><td>G4.1 first differences</td><td>pass by construction</td></tr>
+<tr><td>G4.2 trend horse race</td><td><strong>FAIL</strong> — <code>exposure × trend</code> −0.0226 (t −2.54); <code>exposure × POST</code> <strong>flips to +0.0214 (t 0.28)</strong></td></tr>
+<tr><td>G4.3 CPI-U placebo</td><td><strong>FAIL</strong> — −0.1133 (<strong>t −2.86</strong>)</td></tr>
+<tr><td>G4.4 Newey–West</td><td>pass — Durbin–Watson 1.73</td></tr>
+<tr><td>G5 composition</td><td><strong>FAIL</strong> — balanced frame −0.2022 (t −1.85)</td></tr>
+</table>
+<p>Primary estimate <strong>−0.1680 (se 0.0666, t −2.52)</strong>, stable across the entire pre-registered robustness grid (K = 1/5/10 → −0.140/−0.198/−0.192; the alternative exposure rating → −0.114; all significant). The secondary price outcome is a precise zero, <strong>+0.0021 (t 0.06)</strong>.</p>
+<p><strong>This is the first design in the project to pass parallel trends on the demand margin</strong> — on both the pre-registered joint test and I1's stricter count rule — and G2 and G3 rule out the two failure modes that killed I5 and an earlier retracted result. Three of the four ways prior designs died are excluded. It dies on the fourth: the exposure interaction changes sign once a differential trend is allowed, and the CPI-U placebo shows the interaction tracks any smooth series.</p>
+<p>The pre-registered fallback — descriptive dose–response by exposure decile, explicitly not identified — agrees: decile changes run −13.3% to +3.5% with <strong>no monotone gradient</strong>, and the <em>least</em>-exposed decile falls more (−7.8%) than the most-exposed (−1.9%).</p>
+<p><strong>Three qualifications, so the failure is not overstated.</strong> (i) The estimate was underpowered against its own pre-registered standard: realised MDE ±0.186 log points and |β| is 0.90× the MDE. (ii) G5 failed on power, not sign — the balanced estimate is −0.2022, <em>larger</em> and identically signed, losing significance only because n falls to 1,715 listings; recorded FAIL by the letter of the lock, but "the sign reversed" would be a misreading. (iii) The collapsed Newey–West difference series returns +0.0701 (t 2.44), opposite in sign to the panel estimate; it carries no listing fixed effects, so the gap is composition — one more reason not to read −0.168 as an effect.</p>
+<h3 id="4-5-what-the-six-failures-jointly-establish">4.5 What the six failures jointly establish</h3>
+<p>They are not six independent nulls. Across all six the surviving pattern is the same, and after I6 it is specific:</p>
+<p>> <strong>There is an exposure-correlated differential trend that predates ChatGPT, and > there is no break at ChatGPT.</strong></p>
+<p>Two descriptive series in §3, built without any exposure measure, date the structural change the same way: the commodity tier's steepest decline is 2021Q2 (§3.3) and the repricing break is 2021Q3 (§3.4). A third — the platform's buyer growth — inflects in 2022, from +23.5% to exactly +0.0%. The transformation was under way before generative AI was publicly available.</p>
+<h3 id="4-6-a-note-on-method">4.6 A note on method</h3>
+<p>Every design in this section was run against a placebo capable of destroying it, in the same script that produced it, and the gate rules for I6 were fixed before estimation. We stress this because the alternative was available and would have been publishable: I1 alone yields a −7.9% AI effect with t = −4.14 meeting a stated precision standard, and I5's price variant yields a textbook event-study figure. Both are artefacts. On observational marketplace data of this shape, <strong>the guard is the result</strong>.</p>
+<h2 id="5-discussion">5. Discussion</h2>
+<h3 id="5-1-what-the-market-actually-looks-like">5.1 What the market actually looks like</h3>
+<p>Put §3's five verdicts together and the composite is coherent, and it is not a commoditised market. Over the generative-AI diffusion window this platform shows:</p>
+<ul>
+<li><strong>fewer, larger buyers</strong> — active buyers −36% from peak while spend per buyer</li>
+<p>rose every year, from $205 (2020) to $368;</p>
+<li><strong>higher listed prices</strong> — +40.7% real, with no category falling;</li>
+<li><strong>a hollowed-out commodity tier</strong> — the $5 tier down from 27.3% to 10.3% of</li>
+<p>listings, the $100+ tier up from 15.6% to 22.4%, the median listing $15 → $30;</p>
+<li><strong>deeper product menus</strong> — three-tier share 82% → 91%, with the seller's own</li>
+<p>premium/basic ladder compressing 4.06× → 3.80×;</p>
+<li><strong>no price war</strong> — repricing down, and down entirely through fewer increases;</li>
+<li><strong>unchanged concentration</strong> — flat among trading listings and trading sellers.</li>
+</ul>
+<p>That is the signature of a market <strong>repositioning upmarket</strong>: shedding its micro-task base, retaining and up-selling larger buyers, and differentiating through packaging rather than competing through price. Whether one reads that as sellers responding to AI by abandoning work AI does well, or as a platform strategy pursued for its own reasons, the data are the same — which is the point of §5.2.</p>
+<h3 id="5-2-rival-explanations-we-cannot-separate-from-ai">5.2 Rival explanations we cannot separate from AI</h3>
+<p>The timing evidence in §4.5 does not merely fail to support an AI account; it actively favours several rivals, and this paper cannot adjudicate between them.</p>
+<ul>
+<li><strong>Post-pandemic normalisation.</strong> 2020–21 was a freelance boom. The buyer series</li>
+<p>peaks exactly at its end, and the commodity-tier decline is steepest in 2021Q2. A normalisation account predicts the observed dates better than an AI account does.</p>
+<li><strong>The 2022 rate shock and the tech downturn.</strong> Marketing and design budgets are</li>
+<p>procyclical, and these are two of the platform's largest categories.</p>
+<li><strong>The platform's own strategy.</strong> Pro, subscriptions, advertising, acquired</li>
+<p>services, and an explicit upmarket push. <strong>This rival predicts every structural fact in §3 — hollowed cheap tier, deeper menus, upmarket buyer mix, higher listed prices — and predicts the 2021 timing better than AI does.</strong> It is the hardest rival, and the archive cannot separate it from AI because both act on the whole platform at once, which is exactly what a category × quarter fixed effect absorbs.</p>
+</ul>
+<p>A pattern that appears in every category, including the least AI-exposed, is what a platform-wide shock looks like. The identification problem is not a technical shortfall; it is that the treatment we care about and the rivals we must exclude have the same footprint.</p>
+<h3 id="5-3-why-the-negative-result-is-worth-reporting">5.3 Why the negative result is worth reporting</h3>
+<p>Three specific reasons.</p>
+<p><strong>The false positives were available and would have looked good.</strong> Design I1 yields −7.9% with t = −4.14 on a realised MDE meeting a stated precision standard. Design I5's price variant yields a textbook event study — sign reversal at exactly the treatment quarter, monotone afterwards, every coefficient significant — and is mean reversion. On this class of data, an analyst who stops at the first well-shaped result will find one.</p>
+<p><strong>The failure is diagnostic rather than uninformative.</strong> Design I6 passes parallel trends, the not-a-price-proxy gate and the placebo window, and fails on a trend horse race and a price-index placebo. That combination localises the problem: an exposure-correlated differential trend that predates the event. That is a claim about the world, not about our estimator.</p>
+<p><strong>The p-floor is a design fact worth publishing.</strong> Seven categories cap the attainable one-sided p-value at 0.143. Any category-level study of AI exposure on a platform with a handful of categories inherits that ceiling regardless of sample size within categories, and no amount of additional listings fixes it.</p>
+<h3 id="5-4-what-would-change-the-answer">5.4 What would change the answer</h3>
+<p>In order of value.</p>
+<ol>
+<li><strong>Task-level exposure text.</strong> Occupation <em>titles</em> are a few words long, which</li>
+<p>is why 36.8% of listings match nothing and why the automated ranking puts marketing above translation. Task statements would plausibly push coverage well above 63% and would change the treatment measure itself. This weakness was declared in the pre-registration <em>before</em> design I6 ran, so that if the design failed, "the mapping was thin" would be a stated prior weakness rather than a post-hoc excuse [CITE-prereg].</p>
+<li><strong>Coverage past 2024Q4.</strong> The structural window ends eight quarters after the</li>
+<p>break and before the 2025–26 agentic period, which is where the largest capability change has occurred.</p>
+<li><strong>A collection design that records 404s</strong> on a fixed schedule, with manifests</li>
+<p>not selected on survival. This is the only route to entry and exit — the margin where a commoditising shock would appear first, and the one this data cannot see at all.</p>
+<li><strong>Sub-category or population-level data</strong>, to escape the seven-unit p-floor.</li>
+</ol>
+<h3 id="5-5-limitations">5.5 Limitations</h3>
+<p>Beyond the measurement limits in §2.6: this is one platform, and platform strategy is a confound rather than a nuisance (§5.2); listed prices are not realised prices, so quantity declines derived from them are upper bounds; review counts proxy sales; the descriptive claims in §3 are read off quota-sampled cross-sections, which is why every one of them is stated on a fixed or balanced panel with both columns printed; and the structural claims are pre-registered only in the weak sense that they were locked after being generated and before any further specification search [CITE-lock] — they are descriptions, not tests.</p>
+<h2 id="6-conclusion">6. Conclusion</h2>
+<p>We asked how the diffusion of generative AI changes long-run pricing and competitive structure in an online freelancer market, and we can answer the first half of that question and not the second.</p>
+<p><strong>On pricing the record is clear and runs against the standard prediction.</strong> Real listed prices for cognitive-labour services rose +40.7% over 2020Q1–2026Q1 while the platform's transaction count fell — buyers −36% from their 2021 peak, implied real orders −18% against 2020. Prices did not fall in any category, in any specification, at any point in the window.</p>
+<p><strong>On competitive structure, four of the five predictions a commoditisation account makes are rejected in sign and the fifth is rejected on timing.</strong> The commodity tier did empty, but its steepest decline is 2021Q2 and the decline slows after ChatGPT. Price competition did not intensify; repricing fell, and fell entirely through fewer price increases while cuts stayed flat. Sales did not concentrate, at listing level or seller level. Product lines got deeper. What the data describe is a market repositioning upmarket, not one being commoditised.</p>
+<p><strong>On attribution we report six failures and one specific diagnosis.</strong> Six designs — four capped at a p-floor of 0.143 by having seven categories, one killed by mean reversion in a price-rank proxy, and one pre-registered with five gates that passes parallel trends before dying on a trend horse race and a CPI-U placebo — converge on the same statement: <em>there is an exposure-correlated differential trend that predates ChatGPT, and there is no break at ChatGPT.</em> Two descriptive series built without any exposure measure agree on the dates.</p>
+<p>The most defensible reading is therefore joint and uncomfortable: <strong>this market changed shape substantially during the generative-AI diffusion window, in a direction opposite to the one commoditisation predicts, and on a schedule that began before the technology was publicly available.</strong> Post-pandemic normalisation, the 2022 rate shock and the platform's own upmarket strategy each explain the observed pattern at least as well as AI does, and archival data with a platform-wide treatment cannot separate them.</p>
+<p>We would rather publish that, with the six failed designs attached, than the −7.9% effect our first specification produced.</p>
+<h2 id="references">References</h2>
+<p><!-- Managed by code/35-bibliography.py; placeholders resolve from drafts/references.json --></p>
+<ul>
+<li>[CITE-ipi] — the Intelligence Price Index paper: instrument, estimator, and the</li>
+<p>frozen price figures quoted in §3.1.</p>
+<li>[CITE-eloundou2023] — Eloundou et al. (2023), occupation-level GPT exposure</li>
+<p>ratings; the source of both the pre-registered category ranking and the continuous gig-level exposure measure (§2.5).</p>
+<li>[CITE-prereg] — pre-registration of the continuous-exposure design, locked</li>
+<p>before estimation, with the gate card recorded as §10 of the same file.</p>
+<li>[CITE-lock] — lock file for the descriptive claims and nulls in §3, recorded</li>
+<p>after the analyses that produced them and before any further specification search.</p>
+<li>[CITE-fvrr] — the platform operator's reported metrics (active buyers, spend</li>
+<p>per buyer, GMV), §2.4 and §3.2.</p>
+<li>[CITE-cpiu] — CPI-U, U.S. Bureau of Labor Statistics, used for deflation and as</li>
+<p>a placebo series.</p>
+</ul>
+</body>
+</html>

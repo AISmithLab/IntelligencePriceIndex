@@ -1,5 +1,193 @@
 # Progress Log
 
+## 2026-08-18 (night) — The seller-conduct half of competitive structure, and the whole question assembled into one answer
+
+The user asked, again and directly: **how does the diffusion of generative AI
+change long-run pricing and competitive structure of online freelancer markets?**
+Two things were produced, both from data already collected.
+
+### 1. `code/51-seller-structure.py` → `runs/seller-structure.out`
+
+Step 49 asked the structural question at the level of the price *distribution* —
+all properties of the cross-section. Step 51 asks the four questions that are
+properties of **seller conduct and the seller side**, none of which the project
+had ever measured. Five candidate findings, **three killed, one demoted to a lead,
+one survivor.**
+
+| finding | status | number |
+|---|---|---|
+| **sellers stopped RAISING prices** | **SURVIVES (descriptive)** | balanced panel: any price change 23.6% → 18.3% of listing-quarters; **increases 18.1% → 12.4%; cuts 5.4% → 5.9%, flat**; mean Δlog p +0.0565 → +0.0239 |
+| repricing intensified (price war) | **KILLED** | the fall is *entirely* fewer increases — downward nominal rigidity, not a price war |
+| AI reshuffled the price ordering | **KILLED** | 4-quarter rank correlation **rises** 0.898 → 0.940 — and it is mechanically implied by the repricing fall, so not independent evidence |
+| sales concentrate on top **sellers** | **KILLED** | Gini among trading sellers 0.637 (2021) → 0.618 (2023) → 0.651 (2024); top-decile seller share 51.5% → 50.5% → 56.4%. Same 2024-only pattern that killed the listing-level version |
+| return to reputation rose at ChatGPT | **LEAD, not a finding** | balanced panel +11.3% → **+18.5%** per doubling (diff +0.091, t 2.04), clears a false-break placebo (−0.012, t −0.54) — but **all 37,888 listings give +0.0060, t 0.79, a precise zero** |
+
+**The searched break says this is not a ChatGPT event either.** Best break for
+any-change is **2021Q3** (the ChatGPT quarter is t 1.90 and *positively* signed);
+for price cuts the best break is 2022Q3, one quarter *before* ChatGPT, and the
+ChatGPT-quarter coefficient is −0.0005. That is the third independent series to
+date the structural change to 2021 — after the commodity tier (2021Q2) and the
+buyer-growth inflection (2022, from +23.5% to +0.0%).
+
+**The lead was demoted on the frame disagreement, not on the placebo.** It clears
+its own placebo split cleanly. It appears on 2,750 of 37,888 listings and vanishes
+on the frame containing them, so it is recorded as a lead with a written promotion
+rule rather than reported.
+
+### 2. `drafts/market-structure-answer.md` — the question, answered
+
+Assembles the IPI (steps 21/23/27/30), the demand break (46), Fiverr Inc.'s
+transactions (47), the failed attribution designs (46/48/49/50) and the structure
+descriptions (49/51) into one document. The answer, in short:
+
+**Four of the five things a commoditisation story predicts did not happen, and
+the fifth happened too early for generative AI to have caused it.**
+
+| prediction | data |
+|---|---|
+| prices fall | real listed prices **+40.7%** (±3.7%) |
+| quantities rise | Fiverr buyers **−36%** from the 2021 peak; implied orders −18% vs 2020 |
+| the cheap tier widens | the $5 tier **emptied** 27.3% → 10.3% — steepest decline **2021Q2**, slowing after ChatGPT |
+| price competition intensifies | repricing **fell**, entirely through fewer increases; cuts flat |
+| sales concentrate | Gini flat among trading listings **and** trading sellers |
+
+What this market looks like across the diffusion window is **repositioning
+upmarket** — fewer and larger buyers, higher prices, a hollowed commodity tier,
+deeper menus, no price war, unchanged concentration — not commoditisation. The
+AI attribution remains unidentified after six designs, and §4.4 of the answer
+names the rivals this data cannot separate from AI: post-pandemic normalisation,
+the 2022 rate shock, and Fiverr's own upmarket strategy, which predicts every
+structural fact **and** predicts the 2021 timing better.
+
+### 3. `plans/active/structure-descriptive-lock.md` — the survivors locked
+
+Discharges the market-structure plan's pre-registration step. Eight descriptive
+claims (D1–D8) with the frame each is read off, six locked nulls (N1–N6) that may
+not be quietly dropped if a later specification revives one, one lead (L1) with a
+written promotion rule, and the five guards that apply to any successor
+specification. Locked **before** any further search on this question.
+
+### 4. User chose: **second paper.** Scaffolded with real content, not stubs
+
+`drafts/structure/` — *"What Generative AI Did Not Do to a Freelance Market"*.
+Seven sections written from the assembled answer: abstract, introduction, data,
+**§3 the five predictions tested** (P1–P5, each rejected in sign or on timing),
+**§4 the six identification designs** (relabelled I1–I6 so they cannot be confused
+with the lock's descriptive D-claims), discussion, conclusion, references with
+`[CITE-]` placeholders. Renders clean, no missing includes:
+`drafts/structure-draft-2026-08-18.html`.
+
+`drafts/render.py` gained a `--main` flag so a second paper tree can render; the
+HTML still lands in `drafts/` so the `../`-relative image rewriting keeps working.
+The IPI draft re-renders byte-identical in structure — nothing about paper 1 moved.
+
+**Nine test files** under `tests/structure-*.test.md`: a master layer carrying the
+user requirements (U1 the question, U2 data-we-already-have, U3 second paper) and
+eight cross-cutting criteria, plus reviewer simulations for each section — 14
+critiques on §3, 12 on §4.
+
+### 5. The tests immediately earned their keep — three FAILs, all now closed
+
+- **R8 "the repricing fall could be thinner capture coverage."** A real threat, and
+  it needed data rather than prose. Added S2c to `code/51`: on a **strict panel of
+  936 listings present in every quarter**, any-change runs **24.1% → 18.1%**,
+  increases **18.5% → 12.0%**, cuts **5.6% → 6.1%**, and observed pairs per listing
+  move **−1.9%**. The finding survives a frame where coverage cannot vary. Recorded
+  as D7a in the lock.
+- **R9 "category × quarter FE absorbs the treatment if AI is platform-wide."**
+  Correct, and central enough that §4.4 now states it outright: a *uniform* AI
+  shock is absorbed by construction, design I6 identifies only *relative* exposure
+  effects, and its null therefore does not mean AI had no effect. This is the
+  paper's sharpest self-limitation and it came from a reviewer simulation.
+- **M6 terminology** — glossary paragraph added (listing = gig, sales proxy =
+  review count). **M5 causal language** — scanned; the only hit is §1's explicit
+  disclaimer.
+
+Remaining open FAILs are recorded, not hidden: §2 R3 (what makes this platform
+representative), §2 R7 (point at the category classifier), §5 R3 (show the
+pre-2020 baseline), §5 R4 (downward nominal rigidity asserted rather than tested).
+
+No IPI paper section, figure, frozen number or site file was touched.
+
+## 2026-08-18 — Competitive structure asked for the first time. Three of six candidate findings died in the same script that produced them
+
+`code/49-market-structure.py` → `runs/market-structure.out`. The user asked how AI
+diffusion changes **long-run pricing and competitive structure**. The project
+answers the pricing half already (+40.7% real); it had never asked the structure
+half. Nine sections on the balanced frame, 2019Q3–2024Q4, 257,208 gig-quarter
+observations on 37,888 listings. Plan: `plans/active/market-structure.md`.
+
+### What survives
+
+| finding | status | number |
+|---|---|---|
+| the $5 commodity tier emptied | **FACT, but PRE-DATES AI** | 32.0% → 11.4% of listings; steepest decline 2021; decline **slows** after 2022Q4 |
+| product-line depth rose | **FACT** | 3-tier share 82% → 91%; premium/basic ladder compresses 4.06× → 3.80× |
+| dispersion narrowed then recovered | descriptive only | sd log p 1.43 → 1.15 (2023Q3) → 1.23 |
+| buyers fewer and larger | FACT (step 47) | buyers −36% from the 2021 peak, spend/buyer $205 → $368, GMV roughly flat |
+
+**The headline is the sign.** A technology that commoditises supply should push
+price down, quantity up, and the cheap tier wider. This market shows price **up**,
+quantity **down**, and a cheap tier that stopped emptying almost exactly when
+ChatGPT launched. Whatever happened here, it does not have the shape of
+AI-driven commoditisation of the low end.
+
+### What was killed, and by what
+
+1. **"Sales concentrated on the winners."** Gini of quarterly accrual rises
+   0.63 → 0.75 — but Gini **among listings with any sales** is flat (2021 0.64 →
+   2023 0.61). The whole rise is the zero-sales share, and that rises only in
+   2024, which is the trailing edge step 48 already flagged. Not a concentration
+   result; a dormancy-at-the-edge artefact.
+
+2. **"AI eats the cheap end" (new design 1).** Abandons the seven-category
+   ranking entirely: rank listings by pre-period price *within* category, let
+   category × quarter FE absorb every platform-wide shock, ask whether cheap
+   listings lost more demand. 16,526 ranked listings instead of 7 categories.
+   **Event study fails: 10 of 11 pre-period coefficients significant**, pre-period
+   mean −0.18 against post-period −0.25. No break, just a wandering gradient. The
+   DiD point estimate (−0.109, t −3.56) is also **wrong-signed for the hypothesis**.
+
+3. **"Post-ChatGPT price convergence from below" (new design 2).** The same design
+   on prices returns the most publishable-looking shape in this project: a clean
+   sign reversal at exactly 2022Q3/Q4, monotone after, every coefficient
+   significant. **It is mean reversion.** Moving the ranking window moves the
+   pattern with it — **3 of 3 windows peak inside their own ranking window** and
+   decay away from it in both directions. Dropping the ranking window from the
+   estimation sample changes nothing, which confirms the bias is in rank
+   measurement error rather than sample overlap. Same failure mode as the
+   retracted price-elasticity result: tight, correctly signed, well shaped, and
+   about nothing.
+
+### Two methodological traps worth keeping
+
+**Gig fixed effects do not protect against composition.** The quota manifest adds
+~1,250 net listings at 2022Q3 and the added ones are cheaper. On all listings the
+≤$10 share **jumps +5.7pp at 2022Q3** — one quarter before the break — and a
+level-shift search then reports a significant *positive* break at 2022Q4. On a
+strictly balanced panel (3,106 listings present in all seven quarters 2021Q4–2023Q2)
+the same series falls **monotonically**, 19.8% → 19.1% → 18.6%, with no jump at all.
+Every distributional claim here is read off a balanced panel for that reason.
+
+**Break dates must be searched, not assumed.** Assuming 2022Q4 returns a
+significant coefficient on the commodity-tier series and would have produced a
+wrong headline. Searched, the steepest decline is **2021Q2** and the ChatGPT
+quarter carries the opposite sign. And the *form* matters as much as the date: the
+series is a decline whose slope changes, so a level-shift search reports curvature
+and picks an endpoint (2023Q1), while the trend-break form answers the actual
+question. Both are printed.
+
+### What would change the verdict
+
+The category design space is exhausted at seven units (p-floor 0.143) and the two
+within-category routes tried here both fail on pre-trends and on mean reversion.
+The remaining route is the backlog's **gig-level continuous exposure**, mapping
+`data/eloundou-2023-occ-level.csv` onto the **151 item clusters** in
+`data/pilot/item-clusters.csv` rather than onto seven categories. That is the only
+design in view that raises the p-floor, and both of its inputs are already vendored.
+
+No paper section, figure, frozen number or site file was touched.
+
 ## 2026-08-17 — The category question is exhausted at category level: the two HIGH categories land at OPPOSITE ends of the placebo distribution
 
 `code/48-category-impact.py` → `runs/category-impact.out`. Ran the pre-registration's
