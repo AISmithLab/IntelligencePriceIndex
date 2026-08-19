@@ -67,6 +67,41 @@ Anything post-2024Q4 (trailing edge). Nothing here is pre-registered.
 - [x] Decide framing — **USER CHOSE A SECOND PAPER**, 2026-08-18
 - [x] Scaffold it with real content: `drafts/structure/` (7 sections) +
       `tests/structure-*.test.md` (9 files) + `--main` support in `render.py`
+- [x] **Date the AI timeline properly — RAN as step 52.** Searched the break in
+      the transaction proxy over 15 candidate quarters instead of assuming
+      2022Q4. Proxy peaks **2020Q3**; ChatGPT ranks **11 of 15**, the image
+      models last. Converts "no break at ChatGPT" from an absence of evidence
+      into a falsification of dates.
+- [x] **Test the operators' own two claims on the recent frame — RAN as steps
+      53-55.** Design 7 (Fiverr's "weakness in AI-exposed categories") dies on
+      category-level randomisation (4th of 21 pairs) and a flat exposure
+      gradient (rho +0.04). Design 8 (Upwork's under-$500 erosion) is correctly
+      signed and monotone on 2023-24, then dies on a significant opposite-signed
+      pre-AI placebo and a searched break at **2020Q3**. Eight designs, eight
+      failures.
+- [x] **Audit every route to more 2025-26 data — DONE as step 56**, →
+      `plans/active/recent-frame-collection.md`. R3 Common Crawl dead on
+      evidence; R5 the gig sitemap is free, open and was not on the agenda.
+      First snapshot taken (288,976 gig URLs). One decision open: the live crawl.
+- [x] **Measure AI diffusion INSIDE the market — RAN as step 57.** The answer to
+      "what is already held that no design uses" was `title`, on 100.0% of
+      384,983 observations. Entry-cohort AI share 0.0-0.5% → **5.98% at 2023Q1**;
+      diffusion through **entry** (22 of 11,425 incumbents ever relabelled);
+      entry **above** the median price; an **anti-AI segment from exactly zero**
+      before 2023Q2. Written up as answer §3.7.
+- [x] **THE POSITIVE CONTROL — the finding that changes the paper's standing.**
+      The identical searched-break procedure ranks ChatGPT **1 of 19** on the
+      diffusion series (top four candidates all AI milestone quarters, SSR
+      spread 227%) against **11 of 15** and **16 of 17** on the outcome series.
+      The instrument is not blind. The null is a fact about the market, not the
+      method. Answer §4.3.1.
+- [ ] **Fold §3.7 and §4.3.1 into the second paper** (`drafts/structure/`). The
+      answer document has them; the paper tree does not. §4.3.1 in particular
+      should be *early* in the identification section, not late — it is the
+      reason a reader should believe the null at all.
+- [ ] **Design 9: niche-level AI penetration** → `plans/active/ai-penetration-prereg.md`,
+      pre-registered 2026-08-19, nothing estimated. The first treatment measure
+      in the project that varies within category and within quarter.
 - [ ] Close the four open test FAILs: platform representativeness (§2 R3), the
       category classifier reference (§2 R7), the pre-2020 normalisation baseline
       (§5 R3), and the downward-nominal-rigidity claim (§5 R4)
@@ -116,3 +151,20 @@ Anything post-2024Q4 (trailing edge). Nothing here is pre-registered.
   Reviewer simulation immediately produced three FAILs that were closed the same
   session — including S2c, a new strict-panel check that could have killed the
   repricing finding and did not (D7a in the lock).
+- 2026-08-19: Steps 52-55 ran. The AI *timing* claim is falsified rather than
+  merely unsupported, and both operators' specific public claims were tested
+  directly and failed. Scope of the null dated to **2024Q4** throughout, because
+  the period the operators describe is one this frame barely reaches.
+- 2026-08-19 (later): Step 56 audited every collection route on measurement.
+  The 2025-26 frame is 4-6x too thin (realised MDE 0.131 / 0.083) and the
+  archive route to 2026Q2+ is closed by PerimeterX.
+- 2026-08-19 (latest): **Step 57 answers the plan's own question from a new
+  direction.** The user asked to answer the standing question on data already
+  held; auditing for unused held data returned `title`. Two things follow.
+  (i) Generative AI *is* in this market, dated to 2023Q1, arriving through entry
+  and above the median price, and it created an anti-AI segment from nothing —
+  so the answer now has a diffusion half it never had. (ii) The searched-break
+  machinery gets a **positive control**: it resolves the AI date to within one
+  quarter when asked about a variable AI moved. That retires the strongest
+  objection to the whole identification argument and is recorded as R13 in
+  `tests/structure-identification.test.md`.
