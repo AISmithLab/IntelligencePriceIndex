@@ -1,5 +1,469 @@
 # Progress Log
 
+## 2026-08-19 (latest) — Step 57: generative AI is measured inside the market for the first time, and it supplies the positive control the whole identification argument was missing
+
+`code/57-ai-diffusion-titles.py` -> `runs/ai-diffusion-titles.out`,
+`data/pilot/ai-title-flags.csv`. No new data collected. The user asked to answer
+the standing question on data already held; the answer to "what is held that no
+design has used" turned out to be **`title`, present on 384,967 of 384,983
+gig-date observations (100.0%)**.
+
+### The gap this closes
+
+Designs 1-8 all proxied AI with something **external** to the market: an
+Eloundou occupation score (thin, 36.8% zero-match, varies over 7 categories) or
+a release date (a guess about when the technology mattered here). The project
+has never had a diffusion measure taken from inside the market. Sellers who use
+generative AI advertise it, so the AI-branded share of listings is one.
+
+### The classifier, and the three guards that were needed
+
+Two series: `AI_GEN` (generative-specific) and `AI_ANY` (includes the
+pre-generative chatbot/ML-annotation trade). Guards, each added after auditing
+flagged titles rather than anticipated:
+
+1. **`.ai` is the Adobe Illustrator file extension.** "convert any file to vector
+   ai, eps, svg" is a design gig. Largest source of pre-2022 hits before the guard.
+2. **"Synthesia" is both the AI-video platform and piano-tutorial software.**
+3. **"real human traffic" is SEO bot-traffic language**, not an anti-AI claim;
+   "humanize your brand with animation" (2018) is not one either.
+
+Prefix `<seller>: ` and suffix ` for $X on fiverr.com` are stripped first, or any
+seller with "ai" in the handle reads as an AI gig in every quarter since 2019.
+
+**Realised precision floor: 7 distinct `AI_GEN` titles across all of 2019-2021**,
+six of them genuine pre-generative AI work. ~0.02% of observations against a
+post-2023 level 25-60x higher.
+
+### Result 1 — the diffusion curve is sharp and it breaks at 2023Q1
+
+| quarter | AI share, all listings | share of NEW listings ever AI-branded |
+|---|---:|---:|
+| 2019Q1-2022Q2 | 0.01-0.03% | 0.00-0.40% |
+| 2022Q4 (ChatGPT) | 0.04% | 0.50% |
+| **2023Q1** | **0.48%** | **5.98%** |
+| 2023Q3 | 1.20% | 3.85% |
+| 2026Q1 | 1.86% | - |
+
+Twelvefold in one quarter, on the entry-cohort series, which is the clean one
+(the flow, not the stock, so panel composition cannot drive it). The measure is
+biased **against** this: "ever AI-branded" gives early cohorts more quarters in
+which to be flagged.
+
+### Result 2 — THE POSITIVE CONTROL. The timing machinery is not blind.
+
+The strongest available objection to steps 52/55 was never answerable: *if your
+searched-break procedure never finds ChatGPT, maybe it cannot find anything.*
+The identical search - same grid, same level-and-slope break, same SSR ranking -
+run on the diffusion series:
+
+| series | best break | ChatGPT rank | SSR spread |
+|---|---|---|---|
+| within-gig transaction proxy (step 52) | 2020Q4 | 11 of 15 | - |
+| cheap-end relative performance (step 55) | 2020Q3 | 16 of 17 | 0.06% |
+| **AI-branded share of new listings** | **2023Q1** | **1 of 19** | **227%** |
+| AI-branded share of standing stock | 2023Q2 | 4 of 19 | 399% |
+
+**The top four candidates of nineteen on the entry series are 2023Q1, 2022Q4,
+2023Q2, 2022Q3** - every generative-AI milestone quarter, consecutively, at the
+top. Worst is 2019Q4. SSR spread 227% vs step 55's 0.06%, so where that break was
+correctly called weakly identified, this one is sharply identified.
+
+**This changes the standing of the project's central negative result.** It is no
+longer "we looked and did not find", which is compatible with a blunt
+instrument. The same procedure on the same panel over the same quarters resolves
+generative AI's arrival to the exact quarter when asked about a variable AI
+demonstrably moved, and puts the price/transaction/structure turns in
+2020Q3-2021Q4 when asked about those. Written into the answer as **4.3.1**.
+
+Explicitly **not** licensed by this: a positive control shows the procedure
+detects a break of the size present in the diffusion series, not an arbitrarily
+small one in the price series. Step 55's power caveat stands unchanged.
+
+### Result 3 — diffusion ran through ENTRY, not incumbent conversion
+
+Of **11,425 listings observed in both 2022 and 2024**, only **22 (0.19%)** ever
+switched their title to advertise AI, and **none** dropped the label. New
+listings carried it instead, at 4-6% of each post-2023 entry cohort.
+
+This is also why designs looking for AI *within* incumbent listings found
+nothing: under gig fixed effects an entrant is invisible. It is a
+competitive-structure fact the project previously could not see at all.
+
+### Result 4 — AI entered ABOVE the median price
+
+| band | AI listings | non-AI |
+|---|---:|---:|
+| <=$10 | 25.3% | 28.9% |
+| $26-50 | 13.9% | 20.1% |
+| $51-100 | **22.1%** | 16.1% |
+| >$100 | **16.5%** | 12.4% |
+
+Median AI **$30** vs non-AI **$25**. AI did not arrive as a low-price flood -
+consistent with the $5 tier having already emptied, before the technology existed.
+
+Conditional on category x quarter, AI listings none the less price **-12.5%**
+below others (t -2.42), ranging audio **-60.8%** (t -5.22) and writing **-26.4%**
+(t -2.85) to marketing **+87.4%**. **Recorded as a selection fact, not an
+effect** - it compares different listings. The within-gig version is 61 adopters:
+**-14.9% (t -0.78)**, same sign, no significance.
+
+### Result 5 — an anti-AI segment that did not exist
+
+Listings explicitly selling human production ("no AI", "100% human", "human
+written", "humanize AI content") are **exactly zero in every quarter from 2019Q1
+to 2023Q1**, first appear **2023Q2**, and reach 0.15% by 2024Q3. Sellers now pay
+title characters to say what their work is *not*. They price -31.5% below others
+in the same cell (t -2.37, 107 observations - a description of 107 listings, not
+a robust result).
+
+### A bug found and fixed mid-run
+
+The first `_ols` did **one sequential demeaning pass** for two FE sets, which is
+wrong - demeaning on the second reintroduces variation in the first. It returned
+an exact 0.0000 with a 0.0000 SE, which is what exposed it. Replaced with
+alternating projections iterated to convergence.
+
+### Outputs
+
+- `code/57-ai-diffusion-titles.py`, `runs/ai-diffusion-titles.out`
+- `data/pilot/ai-title-flags.csv` (384,983 rows: gig, quarter, category, price,
+  reviews, ai_gen, ai_any, anti_ai) - reusable by any later design
+- `drafts/market-structure-answer.md`: new **3.7** (six subsections), new
+  **4.3.1** (the positive control), rewritten header note and 0, six new rows in
+  the reader's guide, new 5 bullet on silent adoption, provenance updated
+
+### What this changes about the research agenda
+
+The diffusion measure is a **time-varying, within-category, gig-level** treatment
+intensity - which is exactly what designs 1-8 lacked (7 category units, p-floor
+0.143). Whether niche-level AI penetration predicts incumbents' price and accrual
+paths is now a runnable design, and it is **design 9**. It must be
+**pre-registered before any outcome is estimated**, per project practice, and its
+endogeneity problem must be declared first: sellers adopt AI where AI works, so
+penetration is not exogenous. Plan written to
+`plans/active/ai-penetration-prereg.md`.
+
+## 2026-08-19 (later, fourth) — Steps 54-55: the lead dies, the best-designed AI test dies with it, and six series now share one date
+
+Two scripts, both answering the user's standing question ("how does generative AI
+diffusion change long-run pricing and competitive structure") on data already
+collected. `drafts/market-structure-answer.md` is revised to match and is again
+the single current answer.
+
+### Step 54 — the promotion battery. The step-53 lead is NOT promoted.
+
+`code/54-recent-lead-battery.py` -> `runs/recent-lead-battery.out`. Five gates.
+
+**Gate A, category-level randomisation inference — FAIL, and it is decisive.**
+Step 53's treatment varies across **two categories** while its SEs cluster on
+hundreds of gigs; the effective treated-cluster count is **one**, so every t it
+printed is inflated by an unknown factor. Running the identical contrast for all
+21 category pairs:
+
+| frame | writing-video rank | p | what beats it |
+|---|---|---|---|
+| recent 2024Q3-2026Q1 | **4 of 21** | 0.190 | marketing/video, design/video, coding/video |
+| balanced 2023Q1-2024Q4 | 5 of 21 | 0.238 | design/audio, writing/audio, design/video, marketing/audio |
+| balanced full | 9 of 21 | 0.429 | - |
+
+All three pairs beating it in the recent frame are **X/video**. **The step-53
+result is a video result, not a writing result.** Correlation between the 21 pair
+coefficients and the exposure gap they span: **-0.068**, i.e. zero.
+
+**Gate B, seven-category exposure gradient — FAIL.** Spearman rho against the
+pre-registered beta (needs <= -0.786): **+0.036** recent, -0.250 balanced 2023-24,
+-0.143 balanced full. In the recent frame **translation, the most exposed
+category, has the most positive trend.**
+
+**Gate C, pre-AI placebo window — PASS**, and this is genuinely new. writing x
+trend on 2019Q3-2021Q4 is **+0.0022 (t +0.34)**. Unlike designs I1-I6 this
+differential is *not* pre-existing. It does not rescue the design.
+
+**Gate D, inference robustness — PASS on the balanced frame.** Wild cluster
+bootstrap (999 reps, Rademacher, H0 imposed) p 0.001 on 2023Q1-2024Q4; collapsed
+two-step on category-quarter means b -0.0341 (t -5.98) vs -0.0325. Recent frame
+p 0.140 either way.
+
+**Gate E, selection/composition — PASS.** Re-estimated on gigs present in both
+halves: recent -0.0719 (t -1.72), balanced 2023-24 -0.0308 (t -4.82).
+
+The auto-verdict printed by step 53 ("NO differential") was flagged in the last
+entry as too crude. It reached the right conclusion for the wrong reason: the
+recent estimate fails on **power**, but the design fails on **gates A and B**,
+which is a different and much more damaging failure.
+
+### Step 55 — Upwork's under-$500 prediction. The best AI test we can run, and it also dies.
+
+`code/55-low-tier-erosion.py` -> `runs/low-tier-erosion.out`. This is the only
+public statement by an operator with transaction-level visibility that names a
+**specific testable signature**: erosion concentrated in contracts under $500.
+Better designed than I1-I7 because it is **within-category** — it needs neither
+the seven-unit p-floor nor a two-category treatment. Category x quarter FE;
+treatment is the gig's **first observed price**, fixed.
+
+**On 2023Q1-2024Q4 it is the cleanest AI-consistent result in the project.** All
+four specifications correctly signed, and the dose response is monotone across
+five bands:
+
+| band | trend vs >$100 | t |
+|---|---|---|
+| <=$10 | **-0.0256** | -2.99 |
+| $11-25 | -0.0165 | -1.82 |
+| $26-50 | -0.0120 | -1.28 |
+| $51-100 | -0.0074 | -0.72 |
+
+**Then the guards fire.**
+
+1. **Pre-AI placebo significant and OPPOSITE-signed.** On 2019Q3-2021Q4 the cheap
+   end did *better*: +0.0236 (t +5.95); log price x trend -0.0162 (t **-12.49**);
+   <=$10 vs >$100 +0.0721 (t +12.30). So 2023-24 is the **reversal of a large
+   pre-existing cheap-end advantage**, not a new decline.
+2. **Searched break is 2020Q3. ChatGPT ranks 16 of 17.** The change coefficient
+   grows monotonically the *earlier* tau is placed - an early gradual bend, not a
+   late-2022 event. Caveats recorded: SSR range across all 17 candidates is 0.06%
+   so the location is weakly identified and sits at the window edge, and there is
+   no multiple-testing correction.
+3. **Recent frame does not continue it** - all four specs null, dose response
+   non-monotone and positive.
+
+### The synthesis this creates — six series, one date
+
+| series | turn | dated by |
+|---|---|---|
+| within-gig transaction proxy | 2020Q4 | searched, 15 quarters (step 52) |
+| cheap-end relative performance | **2020Q3** | searched, 17 quarters (step 55) |
+| $5 commodity tier | 2021Q2 | searched (step 49) |
+| repricing frequency | 2021Q3 | searched (step 51) |
+| Fiverr active buyers | 2021 | company reports |
+| Ramp marketplace spend share | 2021Q4 | external panel |
+
+Six series, none dated by us in advance, all inside eighteen months, and
+generative AI was not in commercial use in these categories in any of them.
+
+### The counterweight that must travel with it — the recent frame is UNDERPOWERED
+
+Realised MDE at 80%/5% (2.80 x se) on the recent frame vs the effects we measure
+on the balanced frame:
+
+| design | recent MDE | balanced-frame effect | effect as x MDE |
+|---|---|---|---|
+| 7, writing x trend | 0.131 | -0.033 | **0.25x** |
+| 8, cheap x trend | 0.083 | -0.014 | **0.17x** |
+
+**If the balanced-frame effect were running unchanged through 2025-26 the recent
+frame could not see it.** So neither recent-frame null is evidence the operators
+are wrong; Upwork's reported GSV -3.6% and clients -4% (annual) sit comfortably
+inside our intervals. An uninformative null is not a null.
+
+### Outputs
+
+- `code/54-recent-lead-battery.py`, `runs/recent-lead-battery.out`
+- `code/55-low-tier-erosion.py`, `runs/low-tier-erosion.out`
+- `drafts/market-structure-answer.md` revised: new 2.5 (operators' account and
+  the window problem), rewritten 0 and 4.3, new 4.5.1 / 4.5.2 / 4.6, updated
+  5-8. Design count 6 -> 8. Scope of the null now dated to 2024Q4 throughout.
+
+### What this changes about the research agenda
+
+**Thickening the 2024Q3-2026Q1 frame is now priority 1**, ahead of the O*NET task
+statements. It is not "extend the window" any more - the window exists and it is
+the one that matters; at 525 and 2,537 gigs it just cannot resolve anything. A
+~6x increase in recent-frame gigs brings its MDE down to the size of the balanced
+frame's estimates, at which point the operators' claims become testable.
+
+## 2026-08-19 (later still) — Step 53: the first AI-consistent pattern in the project, and it is a LEAD, not a finding
+
+`code/53-recent-exposure.py` -> `runs/recent-exposure.out`. Tests Fiverr's own
+Q2-2026 claim ("weakness in AI-exposed categories") on gig-level data.
+
+**Declared deviation, made before the outcome was seen.** The registered arms
+HIGH={translation,writing} / LOW={video,audio} cannot run on the recent panel:
+translation has **27** gigs with usable review counts and audio **47**, reaching
+4 and 5 observations in a quarter. Substituted the largest adequately-sized
+category on each side of the SAME registered ranking: **writing (exposed, 2nd of
+7) vs video (unexposed, 6th of 7)**.
+
+### The result — a monotone escalation
+
+| frame | exposed x trend | t | per quarter |
+|---|---|---|---|
+| balanced, full 2019Q3-2024Q4 | -0.0077 | **-3.20** | -0.8% |
+| balanced, 2023Q1-2024Q4 | -0.0427 | **-6.35** | -4.2% |
+| recent, 2024Q3-2026Q1 | **-0.0700** | -1.50 | **-6.8%** |
+
+Writing falls faster than video, **and the gap widens over time** — exactly the
+shape an accelerating AI effect predicts. The recent estimate is the largest and
+is the only one that misses significance, on **power** (525 gigs against 5,372),
+not on sign. Two of three are significant.
+
+**The auto-verdict printed by the script ("NO differential") reads only the recent
+t-statistic and is too crude. Do not quote it.**
+
+### Why this is a LEAD and not a finding
+
+It has **not** faced the battery that killed all six previous designs: no trend
+horse race, no CPI-U placebo, no placebo window, no Newey-West, no selection
+audit. Steps 46 and 50 both produced significant, correctly-signed, tightly-banded
+estimates at this stage and **both died on the horse race and the CPI placebo**.
+The prior here is that this dies the same way. Promotion rule: it is reported only
+if it clears all four, on both frames.
+
+Second reason for caution: the 2023Q1-2024Q4 result sits inside the window six
+designs already searched. A differential that only now appears may be a
+consequence of narrowing 4 arms to 2 categories, which removes the arm-averaging
+that suppressed category-specific noise.
+
+### Frames were not spliced
+
+Balanced (archival) and recent (live) are different gig populations; only slopes
+are compared, never levels. The balanced frame's 2025-2026 rows in section A are
+its trailing collapse (66-95 gigs) and are not evidence of anything.
+
+## 2026-08-19 (later) — External news check: the descriptive findings hold, the causal null is now at risk from the window
+
+User asked for news corroboration. Searched and verified against company releases
+and one independent spend dataset. Three outcomes: **our numbers are confirmed
+exactly**, **one claim in this log was wrong**, and **the paper has a window
+problem that is more serious than any reviewer critique currently recorded**.
+
+### 1. Confirmed to the digit
+
+Fiverr Q2 2026 release: annual active buyers **2.7M, -21.9% YoY**; annual spend per
+buyer **$368, +15.6%**; marketplace take rate 28.0%. `data/fiverr-inc-metrics.csv`
+carries 2.70 and 368 for TTM-2026Q2 — both exact. The upmarket repositioning
+(fewer, larger buyers) is the platform's own stated strategy, not our inference.
+
+### 2. CORRECTION — Fiverr revenue is falling, and this log said it was rising
+
+An earlier session note used revenue growth (+10.1% to $430.9M in FY2025) to argue
+the "revenue is declining" premise was wrong. **It was right, one year later.**
+
+| | Q2 2025 | Q2 2026 | change |
+|---|---|---|---|
+| total revenue | $108.6M | **$97.8M** | **-10.0%** |
+| marketplace revenue | $74.7M | **$63.1M** | **-15.5%** |
+
+Marketplace revenue — the take on gig transactions, the part our price index is
+about — is falling **faster** than total. `data/fiverr-inc-metrics.csv` has no
+revenue figure for 2026 at all; the column is blank. **It needs a quarterly
+revenue series, not an annual one.**
+
+### 3. THE WINDOW PROBLEM — the null may be measuring the wrong years
+
+Both platforms now attribute the decline to AI **explicitly**:
+
+- **Fiverr Q2 2026**: rapid AI adoption is reducing high-volume, low-value
+  transactional work; "AI-related demand and traffic headwinds" and weakness in
+  AI-exposed categories, cited as the reason for revised 2026 guidance.
+- **Upwork Q2 2026**: full-year revenue midpoint cut $35M. Active clients -4%,
+  GSV -3.6%. The decline is concentrated in **contracts under $500** as clients use
+  AI for simple tasks. Upwork had flagged ~10% of GSV as AI-exposed and says
+  erosion inside that group is running ahead of plan — a "pull forward".
+- **Ramp** (independent, corporate card spend): labour-marketplace share of total
+  corporate spend **0.66% in 2021Q4 -> 0.14% in 2025Q3**; AI-provider share 0 ->
+  ~3%. Most-exposed firms substitute **$1 of freelance spend for $0.03 of AI**.
+
+**Ramp's peak is 2021Q4, which corroborates our 2020-21 turn.** But the
+AI-attributed collapse those releases describe is **2025-2026**, and:
+
+  * the balanced frame ends **2024Q4**
+  * the IPI ends **2026Q1**
+  * step 46/48/50 all treat 2022Q4-2024Q4 as "post"
+
+So six identification designs concluded "no AI effect" on a window that mostly
+**precedes the period where both operators say the effect arrived.** The paper is
+titled *What Generative AI Did Not Do*. On this evidence the defensible title is
+narrower: **what it had not yet done by 2024**.
+
+This is not a reason to retract anything descriptive. Prices +40.7% real, the
+emptied \$5 tier, flat concentration, no price war, fewer and larger buyers — all
+are corroborated by the operators' own accounts. It is a reason to **date the
+claim explicitly and stop generalising past the frame**.
+
+### Actions this creates
+
+1. Add a quarterly revenue series to `data/fiverr-inc-metrics.csv` (2025Q1 onward).
+2. Restate the second paper's scope as **through 2024Q4** in the title, abstract
+   and conclusion; the null does not extend to 2025-2026.
+3. New test entry: "the null is a window artefact" against
+   `tests/structure-identification.test.md` — currently the strongest live threat
+   to the paper and not recorded anywhere.
+4. Upwork's under-\$500 concentration is a **testable prediction** our data can
+   check on the low tier, and it is the closest thing to an AI signature yet named
+   by anyone with transaction-level visibility.
+
+## 2026-08-19 — The transaction turn is dated, and it is not an AI date
+
+`code/52-ai-timeline-break.py` -> `runs/ai-timeline-break.out`. Written to answer a
+user question directly: **is the number of transactions on Fiverr decreasing along
+with AI development?**
+
+### Why this step exists
+
+Steps 24, 46, 48 and 50 all test a single pre-specified break at **2022Q4**, on the
+premise that ChatGPT is "the" generative-AI event. **That premise is wrong on the
+history.** GPT-3 API beta is 2020-06, Jasper 2021-02, Copilot preview 2021-06,
+GPT-3 GA 2021-11, DALL-E 2 2022-04, Midjourney and Stable Diffusion 2022-07/08.
+So "no break at 2022Q4" was only ever a statement about one date, not about
+generative AI. This step **searches** the break instead of assuming it.
+
+### The answer
+
+The within-gig transaction proxy **peaks 2020Q3 and turns down from 2020Q4** —
+before any of these tools was in commercial use in these categories.
+
+| quarter | index (2020Q1 = 100) |
+|---|---|
+| 2020Q1 | 100.0 |
+| **2020Q3** | **146.4 (peak)** |
+| 2021Q2 | 135.0 |
+| 2022Q1 | 78.1 |
+| 2022Q4 (ChatGPT) | 103.9 |
+| 2023Q3 | 124.6 |
+| 2024Q4 | 64.9 |
+
+Best **trend break** of 15 candidates: **2020Q4**, gamma -0.0966/quarter (t -48.63).
+Best **level-shift** break: 2020Q2, and it is **positive** (+49.7%) — the pandemic
+boom beginning, not a decline.
+
+**Where the AI milestones rank among the 15 candidate quarters (level-shift SSR):**
+
+| milestone | quarter | rank | t |
+|---|---|---|---|
+| GPT-3 API beta | 2020Q2 | 1/15 | +38.73 (wrong-signed) |
+| Copilot preview | 2021Q2 | 5/15 | -17.27 |
+| GPT-3 GA | 2021Q4 | 8/15 | -10.84 |
+| GPT-4 | 2023Q1 | 9/15 | -10.53 |
+| **ChatGPT** | **2022Q4** | **11/15** | -6.22 |
+| DALL-E 2 | 2022Q2 | 14/15 | -3.52 |
+| Midjourney + SD | 2022Q3 | **15/15** | **-0.09** |
+
+**The three image-model and ChatGPT dates are the WORST-fitting breaks in the
+window.** The one AI milestone that fits is GPT-3's API beta, and it fits with the
+wrong sign, because 2020Q2 is when the pandemic boom started.
+
+### Identification, stated rather than assumed
+
+Review accrual falls as a gig ages, and within a gig age and calendar time move
+one-for-one, so under gig FE the **linear** calendar trend is not separable from
+the ageing profile — the age-period-cohort problem, which has no solution here.
+Age is absorbed as full **age fixed effects** (no functional form imposed), so
+**non-linear** calendar changes are identified off cohort spread. Only break
+locations and sizes are reported; no trend is.
+
+### What must not be over-claimed
+
+The search covers 15 quarters with **no multiple-testing correction**, so the
+winning t is inflated. A searched break also lands at window edges when the series
+is humped, and this one is humped. The defensible claim is the weaker one: **the
+proxy peaks 2020Q3 and declines thereafter, so no AI milestone can have initiated
+the decline.** This is a falsification of dates, not evidence for a cause.
+
+Consistent with the four series that already dated structural change to 2020-21:
+commodity tier 2021Q2, repricing 2021Q3, buyer-growth inflection 2022, and the
+implied-order peak in 2021 (annual).
+
 ## 2026-08-18 (night) — The seller-conduct half of competitive structure, and the whole question assembled into one answer
 
 The user asked, again and directly: **how does the diffusion of generative AI
@@ -108,6 +572,111 @@ representative), §2 R7 (point at the category classifier), §5 R3 (show the
 pre-2020 baseline), §5 R4 (downward nominal rigidity asserted rather than tested).
 
 No IPI paper section, figure, frozen number or site file was touched.
+
+## 2026-08-18 (evening) — The sixth design RAN. First to pass parallel trends; dies on the trend horse race and the CPI-U placebo
+
+`code/50-continuous-exposure.py` → `runs/continuous-exposure.out`, running the
+specification locked in `plans/active/exposure-continuous-prereg.md` hours earlier.
+**No deviations from §2–§5.** Result recorded as §10 of that file.
+
+### The gate card
+
+| gate | result |
+|---|---|
+| §2 selection audit | **THREAT** — dropped (zero-match) gigs accrue **+23.7%** more pre-period |
+| G1 parallel trends | **PASS** — Wald chi2(11) = 9.99, **p = 0.53**, 0 of 11 significant |
+| G2 not-a-price-proxy | **PASS** — −0.1692 (t −2.43) with price rank × quarter controlled |
+| G3 placebo window | **PASS** — false break returns t −0.45 |
+| G4.2 trend horse race | **FAIL** — `exposure × POST` **flips sign** to +0.021 (t 0.28) once `exposure × trend` (t −2.54) is in |
+| G4.3 CPI-U placebo | **FAIL** — t **−2.86** |
+| G4.4 Newey-West | PASS — DW 1.73 |
+| G5 composition | **FAIL** — balanced frame t −1.85 |
+
+Primary estimate **−0.1680 (se 0.0666, t −2.52)** on 121,414 observations / 20,966
+gigs, stable across the entire robustness grid (K = 1/5/10 → −0.140/−0.198/−0.192;
+`dv_rating_beta` → −0.114; all significant). Price outcome is a precise zero,
+**+0.0021 (t 0.06)**.
+
+### Why this failure is worth more than the previous five
+
+**It is the first design in the project to pass parallel trends on the demand
+margin** — and it passes on step 46's stricter count rule as well as the
+pre-registered joint test. G2 excludes step 49's mean-reversion disease; G3
+excludes step 29's standard-error disease. **Three of the four ways prior designs
+died are now ruled out.**
+
+It dies on the fourth, and the diagnosis is now specific rather than a shrug:
+**there is an exposure-correlated differential trend that predates ChatGPT, and
+there is no break at ChatGPT.** The §6 dose–response says the same thing
+independently — decile changes run −13.3% to +3.5% with **no monotone gradient**,
+and the *least*-exposed decile falls more (−7.8%) than the most-exposed (−1.9%).
+
+### Three qualifications, so the failure is not overstated
+
+1. **Underpowered against its own standard.** Realised MDE ±0.186 log points
+   (±20.5%); |β| is **0.90× the MDE**. Even on a clean sweep this estimate sits
+   below the pre-registered power threshold.
+2. **G5 failed on power, not sign.** The balanced estimate is **−0.2022** — larger
+   and identically signed — and loses significance only because n falls to 1,715
+   gigs. Recorded FAIL by the letter of §5; "the sign reversed" would be wrong.
+3. **Internal contradiction.** The collapsed Newey-West difference series returns
+   `post` = **+0.0701 (t 2.44)**, opposite in sign to the panel estimate. It carries
+   no gig FE, so the gap is composition — one more reason not to read −0.168 as an
+   effect.
+
+### Where this leaves the project
+
+Six designs, six failures, one consistent surviving pattern. The category design
+space was exhausted at step 48; the within-category price route died at step 49;
+the continuous-exposure route now dies on trend and placebo. Highest-value
+remaining input is the one the prereg declared as a prior weakness **before**
+running: **O\*NET task statements**, since the current measure is both thin (36.7%
+zero-match) and selected (dropped gigs accrue 23.7% more). Second is reaching past
+2024Q4, which needs the live forward crawl.
+
+No paper section, figure, frozen number or site file was touched.
+
+## 2026-08-18 (later) — Pre-registration locked for the sixth design, and a correction to the item-cluster claim
+
+`plans/active/exposure-continuous-prereg.md`. User chose: hold the step-49 framing
+decision, sharpen identification first, and pre-register before extending.
+
+**Correction.** The todo entry written earlier today said the 151 item clusters
+were ready to carry a continuous-exposure design. They are not.
+`data/pilot/item-clusters.csv` was built by `code/10-cluster-items.py` on the
+superseded 500-seller pilot: **1,908 gigs, median cluster size 8, only 14 clusters
+reaching 30 gigs.** The design scores **gigs directly** instead.
+
+**Feasibility pilot, run before the lock and disclosed in prereg §1:**
+
+| | |
+|---|---|
+| gigs with usable descriptions | 39,933 |
+| TF-IDF match rate against O*NET occupation titles | **63.2%** (36.8% zero-match — a declared selection threat) |
+| agreement with the pre-registered category ranking | **Spearman ρ = +0.786 (K=3)**; +0.68 / +0.71 / +0.71 at K = 1 / 5 / 10 |
+| within-category sd of exposure | **0.11–0.20**, against a between-category range of **0.13** |
+
+That last row is the reason to run it: **within-category exposure variation is at
+least as large as between-category variation**, which is exactly the variation the
+seven-category designs never had.
+
+**What is locked:** exposure × POST with gig FE + **category × quarter FE** —
+the latter absorbing the platform-wide demand fall that steps 46–48 kept mistaking
+for treatment — gig-clustered SEs, and five gates whose failure consequences are
+fixed in advance: joint-F parallel trends (not step 46's count rule, which is
+infeasible with 11 pre-quarters), a not-a-price-proxy gate carrying step 49's
+mean-reversion lesson, a placebo window, the step-29 battery, and a balanced-panel
+composition gate carrying step 49's other lesson. Sole authorised fallback:
+descriptive dose–response by exposure decile, explicitly not identified.
+
+**The prior is recorded in the file as low.** Five designs have failed on this
+data; the lock's purpose is to make a sixth failure interpretable rather than
+discardable. The known weakness — O*NET *titles* are thin text, and task
+statements would fix coverage — is declared before running and deliberately left
+out of scope, so it cannot become a post-hoc excuse.
+
+Nothing has been estimated under this exposure measure. No paper section, figure,
+frozen number or site file was touched.
 
 ## 2026-08-18 — Competitive structure asked for the first time. Three of six candidate findings died in the same script that produced them
 

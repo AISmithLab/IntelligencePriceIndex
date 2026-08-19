@@ -19,3 +19,16 @@
 | R10 | "The dose–response fallback is not identified, so why report it?" | minor | PASS | reported as the pre-registered fallback, explicitly not identified |
 | R11 | "Synthetic control with 7 donors is underpowered by construction" | major | PASS | that is the reported conclusion, with the in-space placebo ranks given |
 | R12 | "Newey-West series contradicts the panel estimate" | major | PASS | reported as an internal contradiction and attributed to composition |
+| R13 | "Your searched-break procedure never finds ChatGPT — how do we know it can find anything?" | **critical** | PASS | **Positive control added 2026-08-19** (`drafts/market-structure-answer.md` §4.3.1, step 57). The identical search on the AI-diffusion series ranks ChatGPT **1 of 19**, top four candidates all AI milestone quarters, SSR spread 227% vs step 55's 0.06%. The instrument resolves the AI date to within one quarter, so the null in the outcome series is a fact about the market, not the method |
+| R14 | "You measure AI exposure but never measure AI itself — is generative AI even in this market?" | major | PASS | §3.7: it is, dated to **2023Q1** on the entry-cohort series (0.5% → 5.98% in one quarter), measured from gig titles held on 100.0% of observations |
+| R15 | "The title classifier is doing the work; show me its false positives" | major | PASS | §3.7.1: realised precision floor is **7 distinct titles across 2019–2021**, six of them genuine pre-generative AI work. Three guards reported with the audit that produced each — `.ai` as the Illustrator extension being the largest |
+| R16 | "AI-branded listings price −12.5% below others — that is your AI effect" | **critical** | PASS | §3.7.4 refuses the reading explicitly: cross-sectional, different listings, a selection fact about *who* advertises AI. The within-gig version is 61 adopters at −14.9% (t −0.78) and is reported as such |
+| R17 | "The diffusion measure only catches sellers who advertise AI" | major | PASS | conceded in §3.7.6 and §5: it measures AI *marketing*, not AI *production*; silent adopters are invisible and are likely the larger group; stated as a **lower bound on adoption** |
+| R18 | "Diffusion via entry is convenient — it excuses every within-gig null you report" | major | PASS | it is measured, not asserted: 22 of 11,425 continuously-observed listings ever relabelled (§3.7.3). The implication for gig-FE designs is stated as a consequence, and design 9 (`plans/active/ai-penetration-prereg.md`) is pre-registered to test the entry margin directly |
+
+## User Requirements
+
+| # | Instruction | Date | Status | Location |
+|---|---|---|---|---|
+| U1 | "Answer: how does generative AI diffusion change long-run pricing and competitive structure in online freelancer markets" — on data already collected, no new collection | 2026-08-19 | PASS | `drafts/market-structure-answer.md`, whole document; §3.7 and §4.3.1 are the 2026-08-19 additions and used only data already on disk |
+| U2 | The answer must remain answerable from held data — a route that requires new collection is a research-agenda item, not part of the answer | 2026-08-19 | PASS | §6 lists collection-dependent items separately; `plans/active/recent-frame-collection.md` holds the open crawl decision |
