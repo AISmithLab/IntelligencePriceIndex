@@ -1,14 +1,28 @@
 # How does generative AI diffusion change long-run pricing and competitive structure in online freelancer markets?
 
-**Answer assembled 2026-08-18, last revised 2026-08-19 from data already
+**Answer assembled 2026-08-18, last revised 2026-08-20 from data already
 collected.**
 Sources: the IPI panel (`data/pilot/paper-numbers.md`, frozen 2026-07-31), the
 balanced archival frame (`data/pilot/balanced-prices.csv`, 257,208 gig-quarter
 observations on 37,888 listings, 2019Q3–2024Q4), the recent live frame
 (`data/pilot/recent-prices.csv`, 2024Q3–2026Q1), Fiverr Inc.'s reported metrics
-(`data/fiverr-inc-metrics.csv`), and steps 46–57.
+(`data/fiverr-inc-metrics.csv`), and steps 46–59.
 
-**What the latest 2026-08-19 revision changed.** One thing, and it is the largest
+**What the 2026-08-20 revision changed.** We now know **what buyers actually
+paid**, and it is not what the price index measures. Every archived gig page
+carries a hidden block of order records — one per displayed review, each with an
+order date, an order id, and the amount the buyer paid in a price band. The
+extractor had been discarding it since 2019. Reading it back (§1.3) shows that
+**orders under $50 are 1.0% of all orders**, against a listed entry-package
+median of $25–30: buyers almost never buy the package the index prices. Three
+consequences. (i) §1.3 stops being a caveat about something unmeasurable and
+becomes a measurement. (ii) The implied "orders −18%" in §2 divides revenue by a
+price nobody pays, and is flagged as such. (iii) §5's entry saying realised order
+value is "not measurable at any effort" was **wrong** and has been removed. The
+field only starts in 2022 and roughly an eighth of orders are recovered, so this
+is a new resource with real limits, not a finished index — see §1.3 and §6.
+
+**What the 2026-08-19 revision changed.** One thing, and it is the largest
 single addition since the answer was assembled. **Generative AI is now measured
 inside the market rather than assumed from a calendar** (§3.7): gig titles, held
 on 100.0% of observations and never used by any design, give a quarterly
@@ -33,6 +47,37 @@ the ChatGPT and image-model dates are the **worst-fitting** candidates (§4.3).
 
 ---
 
+## How to read this document
+
+The findings below are stated in the vocabulary of applied econometrics. Here is
+what the recurring terms mean in plain language, so the results can be read
+without it.
+
+| term | what it means here |
+|---|---|
+| **listed price** | the price a seller advertises on the gig page. This is what the index measures. |
+| **realised price** | what a buyer actually paid on a completed order. Newly recovered — see §1.3. |
+| **nominal vs real** | *nominal* is the dollar figure as observed; *real* subtracts general inflation (CPI-U). A +78% nominal rise is +41% real. |
+| **matched-model index** | prices are compared **within the same listing over time**, never across different listings, so a change in *which* listings exist cannot masquerade as a change in price. |
+| **balanced panel / frame** | a fixed set of listings observed in every period. Used wherever a change over time is claimed, because a changing sample manufactures trends on its own. |
+| **fixed effects** | a control that strips out everything permanently distinctive about a listing (or a quarter), leaving only *changes* to be compared. |
+| **a break** | a date at which a series changes its level or its slope. |
+| **a searched break** | instead of assuming a date and testing it, the break is fitted at *every* candidate quarter and the best-fitting one reported. This is what allows the claim that the market turned *before* ChatGPT, rather than merely that it did not turn *at* ChatGPT. |
+| **a placebo test** | the identical test run where the answer must be "nothing" — a fake date, an unrelated series, a period before the technology existed. If it still finds an effect, the test is broken, not the world. |
+| **parallel trends** | the assumption behind any before/after comparison of two groups: they must have been moving in step *beforehand*. If they were not, a post-event gap may just be the old divergence continuing. |
+| **exposure** | an external score of how much of a category's work is the kind generative AI can do, built from O\*NET occupation text. It is the "treatment" in most designs here, and a known weak point. |
+| **MDE** (minimum detectable effect) | the smallest effect a test could have detected. A null on a large MDE means *we could not have seen it*, not *it is not there*. |
+| **Gini** | a 0–1 concentration measure. 0 = every listing sells equally; 1 = one listing takes everything. |
+| **a gate** | a pass/fail check fixed **before** the result is seen. A finding that fails a gate is not reported as a finding, however good it looks. |
+
+Two conventions carry most of the argument's weight. **Break dates are searched,
+not assumed**, so a claim that this market turned in 2020 is a claim about which
+date fits best — not about which date we happened to test. And **every promising
+result is gated on a placebo before it is reported**, which is why this document
+contains more failed designs than findings.
+
+---
+
 ## 0. The answer in one page
 
 **On pricing, the data are decisive and the direction is the opposite of the
@@ -43,6 +88,14 @@ further share is reputation accumulation; a reputation-adjusted composite floors
 the real rise at about **+39.7%** on a raw ceiling of **+79.0%**. Prices did not
 fall in any category, in any specification, at any point in the diffusion window.
 
+**Buyers were not paying the advertised price, and we can now show it.** The
+index reads listed entry-package prices, typically $25–30. Order records
+recovered from the same archived pages (§1.3) show **1.0% of orders were under
+$50** and roughly two-thirds were $50–200. The listed price is a real and
+well-measured quantity, but it is the *advertised* one; what buyers actually
+spent per order runs several times higher. This is measurable from 2022 onward,
+which is late enough that it cannot yet extend the long-run index.
+
 **On competitive structure, four of the five things a commoditisation story
 predicts did not happen, and the fifth happened too early to be caused by
 generative AI.**
@@ -50,7 +103,7 @@ generative AI.**
 | what a commoditisation story predicts | what the data show |
 |---|---|
 | prices fall | real prices **+40.7%** |
-| quantities rise | Fiverr buyers **−36%** from the 2021 peak; implied orders **−18%** vs 2020 |
+| quantities rise | Fiverr buyers **−36%** from the 2021 peak; implied orders **−18%** vs 2020 (an upper bound — the divisor is the *listed* price, §1.3) |
 | the cheap tier widens | the **$5 tier emptied**, 27.3% → 10.3% of listings — but its steepest decline is **2021Q2**, and the decline **slows** after ChatGPT |
 | price competition intensifies | repricing **fell** (23.6% → 18.3% of listing-quarters), and the fall is **entirely fewer price increases**; price cuts are flat at ~5–6% |
 | sales concentrate on winners | Gini among trading listings **flat** (0.64 → 0.61); among trading **sellers** flat too (0.637 → 0.618) |
@@ -120,7 +173,10 @@ yet done by 2024Q4.**
 
 ### 1.1 Level
 
-Matched-model GEKS-Jevons index over seven categories, 2020Q1 = 100.
+Matched-model GEKS-Jevons index over seven categories, 2020Q1 = 100. (The index
+compares each listing only with itself over time, then chains the categories
+together with equal weight on every pair of periods — the standard construction
+for goods that appear and disappear from the market.)
 
 | series | terminal 2026Q1 nominal | real | real Δ | ±95% |
 |---|---:|---:|---:|---:|
@@ -150,22 +206,99 @@ measure (β 0.840) — carries a ±29.2% band on 28 panel gigs.
   cumulative sales and so β absorbs demand as well as standing.
 - **What remains** is not attributable. See §4.
 
-### 1.3 The critical caveat on what "price" means here
+### 1.3 What "price" means here — and what buyers actually paid
 
-The IPI reads **listed basic-package prices**, not realised order value. Fiverr's
-spend-per-buyer path (§2) and its stated upmarket push both suggest buyers moved
-to higher tiers, so realised prices likely rose *faster* than the IPI. Every
-quantity figure derived by dividing revenue by the IPI is therefore an **upper
-bound on the quantity decline**.
+The index reads **listed basic-package prices**: the entry-tier figure a seller
+advertises. That is a clean, comparable, well-measured quantity, and it is not
+what changes hands.
+
+Until 2026-08-20 this was recorded here as a caveat about something we could not
+measure. That was wrong. Every archived gig page carries an embedded block of
+**order records** — one per displayed review — and each record holds an order id,
+the **date of the order** (not of the capture), and the amount the buyer paid,
+reported as a price band. The extractor kept the listed prices and dropped the
+rest, so this has been sitting in the stored pages the whole time. Recovering it
+needs **no new collection** (`code/59-review-order-audit.py`).
+
+**What buyers paid**, across 2,883 priced orders on a 1,226-page pilot sample:
+
+| band | share of orders | cumulative |
+|---|---:|---:|
+| $5–20 | 0.2% | 0.2% |
+| $20–50 | 0.9% | 1.0% |
+| **$50–100** | **37.5%** | 38.6% |
+| **$100–200** | **29.8%** | 68.4% |
+| $200–400 | 16.9% | 85.3% |
+| $400–600 | 6.2% | 91.5% |
+| $600–1,000 | 3.5% | 94.9% |
+| $1,000–10,000+ | 5.1% | 100.0% |
+
+**Orders under $50 are 1.0% of all orders**, against a listed basic-package
+median of about $25–30. Buyers essentially never buy the advertised entry
+package: two-thirds of orders land in $50–200. Fiverr's rising spend per buyer
+(§2) is therefore visible in individual transactions and not only in company
+aggregates, and this section's former *conjecture* — that realised prices rose
+faster than listed ones — now has a level measurement underneath it.
+
+**Three limits decide what this can and cannot be used for.**
+
+1. **It starts in 2022.** The paid-amount field is absent from essentially every
+   2018–2021 capture (0.0–0.8% of sampled pages) and appears on 64.2% of 2022
+   pages. Orders placed *before* 2022 do carry amounts when a 2022-or-later page
+   displays them (2020: 58.1%, 2021: 22.9%), but pages show recent reviews, so
+   the pre-ChatGPT baseline this can support is roughly one year and
+   back-filled. That is enough to compare levels. It is **not** enough for the
+   long-run diffusion question the listed-price index answers.
+2. **About an eighth of orders are recovered, and not at random.** A page
+   displays a median of 4.2 reviews against a median gig lifetime total of 168.
+   Pooling repeated captures of the same gig accumulates distinct order ids: on a
+   59-gig pooling subsample the median is **41 distinct orders per gig**, but
+   that is only **13.1%** of the new orders implied by those gigs' own
+   review-count growth. (**9,783** gigs have the ≥8 captures since 2022 that make
+   pooling worthwhile; the 41 and the 13.1% are measured on the 59-gig
+   subsample, and both need re-measuring at full scale.) And pages choose which reviews to display by a
+   `relevancy_score`, **not at random**. Until it is shown that displayed orders
+   are not selected on price, the table above describes *displayed* orders, not
+   all orders. This is the central threat to any index built on it.
+
+   The weaker check that can be run today passes. Orders that carry a price and
+   orders that do not are near-identical on rating (4.877 vs 4.879), repeat-buyer
+   share (39.1% vs 35.9%) and business-buyer share (9.3% vs 7.0%). That says the
+   *price field* is not missing selectively. It says nothing about which orders
+   get shown.
+3. **Amounts are bands, not numbers**, with an open top ($10,000+). Any index
+   built on them needs interval regression or midpoint imputation — not a mean.
+
+**What this changes elsewhere.** Every quantity figure obtained by dividing
+revenue by the index is deflating by a price buyers do not pay, so the implied
+order decline in §2 stays an **upper bound on the quantity decline** — but the
+reasoning behind that bound is now measured rather than assumed. And §5's entry
+declaring realised order value unmeasurable was wrong; it has been removed, and
+the re-extraction is now the second-highest-value item in §6.
+
+**Scale, if it is built.** 9,783 poolable gigs at the subsample's median of 41
+distinct orders each, roughly 55% of them priced — an extrapolation, and one on
+the order of **10⁵ dated, priced transactions**. That
+would be the first transaction-level data in the project, and a direct
+replacement for `review_count` as the sales proxy.
 
 ---
 
-## 2. The quantity half — the only real transaction data in the project
+## 2. The quantity half — where the transaction numbers come from
 
-The archive contains no transactions; `review_count` is a proxy. The one source
-of actual quantities is Fiverr Inc. (NYSE: FVRR), where GMV = active buyers ×
-spend per buyer is an accounting identity, not an estimate (it reproduces every
-independently reported GMV to within rounding).
+Three sources, answering different questions.
+
+- **Fiverr Inc.'s reported metrics** (NYSE: FVRR) are the only *market-wide*
+  quantities. GMV = active buyers × spend per buyer is an accounting identity
+  rather than an estimate, and it reproduces every independently reported GMV to
+  within rounding.
+- **Order records inside the archived pages** (§1.3) are the only
+  *transaction-level* quantities. They begin in 2022 and recover about an eighth
+  of orders, so they can currently anchor a level, not a time series.
+- **`review_count`** carries everything in between — the per-gig demand results
+  below. It is a **proxy** for sales, not a count of them.
+
+**Fiverr Inc.'s reported quantities:**
 
 | period | buyers (M) | $/buyer | GMV ($M) | buyers YoY |
 |---|---:|---:|---:|---:|
@@ -184,13 +317,19 @@ Three facts matter for the structure question.
    to $368. **Fewer, larger buyers.**
 2. **Implied order count.** Deflating GMV by CPI-U and dividing by the IPI real
    composite gives real GMV +11.3%, real price +35.8%, and therefore
-   **orders −18.0% vs 2020, −38.6% from the 2021 peak.** Treat as an upper bound
-   on the decline, per §1.3.
+   **orders −18.0% vs 2020, −38.6% from the 2021 peak.** Read this as an **upper
+   bound on the decline — and the bound is now measured, not assumed.** The
+   divisor is the *listed* entry price, and §1.3 shows buyers hardly ever pay it:
+   99% of orders are above $50 against a listed median of $25–30. If what buyers
+   actually paid rose faster than the listed index, then real prices rose more
+   than +35.8% and the order count fell by less than 18.0%.
 3. **This kills the leading rival explanation for the archive's demand result.**
    The 13–43% fall in per-gig review accrual at 2022Q4 was equally consistent
-   with a real transaction decline and with review-propensity drift. Fiverr's
-   buyer and GMV series have nothing to do with reviewing behaviour, and they
-   fall too. **The direction is externally corroborated.**
+   with two very different stories: sales really fell, or buyers simply began
+   leaving reviews less often (**review-propensity drift**), which would make
+   sales look like they fell when they had not. Fiverr's buyer and GMV series
+   have nothing to do with reviewing behaviour, and they fall too. **The
+   direction is externally corroborated.**
 
 The archive's own demand result, for completeness (step 46, gig FE + linear
 trend, gig-clustered SEs, break at 2022Q4):
@@ -286,6 +425,11 @@ claimed. This is not a formality: the quota manifest adds ~1,250 net listings at
 ≤$10 share one quarter before the break of interest. **Gig fixed effects do not
 protect against composition.**
 
+**In plain terms:** if the set of listings you are looking at changes, the market
+can appear to move when no individual listing has moved at all. Holding the set
+fixed is the only defence, and holding listings fixed *statistically* is not the
+same defence — new listings arriving still shift the average.
+
 ### 3.1 The commodity tier emptied — but before ChatGPT
 
 Share of listings priced at $5, fixed panel: **27.3% (2019Q3) → 10.3% (2024Q4)**.
@@ -325,6 +469,11 @@ and that rises only in 2024 — the trailing edge where captures per quarter
 collapse from ~9,300 to ~700. It is dormancy at the edge of the crawl, not a
 shift of share.
 
+**In plain terms:** concentration appears to rise only because more listings
+record zero sales, and they record zero because the crawl stopped seeing them —
+not because their sales went to somebody else. Among listings that actually sold
+anything, the split is unchanged.
+
 Step 51 closed the obvious objection: that is *listing*-level, and the
 competitive question is about *sellers*. Aggregating accrual to the seller
 (29,835 distinct sellers) changes nothing — Gini among trading sellers
@@ -348,8 +497,9 @@ listing, balanced panel, pre (2020Q4–2022Q3) vs post (2022Q4–2023Q4):
 
 **The fall in repricing is almost entirely a fall in price increases. Cuts are
 flat.** The engine that produced the +78% nominal index throttled back after 2022
-without reversing: this is downward nominal rigidity in a market with falling
-demand, not a price war. A searched break confirms it is not a ChatGPT event —
+without reversing: sellers stopped pushing prices up but would not push them
+down — **downward nominal rigidity** in a market with falling demand, which is
+the opposite of a price war. A searched break confirms it is not a ChatGPT event —
 the best break for any-change is **2021Q3** and the ChatGPT quarter is
 insignificant and *positively* signed; for price cuts the best break is 2022Q3,
 one quarter *before* ChatGPT, and the ChatGPT-quarter coefficient is −0.0005.
@@ -531,9 +681,20 @@ adoption and an upper bound on nothing.**
 
 ## 4. Attribution: nine designs run (1–8 and 10), nine failures, and what they establish
 
-Nothing above is causally attributed to generative AI, because nothing can be. The
-failures are listed with what killed each, because their pattern is itself the
-result.
+Nothing above is causally attributed to generative AI, because nothing can be.
+
+**What "a design" means here.** Describing what happened is easy. Showing that
+generative AI *caused* it requires a comparison — some group the technology
+should have hit harder than another, or some date at which it should have
+arrived. Each design below builds one such comparison and then tries to break it.
+A design **fails** when a check fixed in advance shows the comparison would have
+produced the same answer in a world with no AI in it: because the two groups were
+already drifting apart beforehand, because a plain time trend explains the data
+better, because an unrelated series (US consumer prices) fits just as well, or
+because the test also fires on dates when nothing happened.
+
+The nine failures are listed with what killed each, because the *pattern* of the
+failures is itself the finding.
 
 | # | design | step | killed by |
 |---|---|---|---|
@@ -644,6 +805,12 @@ age-period-cohort problem, which has no solution here. Age is absorbed as full
 **age fixed effects** with no functional form imposed, so **non-linear** calendar
 changes are identified off cohort spread. Only break locations and sizes are
 reported; no trend is.
+
+**In plain terms:** a gig collects fewer reviews as it gets older, and for any
+one gig, getting older and the calendar advancing are the same thing. So a slow
+market-wide decline cannot be told apart from ordinary ageing — and we do not
+try. Only *bends* in the series are reported, never its slope. Bends survive
+because gigs of many different ages coexist in every quarter.
 
 ### 4.3.1 The positive control — the timing machinery is not blind
 
@@ -803,7 +970,10 @@ dies on the two that matter.
 **Gate A — category-level randomisation inference. FAIL, and this is decisive.**
 The treatment varies across exactly **two categories** while the SEs are
 clustered on hundreds of gigs; the effective number of treated clusters is
-**one**. The honest test computes the identical contrast for all 21 category
+**one**. In plain terms, the statistics behave as though there were hundreds of
+independent observations when the comparison actually rests on one category being
+set against one other category — so the confidence interval comes out far
+narrower than the evidence supports. The honest test computes the identical contrast for all 21 category
 pairs, more-exposed member coded as treated, and asks where writing–video ranks.
 It does not rank first anywhere:
 
@@ -952,7 +1122,8 @@ the balanced frame. Realised minimum detectable effects at 80% power and 5% size
 
 **Read the last column.** If the effect measured on the balanced frame were
 running unchanged through 2025–26, the recent frame could not detect it — it is
-four to six times too small. So the recent-frame results are **uninformative**
+four to six times too small. **In plain terms: this window is not a clean bill of
+health, it is a blurry photograph.** So the recent-frame results are **uninformative**
 about effects of the magnitude this project has been measuring, and neither of
 them should be quoted as showing that the operators are wrong.
 
@@ -981,7 +1152,11 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
   removals, so nothing here can be labelled entry or exit. This is the single
   largest gap for a competitive-structure question, because entry is how a
   commoditising shock usually shows up first.
-- **Realised order value.** §1.3.
+- ~~**Realised order value.**~~ **Entry removed 2026-08-20 — it was wrong.**
+  What buyers paid *is* recoverable, at order level and dated by order, from 2022
+  onward, out of pages already on disk (§1.3). What genuinely is not measurable
+  is the **pre-2022** realised-price history: the field does not exist in those
+  captures, which is a limit of the source rather than of effort.
 - **The 2025–26 period, at usable precision.** The balanced structure frame stops
   at 2024Q4, before the agentic period. A recent frame does reach 2026Q1, and two
   designs were run on it (§4.4), but it is four to six times too thin to detect
@@ -1008,20 +1183,29 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
    frame's estimates, at which point Fiverr's and Upwork's claims become testable
    rather than merely inside our intervals. Nothing else on this list changes the
    answer as much.
-2. **O*NET task statements** in place of occupation titles. The current exposure
+2. **Re-extract the order records, and test the display selection first**
+   (new 2026-08-20). §1.3 shows that what buyers paid is sitting inside pages
+   already on disk and has never been read. This costs compute and no crawling.
+   The first task is **not** the index but the **selection test**: pages choose
+   which reviews to show by relevance, so before any number is published it must
+   be established that displayed orders are not selected on price. If they are
+   not, this yields on the order of **10⁵ dated, priced transactions** from 2022
+   — the first transaction-level data in the project, and a direct replacement
+   for `review_count` as the sales proxy.
+3. **O*NET task statements** in place of occupation titles. The current exposure
    measure is both thin (36.8% of gigs get a zero match) and selected (dropped
    gigs accrue 23.7% more pre-period than kept ones). This weakness was declared
    in the pre-registration *before* design 6 ran, precisely so it could not
    become a post-hoc excuse. It is the one input change that alters the treatment
    measure itself. Gate B of step 54 sharpens the case: the seven-category
    gradient is flat, and a measure this coarse is one reason why.
-3. **A quarterly Fiverr revenue series** in `data/fiverr-inc-metrics.csv`, which
+4. **A quarterly Fiverr revenue series** in `data/fiverr-inc-metrics.csv`, which
    currently has no revenue figure for 2026 at all. Marketplace revenue is
    −15.5% YoY (§2.5.2) and the file cannot show it.
-4. **A collection design that records 404s** on a fixed schedule, with manifests
+5. **A collection design that records 404s** on a fixed schedule, with manifests
    not selected on survival. That is the only route to entry and exit, and hence
    to the part of competitive structure this data cannot see at all.
-5. **Sub-category or gig-population data.** Seven categories caps inference at
+6. **Sub-category or gig-population data.** Seven categories caps inference at
    p = 0.143 by construction.
 
 ---
@@ -1032,6 +1216,9 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
 |---|---|
 | real listed prices +40.7% (±3.7%) over 2020Q1–2026Q1 | measured, published, frozen |
 | buyers −36%, spend/buyer +79%, implied orders −18% | external company data + an identity; orders is an upper bound |
+| what buyers paid is recoverable from the archive, 2022 onward | **measured** — dated order records with ids and paid bands sit in pages already collected (§1.3) |
+| orders under $50 are 1.0% of all orders, against a listed median of $25–30 | **measured on a pilot sample** of 2,883 priced orders — a description of *displayed* orders until the relevance-selection test runs |
+| a realised-price series over time, or before 2022 | **not measurable yet** — the field begins in 2022, ~13% of orders are recovered, and display is relevance-ranked |
 | per-gig review accrual broke −13% to −43% at 2022Q4 in all seven categories | measured; direction externally corroborated |
 | $5 tier 27.3% → 10.3%, steepest decline 2021Q2 | measured on a balanced panel, break searched |
 | three-tier share 82% → 91%, ladder 4.06× → 3.80× | measured on a balanced panel |
@@ -1077,3 +1264,4 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
 | AI diffusion measured from gig titles | `code/57-ai-diffusion-titles.py` | `runs/ai-diffusion-titles.out`, `data/pilot/ai-title-flags.csv` |
 | named-launch event studies, monthly | `code/58-ai-launch-events.py` | `runs/ai-launch-events.out` |
 | placebo launches (the design's own size check) | `code/58b-launch-placebo.py` | `runs/ai-launch-placebo.out` |
+| order records recovered from stored pages | `code/59-review-order-audit.py` | `runs/review-order-audit.out` |
