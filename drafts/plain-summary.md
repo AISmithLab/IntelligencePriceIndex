@@ -30,6 +30,33 @@ So: prices up, transactions down, both true — and neither one is timed to AI.
 
 ---
 
+## Six words that get mixed up
+
+Most of the confusion about this market comes from four different quantities
+being called "sales." They are not the same number and they do not move
+together — the whole "fewer, larger buyers" finding is a gap *between* two of
+them.
+
+| word | what it counts | is it published? |
+|---|---|---|
+| **buyers** | *people* — accounts that bought at least once in the past year | yes, by Fiverr |
+| **orders** (= transactions) | *purchases* — how many times somebody bought something | **no. Nobody publishes this. We estimate it** |
+| **GMV** | *dollars transacted* — every order added up at what the buyer paid | yes, by Fiverr |
+| **revenue** | *Fiverr's cut* of those dollars, roughly a third of GMV | yes, by Fiverr |
+| **review accrual** | how many new reviews a gig collects in a quarter — our stand-in for its sales | no; we measure it from the archive |
+| **listed vs realised price** | what a seller *advertises* vs what a buyer *actually paid* | neither; we measure the first, and recovered the second last week |
+
+Two consequences worth holding on to:
+
+- **GMV = buyers x spend per buyer.** That is arithmetic, not an estimate. It is
+  why a third of the buyers can leave while the dollars barely move.
+- **Nobody reports an order count**, so every statement in this document about
+  transactions falling comes from one of two *derived* things: GMV divided by a
+  price, or review accrual. Both are proxies, and §1.4 and §2.2 say what each
+  one gets wrong.
+
+---
+
 ## About the way you summarised it
 
 You said: *prices rose during AI launches but transactions decreased.*
@@ -156,9 +183,12 @@ What the rise is made of, as far as we can decompose it:
 
 ### 2.2 Business fell — and this is corroborated from outside the archive
 
-Fiverr Inc.'s reported numbers:
+Fiverr Inc.'s reported numbers. **GMV** is *gross merchandise value* — every
+order added up at what the buyer paid. It is not Fiverr's revenue; Fiverr keeps
+roughly a third of it. And note that the three columns are an identity rather
+than three separate estimates: **buyers x spend per buyer = GMV**.
 
-| year | buyers (M) | spend per buyer | GMV ($M) |
+| year | buyers (M)<br>*people* | spend per buyer<br>*dollars each* | GMV ($M)<br>*total dollars transacted* |
 |---|---:|---:|---:|
 | 2020 | 3.40 | $205 | 699 |
 | **2021** | **4.20 (peak)** | $242 | 1,020 |
@@ -168,11 +198,19 @@ Fiverr Inc.'s reported numbers:
 | 2025 | 3.10 | $342 | 1,060 |
 | 2026 (trailing 12m) | **2.70** | **$368** | 994 |
 
-**Buyers are down 36% from the peak. Total money through the platform is down
-only 12.8%.** The entire difference is spend per buyer, which has risen *every
+**Buyers are down 36% from the peak — that is 1.5 million people who used to
+buy here and no longer do. Total money through the platform is down only
+12.8%.** The entire difference is spend per buyer, which has risen *every
 single year* since 2017, from $119 to $368.
 
 That is the central fact about this market: **fewer buyers, each much larger.**
+
+Divide those dollars by a price and you get an order count. It comes out at
+**−18% against 2020, and −38.6% from the 2021 peak.** Treat that as an *upper
+bound* on the decline rather than an estimate of it: the price we are dividing
+by is the advertised entry package, and §1.4 shows buyers hardly ever pay it.
+If what they really paid rose faster than the advertised price, the order count
+fell by less than 18%.
 
 Inside the archive, per-gig sales activity fell in every category at once:
 

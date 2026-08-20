@@ -1,5 +1,54 @@
 # Progress Log
 
+## 2026-08-20 (later still) — The plain summary was still assuming finance vocabulary
+
+`drafts/plain-summary.md`, `tests/structure-master.test.md`. From two user
+questions in succession: **"what does GMV mean"** and **"when you say buyers
+decreased 36 percent, do you mean transactions or revenue? I am confused."**
+
+Both landed on a document published the same day whose entire purpose was to be
+readable without jargon. The readability pass had glossed every *econometrics*
+term — searched break, placebo, parallel trends, fixed effects — and left the
+*finance* terms untouched, because GMV and active buyers did not read as jargon
+to the person writing them. They are.
+
+### The specific defect
+
+The document reported three quantities in one table (`buyers`, `spend per
+buyer`, `GMV`) and used a fourth word for them collectively (`transactions`),
+with no statement that these are different things. A reader who takes "buyers
+−36%" as a statement about sales volume has been misled by the document, not by
+their own inattention. **Buyers is a headcount of people.** Fiverr does not
+publish an order count at all.
+
+### What was added
+
+- **"Six words that get mixed up"**, placed before the "during" correction:
+  buyers (people), orders (purchases — *published by nobody*, estimated here),
+  GMV (dollars transacted), revenue (Fiverr's cut, roughly a third of GMV),
+  review accrual (our sales proxy), listed vs realised price. With the two
+  consequences that matter: **GMV = buyers x spend per buyer is arithmetic, not
+  an estimate**, which is how a third of the buyers can leave while the dollars
+  barely move; and **every transactions-fell claim in the document is derived**,
+  from GMV ÷ a price or from review accrual.
+- **§2.2 spells GMV out on first use** and states plainly that it is not
+  revenue, with the column headers glossed inline.
+- **The implied order count now appears in the document** — −18% vs 2020,
+  −38.6% from the 2021 peak, with its upper-bound caveat. The glossary promised
+  an estimate the document did not contain.
+- "Buyers −36%" restated as **1.5 million people who used to buy here and no
+  longer do**, because the percentage alone does not read as people.
+
+`tests/structure-master.test.md` **U7**. Re-rendered; the published artifact
+carries the same glossary.
+
+### The lesson worth keeping
+
+The readability pass audited for terms *the writer* found technical. The terms
+that actually broke were the ones the writer had stopped seeing. Any future
+plain-language pass should be checked by asking what a reader would have to
+already know, not by scanning for words that look specialised.
+
 ## 2026-08-20 (later) — A plain-language summary of the whole project, and the "during" correction
 
 `drafts/plain-summary.md` (19.3k chars), `tests/structure-master.test.md`.
