@@ -1,5 +1,220 @@
 # Progress Log
 
+## 2026-08-20 (later) — A plain-language summary of the whole project, and the "during" correction
+
+`drafts/plain-summary.md` (19.3k chars), `tests/structure-master.test.md`.
+From a user instruction: "make a summary similar to market-structure-answer
+summarizing the data you collected and the findings," stated alongside the
+user's own reading — **"prices rose during AI launches but transactions
+decreased."**
+
+### The document
+
+A standalone non-technical companion to `drafts/market-structure-answer.md`.
+Same numbers, no econometrics vocabulary, and structured so the data collection
+comes *before* the findings — which the answer doc never does, because it was
+written for a reader who already knew where the panel came from.
+
+| part | contents |
+|---|---|
+| short version | five bullets; prices up, business down, AI present, turns predate it |
+| **the "during" correction** | placed before Part 1, not inside the attribution section |
+| Part 1 | the archive (60.0M CDX rows → 509,339 captures → ~375,000 pages → 86 GB), the three datasets built from it, the four outside sources, and §1.4 on the order records the extractor was discarding |
+| Part 2 | eight findings: price level and what it is made of, Fiverr Inc.'s quantities, the five failed commoditisation predictions, AI diffusion dated to 2023Q1, the six turns in 2020Q3–2021Q4, the twenty-launch before/after test, the positive control, and why nine designs failed |
+| Part 3 | five limits, led by "we cannot say AI caused any of this" and "all of this ends at 2024Q4" |
+| Part 4 | the four things that would change the answer |
+| provenance | every finding mapped to its section in the answer doc and its script |
+
+### The correction, which is the reason the document leads with it
+
+The user's reading is **right in both directions** — prices rose, transactions
+fell, and both happened across the launch years. The equivocation is on
+**"during"**: the *level* movements span the AI period, but every *turning
+point* the project can date lands in **2020Q3–2021Q4**. A decline already
+underway that continues through the AI years is not a decline that began with
+them, and from a distance the two are indistinguishable — which is the honest
+explanation for why the project has needed nine designs and this many steps.
+
+Stating it up front rather than in §4 is a deliberate departure from the answer
+doc's ordering. A reader who arrives with the AI hypothesis will otherwise read
+Parts 1 and 2 as confirmation of it.
+
+### Three figures corrected in drafting
+
+- pages downloaded stated as **~375,000** (291,997 balanced + 67,377 expanded +
+  15,150 recent), not the 384,983 gig-date *observations* — different quantities.
+- realised-price bands recomputed from the §1.3 table: **$50–200 = 67.3%**,
+  **>$200 = 31.7%** (had written 67.4/31.6).
+- design count stated as **nine run, nine failed (1–8 and 10)**. Design 9 is
+  pre-registered and has never been estimated, and design 10's *demand* half was
+  discarded on its own placebo rather than failing — an easy conflation.
+
+### Tests
+
+`structure-master.test.md` **U5** records the summary instruction, **U6** the
+"during" correction. Both PASS. M9's split verdict is unchanged: the plain-language
+criterion now passes in two documents and still fails in `drafts/structure/`.
+
+### What this does not do
+
+It is a companion, not a replacement, and it is not in the paper tree. No number
+moved; no claim was strengthened. The seven-section tree still carries neither
+the plain-language pass nor the realised-price finding.
+
+## 2026-08-20 — The answer document rewritten: what buyers paid folded in, and the jargon glossed
+
+`drafts/market-structure-answer.md` (59,680 → 72,882 chars),
+`tests/structure-data.test.md`, `tests/structure-master.test.md`,
+`plans/todo.md`. From a user instruction: "revise market-structure-answer.md,
+make the wording easy to understand and clearly explain findings." Two jobs in
+one pass — fold in step 59's realised-price finding, and make the document
+readable by someone who does not already know what a searched break is.
+
+### Job 1 — step 59 written in, and one claim retracted
+
+| section | what changed |
+|---|---|
+| header | new 2026-08-20 revision note leading the file |
+| §0 | new paragraph: buyers were not paying the advertised price; the "orders −18%" row now carries its own caveat inline |
+| **§1.3** | retitled *"What 'price' means here — and what buyers actually paid"* and rewritten from a 6-line caveat to a full subsection with the paid-amount distribution, the three limits, and the scale if built |
+| §2 | heading was **"the only real transaction data in the project"** — no longer true, so it is now "where the transaction numbers come from" with three sources distinguished; point 2's upper bound is now measured rather than assumed |
+| **§5** | the entry **"Realised order value — not measurable at any effort"** struck through and marked *wrong*, with the genuinely unmeasurable part (pre-2022 history) named in its place |
+| §6 | re-extraction inserted as item 2, items 2–5 renumbered to 3–6 |
+| §7 | three rows added to the reader's guide, including one for what is still **not** measurable |
+| §8 | `code/59-review-order-audit.py` added to provenance |
+
+The §5 retraction is the part worth flagging. A section titled *what is not
+measurable at any effort* had an entry in it that was measurable from data
+already on disk. The strike-through stays rather than a silent delete.
+
+### Job 2 — the readability pass
+
+The document was written for someone who already knew the methods. Three
+additions, no numbers touched:
+
+1. **A "How to read this document" glossary** before §0 — thirteen terms in
+   plain language (listed vs realised price, real vs nominal, matched-model,
+   balanced panel, fixed effects, break, **searched** break, placebo, parallel
+   trends, exposure, MDE, Gini, gate), closing with the two conventions that
+   carry the argument: break dates are searched not assumed, and every promising
+   result is gated on a placebo before it is reported. That second line explains
+   in advance why the document contains more failed designs than findings.
+2. **"In plain terms:" glosses** at the five densest results — §3's balanced-panel
+   rationale, §3.4's Gini-vs-dormancy distinction, §4.3's age-period-cohort
+   paragraph (why only *bends* are reported and never slopes), §4.4.1's
+   "effective number of treated clusters is one", and §4.5's underpowered window
+   (*"not a clean bill of health, a blurry photograph"*).
+3. **§4 now opens by explaining what an identification design is** and what it
+   means for one to *fail* — four concrete failure modes named — so the
+   nine-designs-nine-failures table reads as a result rather than as a list of
+   defeats. First-use glosses added for GEKS-Jevons, downward nominal rigidity
+   and review-propensity drift.
+
+### Tests
+
+- `structure-data.test.md` **R4** ("listed prices are not transaction prices")
+  strengthened from asserted to measured; **R8** added and recorded **FAIL** —
+  the display-selection threat, open; **R9** added, PASS — why the index is still
+  built on listed prices.
+- `structure-master.test.md` **U4** records the readability instruction;
+  **M9** added as a standing criterion and deliberately split: **PASS in the
+  answer doc, FAIL in `drafts/structure/`.**
+
+### What this does not do
+
+The seven-section paper tree in `drafts/structure/` is untouched. It carries
+neither the realised-price finding nor the plain-language pass, and it still
+states the scope as six designs. Both are now Active items in `plans/todo.md`.
+
+## 2026-08-20 — What buyers actually paid is in the archive, and the extractor was discarding it
+
+`code/59-review-order-audit.py` -> `runs/review-order-audit.out`. From a user
+question: "is there a way to track what buyers paid? Or can we only look at
+listing price?" The answer to the second half is **no** — the pages carry
+order-level realised amounts and nothing downstream of
+`code/09-extract-prices.py` has ever read them.
+
+### What the pages actually hold
+
+Fiverr gig pages embed a JSON `reviews` object. Each review is an **order
+record**:
+
+| field | what it gives |
+|---|---|
+| `encrypted_order_id` | unique order key — dedupes across captures |
+| `created_at` | **order date**, not capture date |
+| `price_range_start` / `_end` | **what the buyer paid**, bucketed |
+| `value` | order rating |
+| `repeat_buyer`, `is_business` | buyer type |
+| `reviewer_country_code`, `reviewer_industry` | buyer geography and sector |
+
+The extractor keeps `price_basic/standard/premium`, `title`, `rating`,
+`review_count` and nothing else. The 86 GB of stored HTML is unchanged, so this
+needs **no new collection** — it is a re-extraction.
+
+### Result 1 — realised order value is several times the listed price
+
+| bucket | share | cum |
+|---|---:|---:|
+| $5–20 | 0.2% | 0.2% |
+| $20–50 | 0.9% | 1.0% |
+| **$50–100** | **37.5%** | 38.6% |
+| **$100–200** | **29.8%** | 68.4% |
+| $200–400 | 16.9% | 85.3% |
+| $400–600 | 6.2% | 91.5% |
+| $600–10000+ | 8.5% | 100.0% |
+
+**Orders under $50 are 1.0% of all orders.** The IPI's listed basic-package
+median is ~$25–30. §1.3 of `drafts/market-structure-answer.md` conjectured that
+buyers buy up-tier and that realised prices therefore rose faster than the IPI;
+that is no longer a conjecture. It also means **every quantity figure derived by
+dividing GMV by the IPI is deflating by the wrong price** — the §2 "orders
+−18.0%" is built on a denominator that is not what buyers paid.
+
+### Result 2 — §5's "not measurable at any effort" entry is wrong
+
+`drafts/market-structure-answer.md` §5 lists **realised order value** as
+unmeasurable on this data. It is measurable, 2022 onward, at order level, dated
+by order. That entry must be revised.
+
+### Result 3 — three limits, and they are what gate any use
+
+1. **Starts 2022.** `price_range_start` is absent from every 2018–2021 capture
+   (0.0–0.8% of sampled pages) and appears at 64.2% in 2022. Pre-2022 *orders*
+   do carry prices when served by a 2022+ page (2020: 58.1%, 2021: 22.9%), but
+   displayed reviews skew recent, so the pre-ChatGPT baseline is **roughly one
+   year and back-filled** — enough for a level comparison, not for the long-run
+   diffusion question the listed-price index answers.
+2. **~13% of orders recovered, and selected.** A page shows **4.2 reviews
+   against a median gig `total_count` of 168**. Pooling repeat captures of the
+   same gig accumulates distinct order ids — on a **59-gig pooling subsample**
+   the median is **41 orders per gig** (9,783 gigs have the ≥8 captures in 2022+
+   that make pooling worthwhile) — but that is **13.1% of the new orders
+   implied by `total_count` growth**. Displayed reviews are ranked by
+   `relevancy_score`, **not sampled at random**. This is the central threat and
+   needs its own test before any index is built. The weaker check that could be
+   run now passes: priced and unpriced reviews are close on rating (4.877 vs
+   4.879), repeat-buyer share (39.1% vs 35.9%) and business share (9.3% vs
+   7.0%), so the *price field* is not obviously missing selectively — which says
+   nothing about which orders are *displayed*.
+3. **Interval-censored.** Amounts are buckets with an open top ($10000+), so any
+   index needs interval regression or midpoint imputation, not a mean.
+
+### Scale, on the pilot's own numbers
+
+53,855 gigs indexed across 361,760 captures; 9,783 have ≥8 captures in 2022+,
+and the 59-gig pooling subsample gives a median 41 distinct orders each at ~55%
+priced. Extrapolated, that is an order of **10^5 dated, priced transactions** — the first real transaction-level data in the project.
+`review_count` has been a proxy for sales since step 24; this would replace it
+with orders.
+
+### Outputs
+
+- `code/59-review-order-audit.py`, `runs/review-order-audit.out`
+- No draft changes yet — §1.3, §2 and §5 of
+  `drafts/market-structure-answer.md` all need revision and are tracked in
+  `plans/todo.md`
+
 ## 2026-08-20 — Design 10: twenty named AI launches at monthly resolution, and a placebo that throws half of it away
 
 `code/58-ai-launch-events.py` -> `runs/ai-launch-events.out`;
