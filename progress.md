@@ -1,6 +1,89 @@
 # Progress Log
 
-## 2026-08-19 (latest) — Step 57: generative AI is measured inside the market for the first time, and it supplies the positive control the whole identification argument was missing
+## 2026-08-20 — Design 10: twenty named AI launches at monthly resolution, and a placebo that throws half of it away
+
+`code/58-ai-launch-events.py` -> `runs/ai-launch-events.out`;
+`code/58b-launch-placebo.py` -> `runs/ai-launch-placebo.out`. From a user
+question: "look at specific important dates related to AI launches and compare
+before and after -- or did you do that already?" Honest answer was **no, not
+properly**. Steps 52/55/57 *searched* for breaks and ranked milestones by fit;
+none compared before against after at a named date, and all three ran quarterly.
+
+### Three things this adds
+
+1. **Monthly.** `month` was on every row and no prior test used it. A quarterly
+   test smears a launch across up to three months.
+2. **Twenty named launches**, dated by **public availability**, not announcement
+   -- an announcement cannot change a gig.
+3. **Per-tool target category** as treatment (Copilot->coding,
+   ElevenLabs->audio, Midjourney->design, ChatGPT->writing+translation,
+   Runway/HeyGen/Veo->video, Suno->audio), non-targets as controls. Needs no
+   exposure score at all, so it escapes the Eloundou measure entirely.
+
+Every estimate gated on a 12-month pre-window placebo, because steps 52/55
+established these series were already bending from 2020Q3.
+
+### Result 1 — the PRICE margin is valid, and it is null
+
+| verdict | n | which |
+|---|---:|---|
+| confounded, pre-window also significant | 7 | all five image-model dates, Copilot, GPT-4o |
+| null | 11 | ElevenLabs, GPT-4, Runway, HeyGen, Suno x2, Sonnet 3.5, FLUX, Veo 2, GPT-3 GA, R1 |
+| clears the gate | 2 | GPT-3 API (-3.3%), ChatGPT (-2.0%) |
+
+**Two survivors is FEWER than chance predicts** (~60 tests at 5% gives ~3). And
+GPT-3's API date is 2020-06, the pandemic inflection step 52 already flagged as
+fitting with the wrong sign.
+
+The image models are the cleanest illustration of the project's recurring
+finding: design prices fall -4.5% to -5.1% (t -4.9 to -5.6) at every image date,
+and **every one has a LARGER pre-window effect** (t -5.3 to -7.1).
+
+### Result 2 — the DEMAND margin is discarded, on its own placebo
+
+It returned **11 of 20 significant** where chance predicts one, with incoherent
+signs: image tools raising design accrual (+5.4% to +9.6%) while text tools cut
+writing's (-6.7%, -9.0%). That is not a story, it is a symptom.
+
+Step 58b ran the identical design on **12 fake launches, 2019-03 to 2020-02**,
+each given the same target categories a real launch used. No generative-AI tool
+existed for any of them.
+
+| outcome | placebo false-positive rate | nominal | verdict |
+|---|---:|---:|---|
+| price | **1 of 12 = 8%** | 5% | at size; the price null stands |
+| demand | **9 of 12 = 75%** | 5% | **fires at arbitrary dates; DISCARDED** |
+
+**The eleven demand results are reported nowhere.** Writing them up and then
+running the placebo would have been the wrong order; running the placebo first
+is why they never entered the draft.
+
+### Result 3 — the design's own premise failed, and that is the informative part
+
+The first stage asks whether a launch moved AI *adoption* in its target
+category. **It rejects the targeting assumption.** ChatGPT produced no
+differential adoption in writing or translation; AI branding rose platform-wide
+and concentrated in **coding** regardless of which tool launched.
+
+This is what step 57 predicts -- diffusion came through **entry**, not incumbent
+conversion in exposed categories -- and it is the deepest diagnosis yet of why
+designs 1-8 failed: **they looked for AI's effect inside the categories a
+crosswalk called exposed, and that is not where AI arrived.**
+
+Two caveats recorded rather than buried. The first stage clusters on **seven
+categories**, the same defect that killed design 7 at step 54's gate A, so only
+its direction is read. And launches sit 1-3 months apart, so each pre-window
+contains other launches; effects cannot be separated within the 2022-23 cluster.
+
+### Outputs
+
+- `code/58-ai-launch-events.py`, `runs/ai-launch-events.out`
+- `code/58b-launch-placebo.py`, `runs/ai-launch-placebo.out`
+- `drafts/market-structure-answer.md`: new **4.3.2**, design table extended to 10,
+  section 4 retitled to nine designs run, three new reader's-guide rows,
+  provenance updated
+
+## 2026-08-19 — Step 57: generative AI is measured inside the market for the first time, and it supplies the positive control the whole identification argument was missing
 
 `code/57-ai-diffusion-titles.py` -> `runs/ai-diffusion-titles.out`,
 `data/pilot/ai-title-flags.csv`. No new data collected. The user asked to answer

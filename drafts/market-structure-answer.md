@@ -56,8 +56,9 @@ generative AI.**
 | sales concentrate on winners | Gini among trading listings **flat** (0.64 → 0.61); among trading **sellers** flat too (0.637 → 0.618) |
 
 **On attribution, the honest answer is that this project cannot assign any of it
-to generative AI, and it now knows precisely why.** Eight identification designs
-have failed (§4). Their joint diagnosis is not a shrug but a dated fact:
+to generative AI, and it now knows precisely why.** Nine identification designs
+have now been run and all nine have failed (§4), the latest at monthly resolution
+against twenty named product launches. Their joint diagnosis is not a shrug but a dated fact:
 **six series in this project turned in the same eighteen months, 2020Q3–2021Q4,
 and none of them was dated by us in advance.**
 
@@ -528,7 +529,7 @@ adoption and an upper bound on nothing.**
 
 ---
 
-## 4. Attribution: eight designs, eight failures, and what they establish
+## 4. Attribution: nine designs run (1–8 and 10), nine failures, and what they establish
 
 Nothing above is causally attributed to generative AI, because nothing can be. The
 failures are listed with what killed each, because their pattern is itself the
@@ -544,6 +545,8 @@ result.
 | 6 | gig-level continuous exposure (pre-registered) | 50 | trend horse race (sign flip) and CPI-U placebo (t −2.86) |
 | 7 | recent-window category contrast, writing vs video | 53, 54 | category-level randomisation (ranks 4th of 21 pairs, p = 0.190) and no exposure gradient (ρ = +0.04 over 7 categories) |
 | 8 | within-category cheap-tier erosion (Upwork's prediction) | 55 | searched break is 2020Q3, ChatGPT ranks 16th of 17; pre-AI placebo significant and opposite-signed (t +5.95) |
+| 9 | *(reserved — niche-level AI penetration, pre-registered, not yet run)* | — | — |
+| 10 | twenty named launches, monthly, per-tool target category | 58, 58b | price margin **valid and null** (2 of 20 clear, below the ~3 chance predicts; 7 confounded by pre-trends); demand margin **discarded** on a 75% placebo false-positive rate |
 
 ### 4.1 Why designs 1–4 could never have worked
 
@@ -687,6 +690,85 @@ detect a break of the size and shape present in the diffusion series; it does no
 show the procedure could detect an arbitrarily small break in the price series.
 The power caveat of §4.5 stands unchanged, and the two statements are compatible:
 the machinery is sharp, and the 2025–26 window is still too thin.
+
+---
+
+### 4.3.2 Design 10 — twenty named launches, monthly, and a placebo that splits the result in two
+
+Steps 52, 55 and 57 *searched* for breaks and ranked the AI milestones by fit.
+None of them compared before against after at a named launch date, and all three
+ran quarterly. Design 10 (step 58) does both missing things, and adds a third:
+
+- **Monthly.** `month` is on every row and no prior test used it. A quarterly
+  test smears a launch across up to three months.
+- **Twenty named launches**, dated by **public availability** rather than
+  announcement — an announcement cannot change a gig.
+- **Per-tool targeting.** Each launch is matched to the category it should hit
+  (Copilot→coding, ElevenLabs→audio, Midjourney→design, ChatGPT→writing +
+  translation, Runway/HeyGen/Veo→video, Suno→audio), with non-target categories
+  as controls. This needs no exposure score at all.
+
+Every estimate is gated on a pre-window placebo: the same contrast run on the
+twelve months *before* the launch. Steps 52 and 55 established these series were
+already bending from 2020Q3, so an unguarded post-launch difference is worthless.
+
+#### The price result: the null survives its sharpest test
+
+| verdict | n | launches |
+|---|---:|---|
+| **confounded** — pre-window also significant | 7 | all five image-model dates (DALL·E 2, Midjourney, Stable Diffusion, DALL·E 2 open, MJ v5), Copilot, GPT-4o |
+| **null** | 11 | ElevenLabs, GPT-4, Runway Gen-2, HeyGen, Suno ×2, Claude 3.5 Sonnet, FLUX.1, Veo 2, GPT-3 GA, DeepSeek R1 |
+| **clears the gate** | 2 | GPT-3 API (−3.3%), ChatGPT (−2.0%) |
+
+**Two survivors is fewer than chance predicts.** Roughly 60 tests at 5% yield
+about three by luck. And GPT-3's API date is 2020-06 — precisely the pandemic
+inflection §4.3 already flagged as fitting with the wrong sign.
+
+The image models are the cleanest illustration of the project's recurring
+finding. Design prices fall **−4.5% to −5.1%** (t −4.9 to −5.6) at every image
+date — and **every one has a larger pre-window effect** (t −5.3 to −7.1). Design
+was already diverging downward before any image model shipped.
+
+#### The demand result is discarded, and the placebo is why
+
+The same design on review accrual returned **11 of 20 "significant"** where
+chance predicts one, with incoherent signs: image tools raising design's accrual
+(+5.4% to +9.6%) while text tools cut writing's (−6.7%, −9.0%). No account of AI
+produces that pattern.
+
+Step 58b runs the identical design on **twelve fake launches dated 2019-03 to
+2020-02**, each given the same target categories a real launch used. No
+generative-AI tool existed for any of them, so every hit is a false positive.
+
+| outcome | placebo false-positive rate | nominal | verdict |
+|---|---:|---:|---|
+| **price** | **1 of 12 = 8%** | 5% | at size; the price result stands |
+| **demand** | **9 of 12 = 75%** | 5% | **the design fires at arbitrary dates; discarded** |
+
+The accrual margin is dominated by seasonality and by the platform-wide decline
+already documented in §2, and the launch dates are incidental to both. **The
+eleven demand results are not reported as findings anywhere in this document.**
+The price margin, by contrast, is validated by the same test — which is what
+makes its null worth something.
+
+#### The premise failed, and that is the informative part
+
+The first stage — does a launch move AI *adoption* in its own target category? —
+**rejects the design's own targeting assumption.** ChatGPT produced no
+differential adoption in writing or translation. AI branding rose platform-wide
+and concentrated in **coding**, regardless of which tool had just launched.
+
+This is exactly what §3.7.3 predicts: diffusion came through **entry**, not
+through incumbent conversion in exposed categories. It is also the deepest
+diagnosis yet of why designs 1–8 failed — they searched for AI's effect inside
+the categories a crosswalk called exposed, and that is not where AI arrived.
+
+One caveat on the first stage itself: it clusters on **seven categories**, the
+same too-few-clusters defect that killed design 7 at step 54's gate A, so its
+t-statistics are not trustworthy and only the direction is read. And because the
+launches sit one to three months apart, each launch's pre-window contains other
+launches — effects cannot be separated within the 2022–23 cluster, and no attempt
+is made to.
 
 ---
 
@@ -957,7 +1039,7 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
 | sales concentration flat among trading listings and trading sellers | measured; the apparent rise is 2024 dormancy at the trailing edge |
 | dispersion U-shaped, trough mid-2023 | descriptive only |
 | return to reputation rose post-2022 | **lead only** — balanced panel t 2.04, full frame t 0.79 |
-| any of this was caused by generative AI | **not identified**; eight designs, eight failures |
+| any of this was caused by generative AI | **not identified**; nine designs run, nine failures |
 | no AI milestone initiated the transaction decline | **falsified in timing** — proxy peaks 2020Q3; ChatGPT and the image models are the worst-fitting of 15 candidate breaks |
 | the 2025–26 decline concentrated in AI-exposed categories | **not reproduced** — writing–video ranks 4th of 21 category pairs, exposure gradient ρ = +0.04; and the frame is too thin to detect it either way (§4.5) |
 | the cheap end stopped outperforming and began underperforming | **measured**, monotone dose response across five price bands — but the searched break is **2020Q3** and it is a reversal of a pre-existing advantage, not a new decline |
@@ -970,6 +1052,9 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
 | an explicitly anti-AI segment exists and is new | **measured** — exactly zero to 2023Q1, first appears 2023Q2 |
 | AI-branded listings price −12.5% below others | **descriptive selection fact, not an effect** — cross-sectional; the within-gig version is 61 adopters, −14.9% (t −0.78) |
 | the searched-break machinery is capable of finding AI | **demonstrated** — ChatGPT ranks 1 of 19 on the diffusion series, 11 of 15 and 16 of 17 on the outcome series |
+| no named AI launch moves prices in the category it targets | **measured at monthly resolution** over 20 launches — 2 of 20 clear the pre-window gate, below the ~3 chance predicts; validated by a placebo at 8% against a nominal 5% |
+| AI launches moved sales in their target categories | **discarded, not reported** — the same design has a **75%** false-positive rate on fake 2019 launch dates |
+| each AI tool shows up in the category it targets | **rejected** — ChatGPT produced no differential adoption in writing; AI branding concentrated in coding regardless of tool |
 
 ---
 
@@ -990,3 +1075,5 @@ strategy — Pro, subscriptions, ads, an explicit upmarket push — which predic
 | promotion battery for the lead (gates A–E) | `code/54-recent-lead-battery.py` | `runs/recent-lead-battery.out` |
 | cheap-tier erosion, Upwork's prediction | `code/55-low-tier-erosion.py` | `runs/low-tier-erosion.out` |
 | AI diffusion measured from gig titles | `code/57-ai-diffusion-titles.py` | `runs/ai-diffusion-titles.out`, `data/pilot/ai-title-flags.csv` |
+| named-launch event studies, monthly | `code/58-ai-launch-events.py` | `runs/ai-launch-events.out` |
+| placebo launches (the design's own size check) | `code/58b-launch-placebo.py` | `runs/ai-launch-placebo.out` |
