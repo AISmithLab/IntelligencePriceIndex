@@ -512,6 +512,158 @@ function drawChart(cats, comp) {
   }
 }
 
+// ---- volume, with no price index in it -------------------------------------
+// The point of this chart is what is ABSENT from it. Every other quantity on the
+// page is a quotient of dollars and a price; these two are counted directly.
+// Different cadences (accrual quarterly, buyers annual) on ONE axis, which is
+// legitimate only because both are indexed to the same 2020 base -- never two
+// y-scales. The buyers series is drawn with open markers so its annual grain is
+// visible rather than implied.
+const VOL_ACCRUAL = "#4f46e5", VOL_BUYERS = "#b45309";   // validated pair, dE 31.7 protan
+
+function drawVolume() {
+  const box = document.getElementById("volchart");
+  const CT = DATA && DATA.category_transactions, TX = DATA && DATA.transactions;
+  if (!box) return;
+  if (!CT || !CT.pooled || !TX) { const c = box.closest("section"); if (c) c.style.display = "none"; return; }
+  [...box.querySelectorAll("svg")].forEach(s => s.remove());
+  const tip = document.getElementById("voltip");
+
+  // shared x domain in quarter-index space, so an annual point lands in the right
+  // place among the quarters rather than at an arbitrary tick
+  const qn = q => parseInt(q.slice(0, 4), 10) * 4 + (parseInt(q.slice(5), 10) - 1);
+  const qs = CT.quarters, acc = CT.pooled;
+  const yrNum = y => parseInt(y, 10);
+  const byrs = TX.years, bidx = TX.buyers_index;
+  // an annual figure describes the whole year: place it at the year's midpoint
+  const bx = byrs.map(y => yrNum(y) * 4 + 1.5);
+  const x0 = Math.min(qn(qs[0]), bx[0]), x1 = Math.max(qn(qs[qs.length - 1]), bx[bx.length - 1]);
+
+  const W = box.clientWidth || 900, narrow = W < 620;
+  const H = narrow ? 300 : 360, m = { t: 16, r: narrow ? 16 : 132, b: 34, l: 48 };
+  const vals = acc.filter(v => v != null).concat(bidx);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = Math.max((hi - lo) * .14, 2); lo -= pad; hi += pad;
+  const X = v => m.l + ((v - x0) / (x1 - x0)) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
+
+  const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
+  for (const tk of niceTicks(lo, hi, 5)) {
+    svg.appendChild(el("line", { _svg: 1, x1: m.l, x2: W - m.r, y1: Y(tk), y2: Y(tk),
+      stroke: tk === 100 ? "#cfcfcf" : "#eee", "stroke-width": 1,
+      "stroke-dasharray": tk === 100 ? "4 3" : "" }));
+    svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(tk) + 3.5, "text-anchor": "end",
+      "font-size": 11, fill: "#999" }, [String(tk)]));
+  }
+  const yMid = m.t + (H - m.t - m.b) / 2;
+  svg.appendChild(el("text", { _svg: 1, x: 13, y: yMid, "text-anchor": "middle",
+    "font-size": 11, "font-weight": 600, fill: "#6b7280",
+    transform: `rotate(-90 13 ${yMid.toFixed(1)})` }, ["index (2020 = 100)"]));
+  for (let y = Math.ceil(x0 / 4); y <= Math.floor(x1 / 4); y++)
+    svg.appendChild(el("text", { _svg: 1, x: X(y * 4), y: H - 8, "text-anchor": "middle",
+      "font-size": 11, fill: "#999" }, [String(y)]));
+
+  // the thin early panel, shaded not dropped
+  const thinTo = qs.indexOf(CT.thin_until);
+  if (thinTo > 0) svg.appendChild(el("rect", { _svg: 1, x: X(qn(qs[0])), y: m.t,
+    width: Math.max(0, X(qn(qs[thinTo])) - X(qn(qs[0]))), height: H - m.t - m.b,
+    fill: "#1c2230", opacity: .05 }));
+  [["2021Q3", "#6b7280", "step down"], ["2022Q4", "#c026d3", "ChatGPT"]].forEach(([q, c, lab]) => {
+    const x = X(qn(q));
+    svg.appendChild(el("line", { _svg: 1, x1: x, x2: x, y1: m.t, y2: H - m.b,
+      stroke: c, "stroke-width": 1.1, "stroke-dasharray": "3 3" }));
+    svg.appendChild(el("text", { _svg: 1, x: x + 5, y: m.t + 12, "font-size": 10, fill: c }, [lab]));
+  });
+
+  const keep = acc.map((v, i) => [i, v]).filter(p => p[1] != null);
+  svg.appendChild(el("path", { _svg: 1, fill: "none", stroke: VOL_ACCRUAL, "stroke-width": 2.6,
+    "stroke-linejoin": "round", "stroke-linecap": "round",
+    d: keep.map((p, k) => `${k ? "L" : "M"}${X(qn(qs[p[0]])).toFixed(1)} ${Y(p[1]).toFixed(1)}`).join(" ") }));
+  svg.appendChild(el("path", { _svg: 1, fill: "none", stroke: VOL_BUYERS, "stroke-width": 2.2,
+    "stroke-linejoin": "round", "stroke-linecap": "round",
+    d: bidx.map((v, i) => `${i ? "L" : "M"}${X(bx[i]).toFixed(1)} ${Y(v).toFixed(1)}`).join(" ") }));
+  bidx.forEach((v, i) => svg.appendChild(el("circle", { _svg: 1, cx: X(bx[i]), cy: Y(v),
+    r: 4.2, fill: "#fff", stroke: VOL_BUYERS, "stroke-width": 2.2 })));
+
+  // peak searched only outside the thin stretch, and by index rather than by
+  // value, so a repeated level cannot resolve to the wrong quarter
+  let pk = -1;
+  for (let i = thinTo + 1; i < acc.length; i++)
+    if (acc[i] != null && (pk < 0 || acc[i] > acc[pk])) pk = i;
+  if (pk > thinTo) {
+    svg.appendChild(el("circle", { _svg: 1, cx: X(qn(qs[pk])), cy: Y(acc[pk]), r: 7.5,
+      fill: "none", stroke: VOL_ACCRUAL, "stroke-width": 1.3, opacity: .55 }));
+    svg.appendChild(el("text", { _svg: 1, x: X(qn(qs[pk])), y: Y(acc[pk]) - 14,
+      "text-anchor": "middle", "font-size": 10, "font-weight": 700, fill: VOL_ACCRUAL },
+      [`peak ${qs[pk]} · ${acc[pk].toFixed(0)}`]));
+  }
+  if (!narrow) {
+    const lastA = keep[keep.length - 1];
+    [[Y(lastA[1]), X(qn(qs[lastA[0]])), VOL_ACCRUAL, "Review accrual", lastA[1], qs[lastA[0]]],
+     [Y(bidx[bidx.length - 1]), X(bx[bx.length - 1]), VOL_BUYERS, "Active buyers",
+      bidx[bidx.length - 1], byrs[byrs.length - 1]]].forEach(([y, , c, lab, v, when]) => {
+      svg.appendChild(el("text", { _svg: 1, x: W - m.r + 10, y: y - 2, "font-size": 12.5,
+        "font-weight": 700, fill: c }, [v.toFixed(0)]));
+      svg.appendChild(el("text", { _svg: 1, x: W - m.r + 10, y: y + 12, "font-size": 10,
+        fill: "#6b7280" }, [`${lab} · ${when}`]));
+    });
+  }
+
+  const guide = el("line", { _svg: 1, x1: 0, x2: 0, y1: m.t, y2: H - m.b,
+    stroke: "#bbb", "stroke-width": 1, opacity: 0 });
+  svg.appendChild(guide);
+  const hit = el("rect", { _svg: 1, x: m.l, y: m.t, width: Math.max(1, W - m.l - m.r),
+    height: H - m.t - m.b, fill: "transparent" });
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect(), sx = W / r.width;
+    const xv = x0 + (((ev.clientX - r.left) * sx) - m.l) / (W - m.l - m.r) * (x1 - x0);
+    let i = 0, best = Infinity;
+    qs.forEach((q, k) => { const dd = Math.abs(qn(q) - xv); if (dd < best) { best = dd; i = k; } });
+    let bi = 0, bb = Infinity;
+    bx.forEach((v, k) => { const dd = Math.abs(v - xv); if (dd < bb) { bb = dd; bi = k; } });
+    guide.setAttribute("x1", X(qn(qs[i]))); guide.setAttribute("x2", X(qn(qs[i])));
+    guide.setAttribute("opacity", 1);
+    tip.innerHTML = `<b>${qs[i]}</b>`
+      + `<div><span class="k" style="background:${VOL_ACCRUAL}"></span>Review accrual: `
+      + `<b>${acc[i] == null ? "–" : acc[i].toFixed(1)}</b></div>`
+      + `<div><span class="k" style="background:${VOL_BUYERS}"></span>Active buyers `
+      + `<span style="color:var(--faint)">(${byrs[bi]})</span>: <b>${TX.buyers_m[bi].toFixed(2)}M</b>`
+      + ` · index ${bidx[bi].toFixed(1)}</div>`
+      + (i <= thinTo ? `<div style="color:var(--down)">thin panel — read as noise</div>` : "");
+    tip.style.display = "block";
+    const left = Math.min(X(qn(qs[i])) / sx + 12, r.width - tip.offsetWidth - 6);
+    tip.style.left = Math.max(0, left) + "px";
+    tip.style.top = (ev.clientY - r.top + 12) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
+  svg.appendChild(hit);
+  box.appendChild(svg);
+
+  const lg = document.getElementById("vollegend");
+  if (lg) lg.innerHTML =
+    `<span class="lead"><span class="sw" style="background:${VOL_ACCRUAL}"></span>Review accrual · quarterly · archive</span>`
+    + `<span><span class="sw" style="background:${VOL_BUYERS}"></span>Active buyers · annual · Fiverr Inc.</span>`;
+  const tb = document.getElementById("volrows");
+  if (tb) {
+    tb.innerHTML = "";
+    const rows = Math.max(qs.length, byrs.length);
+    for (let i = 0; i < rows; i++) {
+      const tr = el("tr", i <= thinTo ? { style: "opacity:.55" } : {});
+      tr.appendChild(el("td", {}, [qs[i] ? qs[i] + (i <= thinTo ? " ·thin" : "") : ""]));
+      tr.appendChild(el("td", { class: "hl" }, [acc[i] == null ? "" : acc[i].toFixed(1)]));
+      tr.appendChild(el("td", {}, [byrs[i] || ""]));
+      tr.appendChild(el("td", {}, [byrs[i] ? TX.buyers_m[i].toFixed(2) : ""]));
+      tr.appendChild(el("td", {}, [byrs[i] ? bidx[i].toFixed(1) : ""]));
+      tb.appendChild(tr);
+    }
+  }
+  const nt = document.getElementById("volnote");
+  if (nt) nt.innerHTML =
+    `<span>No price index is used anywhere on this card. Review accrual is the equal-weighted `
+    + `mean of the seven category indices (age-adjusted, within-gig); active buyers is as reported. `
+    + `Accrual ends 2024Q4; buyers runs to the twelve months ending 2026Q2.</span>`;
+}
+
 // ---- transactions: the implied order count ---------------------------------
 // The only transaction-count series the project has. Fiverr Inc. reports GMV
 // (dollars) and never an order count; orders = GMV / price, and the IPI is the
@@ -1037,6 +1189,7 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
+  drawVolume();                          // the price-free view, drawn first
   drawTransactions();                    // independent of the category selection
   drawCategoryTx();                      // small multiples, also selection-independent
   renderMoveNotes(comp, mainChecked);

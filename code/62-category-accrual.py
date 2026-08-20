@@ -161,6 +161,14 @@ def write_site_block(quarters, raw, within, ageadj, cell_n, spans):
         "peak": {c: max((q for q in quarters if q in ageadj[c]),
                         key=lambda q: ageadj[c][q]) for c in cats},
         "mean_dq": [round(spans[q], 2) if q in spans else None for q in quarters],
+        # POOLED, and deliberately kept in this block rather than derived in the
+        # browser: it is the series to quote when the question is volume alone,
+        # because nothing in it passes through a price index. Equal-weighted mean
+        # of the seven category indices — equal-weighted, not review-weighted,
+        # because review weight IS the outcome here and weighting by it would
+        # let the biggest category set its own denominator.
+        "pooled": [round(float(np.mean([ageadj[c][q] for c in cats if q in ageadj[c]])) * 100, 1)
+                   if any(q in ageadj[c] for c in cats) else None for q in quarters],
         "event": {"label": "ChatGPT", "quarter": "2022Q4"},
         "step": {"label": "common step down", "quarter": "2021Q3"},
         "note": ("Within-gig review accrual, the only category-level quantity in the "

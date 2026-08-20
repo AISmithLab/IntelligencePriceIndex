@@ -1,5 +1,55 @@
 # Progress Log
 
+## 2026-08-20 (evening, latest) — A volume card with no price index in it
+
+`code/62-category-accrual.py` (new `pooled` series), `docs/data.json`,
+`docs/index.html`, `docs/ipi.js` (`drawVolume`). From a user correction:
+**"but I'm trying to look at just the volume of transactions."**
+
+### The confusion was ours, not theirs
+
+Every quantity on the site went through the IPI. That is defensible for the
+implied order count — Fiverr reports dollars and never an order count, so
+`orders = GMV / price` is the only way to manufacture one — but it meant a
+reader asking for *volume* was handed a quotient whose denominator is a price
+index, then a five-step explanation of how the index is built. The price index
+was never needed for the question that was asked.
+
+**Two of the project's three volume measures never touch a price**, and neither
+was on the site as such:
+
+| measure | source | price involved |
+|---|---|---|
+| review accrual | archived pages, counted | **none** |
+| active buyers | Fiverr Inc., reported | **none** |
+| implied orders | GMV ÷ IPI | yes — the whole construction |
+
+### The card
+
+Placed **first**, above the implied-order card, because it is the direct answer
+and everything below it is derived from something. Pooled review accrual
+(quarterly, archive) and active buyers (annual, Fiverr Inc.), both indexed
+2020 = 100 so they share **one axis** — the mixed cadence is legitimate only
+because of the shared base, and buyers carries open annual markers so its grain
+is visible rather than implied. Peak 2020Q3 at 109.3, the 2021Q3 step, the
+2023Q4 step, ending at **36.8**.
+
+`pooled` is **equal-weighted across the seven categories, not review-weighted** —
+review weight *is* the outcome here, and weighting by it would let the largest
+category set its own denominator. It is computed in step 62 rather than in the
+browser so the definition lives with the data.
+
+### What the card says it is not
+
+Neither series is an order count, and the card says so in its own text: accrual
+is per **surviving** listing and the archive cannot measure exit (`n_404 = 0`
+across 509,339 captures), so it will not scale to a platform total; buyers
+counts **people**, and spend per buyer nearly doubled over the window. The route
+to an actual count is the dated order records still unextracted in the archived
+HTML — `encrypted_order_id` + `created_at`, no price required — which remains
+PRIORITY 1b.
+
+
 ## 2026-08-20 (evening, later) — The per-category sales proxy, finally as a series
 
 `code/62-category-accrual.py` -> `runs/category-accrual.out`,

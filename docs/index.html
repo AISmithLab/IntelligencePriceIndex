@@ -132,6 +132,8 @@
     /* chart ----------------------------------------------------------------- */
     #chart { position: relative; width: 100%; margin-top: 4px; }
     #chart svg { display: block; width: 100%; height: auto; }
+    #volchart { position: relative; width: 100%; margin-top: 4px; }
+    #volchart svg { display: block; width: 100%; height: auto; }
     #txchart { position: relative; width: 100%; margin-top: 4px; }
     #txchart svg { display: block; width: 100%; height: auto; }
     #ctxchart { position: relative; width: 100%; margin-top: 4px; }
@@ -362,6 +364,44 @@
           <span><span class="dot" style="background:#dc2626"></span>price drop</span>
         </div>
         <ul class="movenotes" id="movenotes"></ul>
+      </section>
+
+      <section class="card">
+        <div class="headline">
+          <h2 class="charttitle">Volume, without a price index</h2>
+          <div class="sub">Two measures that involve no price at all &middot;
+            index, 2020 = 100</div>
+          <ul class="fxbullets">
+            <li><b>Why this card exists.</b> Fiverr reports <b>dollars</b> (GMV) and
+              never an order count, so the count in the next card is manufactured by
+              dividing dollars by a price index. <b>Nothing on this card passes through
+              a price.</b> Review accrual is counted off the archived pages; active
+              buyers is a headcount Fiverr publishes.</li>
+            <li><b>Review accrual</b> is how fast listings gain reviews, measured within
+              each listing so that gigs arriving and leaving cannot move it, and
+              equal-weighted across the seven categories. It peaks in <b>2020Q3</b>,
+              steps down in <b>2021Q3</b>, steps again in <b>2023Q4</b>, and ends at
+              roughly a third of its 2020 level.</li>
+            <li><b>Active buyers</b> is people, not purchases &mdash; 4.20M at the 2021
+              peak against 2.70M in the twelve months to 2026Q2. It is drawn annually
+              because that is how Fiverr reports it.</li>
+            <li><b>Neither one is an order count.</b> Accrual is per <i>surviving</i>
+              listing and the archive cannot measure exit, so it will not scale to a
+              platform total. Buyers counts people, and spend per buyer nearly doubled
+              over the window. A real count needs the dated order records still sitting
+              unextracted in the archived pages.</li>
+          </ul>
+          <div class="txlegend" id="vollegend"></div>
+        </div>
+        <div id="volchart"><div class="tip" id="voltip"></div></div>
+        <table class="txtable" id="voltable">
+          <caption class="sr-only">Pooled review-accrual index and Fiverr active buyers, both on a 2020 equals 100 base</caption>
+          <thead><tr><th scope="col">Quarter</th><th scope="col">Review accrual</th>
+            <th scope="col">Year</th><th scope="col">Active buyers (M)</th>
+            <th scope="col">Buyers index</th></tr></thead>
+          <tbody id="volrows"></tbody>
+        </table>
+        <div class="chartnote" id="volnote"></div>
       </section>
 
       <section class="card">
