@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What we collected, and what we found — the plain-language summary</title>
+<style>
+  @media print {
+    body { font-size: 10pt; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    table { page-break-inside: avoid; }
+  }
+  body {
+    font-family: "Times New Roman", Times, Georgia, serif;
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    font-size: 12pt;
+  }
+  h1 {
+    font-size: 18pt;
+    text-align: center;
+    margin-bottom: 30px;
+    line-height: 1.3;
+  }
+  h2 { font-size: 14pt; margin-top: 28px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { font-size: 12pt; margin-top: 20px; }
+  h4 { font-size: 11pt; margin-top: 16px; }
+  p { margin: 8px 0; text-align: justify; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+  th, td {
+    border: 1px solid #999;
+    padding: 4px 8px;
+    text-align: left;
+  }
+  th { background-color: #f0f0f0; font-weight: bold; }
+  ul, ol { margin: 8px 0; padding-left: 24px; }
+  li { margin: 4px 0; }
+  code { font-size: 10pt; background: #f5f5f5; padding: 1px 4px; }
+  img { display: block; width: 100%; max-width: 100%; height: auto; margin: 16px auto 4px; }
+  em { font-style: italic; }
+  strong { font-weight: bold; }
+  .draft-notice {
+    text-align: center;
+    color: #c00;
+    font-size: 10pt;
+    margin-bottom: 20px;
+    padding: 8px;
+    border: 1px solid #c00;
+  }
+</style>
+</head>
+<body>
+<h1 id="what-we-collected-and-what-we-found-the-plain-language-summary">What we collected, and what we found — the plain-language summary</h1>
+<div class="draft-notice">WORKING DRAFT — 2026-08-20 — Not for distribution</div>
+
+<p><strong>Written 2026-08-20.</strong> This is a non-technical companion to <code>drafts/market-structure-answer.md</code>. Same data, same findings, no econometrics vocabulary. Where a number appears here it is the same number as in the full document; nothing is rounded differently or restated more strongly.</p>
+<p><strong>The question the project is trying to answer:</strong> when generative AI arrived, what happened to prices and to business in an online freelance market?</p>
+<p>---</p>
+<h2 id="the-short-version">The short version</h2>
+<p>Between 2020 and 2026, on Fiverr:</p>
+<ul>
+<li><strong>Prices went up.</strong> Not down. About <strong>+41% after inflation</strong>, and up in every</li>
+<p>one of the seven categories we measure.</p>
+<li><strong>Business went down.</strong> Fiverr's own buyer count is <strong>−36%</strong> from its 2021</li>
+<p>peak, and per-gig sales activity fell in every category.</p>
+<li><strong>The market went upmarket.</strong> Fewer buyers, each spending more, on</li>
+<p>higher-priced work. The $5 tier emptied out.</p>
+<li><strong>Generative AI is definitely here.</strong> We can see it inside the market and date</li>
+<p>its arrival to <strong>early 2023</strong>, sharply.</p>
+<li><strong>But the price and business turns happened in late 2020 and 2021</strong> — one to</li>
+<p>two years <em>before</em> the AI tools existed commercially. And when we test the twenty actual product launch dates one by one, nothing happens at them.</p>
+</ul>
+<p>So: prices up, transactions down, both true — and neither one is timed to AI.</p>
+<p>---</p>
+<h2 id="about-the-way-you-summarised-it">About the way you summarised it</h2>
+<p>You said: <em>prices rose during AI launches but transactions decreased.</em></p>
+<p><strong>Both directions are right.</strong> Prices rose, transactions fell, and both happened across the years when the AI tools were launching. If you had only those two facts, "AI did this" is the natural conclusion — and it is the conclusion most press coverage draws.</p>
+<p><strong>The word doing the work is "during," and that is the one part the data contradict.</strong> Two things are true at once:</p>
+<ol>
+<li>Over the whole AI period, prices are up and transactions are down.</li>
+<li>The <em>turning points</em> in both series are dated to <strong>2020Q3–2021Q4</strong> — before</li>
+<p>ChatGPT, before Midjourney, before Copilot shipped.</p>
+</ol>
+<p>A decline that was already underway continued through the AI years. That is not the same as a decline that began with them. Everything below is essentially the project's attempt to tell those two stories apart, and the reason it has taken so many steps is that from a distance they look identical.</p>
+<p>---</p>
+<h2 id="part-1-what-data-we-collected">Part 1 — What data we collected</h2>
+<h3 id="1-1-the-main-source-the-internet-archive">1.1 The main source: the Internet Archive</h3>
+<p>Fiverr does not publish price history. The Wayback Machine has been photographing Fiverr gig pages since 2017, so the history exists as saved web pages, and we reconstructed it from those.</p>
+<table>
+<tr><th>stage</th><th>scale</th></tr>
+<tr><td>raw archive index rows scanned</td><td><strong>60.0 million</strong></td></tr>
+<tr><td>page captures identified in our window</td><td><strong>509,339</strong></td></tr>
+<tr><td>distinct gigs available in the recent window</td><td><strong>91,849</strong></td></tr>
+<tr><td>gig pages downloaded and parsed</td><td><strong>~375,000</strong></td></tr>
+<tr><td>stored HTML on disk</td><td><strong>86 GB</strong></td></tr>
+<tr><td>gig-date observations in the working dataset</td><td><strong>384,983</strong></td></tr>
+</table>
+<p>From each saved page we read the seller's advertised prices (basic, standard and premium package), the gig title, the star rating, and the number of reviews.</p>
+<h3 id="1-2-the-three-datasets-we-built-out-of-it">1.2 The three datasets we built out of it</h3>
+<table>
+<tr><td>dataset</td><td>what it is</td><td>period</td></tr>
+<tr><td><strong>the price index panel</strong></td><td>2,908 gigs tracked continuously enough to compare a price against its own earlier price</td><td>2020Q1–2026Q1</td></tr>
+<tr><td><strong>the balanced frame</strong></td><td>37,888 listings, 257,208 listing-quarter observations, a fixed set present throughout</td><td>2019Q3–2024Q4</td></tr>
+<tr><td><strong>the recent frame</strong></td><td>the live trailing edge, much thinner</td><td>2024Q3–2026Q1</td></tr>
+</table>
+<p>The reason for the fussiness: if you just average all prices each quarter, you are partly measuring <strong>which gigs happen to exist</strong>, not what prices did. So every price comparison in this project compares a listing <strong>against itself at an earlier date</strong>, and every claim about change over time uses a fixed set of listings.</p>
+<h3 id="1-3-outside-data-we-brought-in">1.3 Outside data we brought in</h3>
+<ul>
+<li><strong>Fiverr Inc.'s own reported numbers</strong> (it is a public company, NYSE: FVRR) —</li>
+<p>buyer counts, spend per buyer, revenue, 2017 through mid-2026.</p>
+<li><strong>CPI-U</strong>, US consumer inflation, so we can say what happened to prices in real</li>
+<p>terms rather than just in dollars.</p>
+<li><strong>An academic AI-exposure score</strong> (Eloundou et al. 2023) rating how much of an</li>
+<p>occupation's work generative AI can do.</p>
+<li><strong>A third-party corporate spend panel</strong> (Ramp) as an independent check on</li>
+<p>Fiverr's direction.</p>
+<li><strong>Twenty AI product launch dates</strong>, each dated by when the tool actually became</li>
+<p>available to the public — not when it was announced. An announcement cannot change a gig.</p>
+</ul>
+<h3 id="1-4-the-thing-we-found-last-week-that-we-had-been-throwing-away">1.4 The thing we found last week that we had been throwing away</h3>
+<p>Every archived gig page contains a hidden block of data behind the reviews. Each displayed review is really an <strong>order record</strong>: an order ID, the <strong>date of the order</strong>, and <strong>the amount the buyer paid</strong>, in a band.</p>
+<p>Our extractor kept the advertised prices and discarded all of it, every time, since 2019. It is still sitting in the 86 GB we already have, so recovering it needs no new collection. From a 1,226-page pilot covering 2,883 priced orders:</p>
+<table>
+<tr><th>what the buyer paid</th><th>share of orders</th></tr>
+<tr><td>under $50</td><td><strong>1.0%</strong></td></tr>
+<tr><td>$50–200</td><td><strong>67.3%</strong></td></tr>
+<tr><td>over $200</td><td>31.7%</td></tr>
+</table>
+<p>The advertised entry price is typically <strong>$25–30</strong>. So buyers essentially never buy the package our index prices — they buy up. This does not make the index wrong (it measures what it says it measures: advertised entry prices), but it does mean <strong>"what things cost" and "what people spent" are two different series, and we have only really measured the first one.</strong></p>
+<p>This data starts in 2022, and we recover only about an eighth of orders, so it cannot yet extend the long history.</p>
+<p>---</p>
+<h2 id="part-2-what-we-found">Part 2 — What we found</h2>
+<h3 id="2-1-prices-rose-substantially-in-every-category">2.1 Prices rose. Substantially. In every category.</h3>
+<table>
+<tr><th></th><th>rise, 2020Q1 → 2026Q1</th></tr>
+<tr><td>in dollars</td><td><strong>+78.4%</strong></td></tr>
+<tr><td>after inflation</td><td><strong>+40.7%</strong></td></tr>
+<tr><td>US consumer inflation over the same period, for comparison</td><td>+26.8%</td></tr>
+</table>
+<p>Every category rose. Design rose least (+23% real), audio most (+154%).</p>
+<p><strong>Do not read the category ranking.</strong> Six of the seven categories have error bars wider than our own ±5% standard — translation's is ±29% on 28 gigs — and the top three overlap completely. The <em>composite</em> is solid; the league table is not.</p>
+<p>What the rise is made of, as far as we can decompose it:</p>
+<ul>
+<li><strong>About half</strong> is general inflation.</li>
+<li><strong>A large further part is reputation.</strong> Within a single gig, price rises about</li>
+<p><strong>+7.7% each time its review count doubles.</strong> A seller with more sales charges more. Strip that out and the real rise floors at about <strong>+39.7%</strong> on a raw ceiling of +79%.</p>
+<li><strong>The rest is unexplained</strong>, and Part 3 is about why we cannot attribute it.</li>
+</ul>
+<h3 id="2-2-business-fell-and-this-is-corroborated-from-outside-the-archive">2.2 Business fell — and this is corroborated from outside the archive</h3>
+<p>Fiverr Inc.'s reported numbers:</p>
+<table>
+<tr><th>year</th><th>buyers (M)</th><th>spend per buyer</th><th>GMV ($M)</th></tr>
+<tr><td>2020</td><td>3.40</td><td>$205</td><td>699</td></tr>
+<tr><td><strong>2021</strong></td><td><strong>4.20 (peak)</strong></td><td>$242</td><td>1,020</td></tr>
+<tr><td>2022</td><td>4.20</td><td>$262</td><td>1,090</td></tr>
+<tr><td>2023</td><td>4.10</td><td>$278</td><td><strong>1,140 (peak)</strong></td></tr>
+<tr><td>2024</td><td>3.60</td><td>$302</td><td>1,087</td></tr>
+<tr><td>2025</td><td>3.10</td><td>$342</td><td>1,060</td></tr>
+<tr><td>2026 (trailing 12m)</td><td><strong>2.70</strong></td><td><strong>$368</strong></td><td>994</td></tr>
+</table>
+<p><strong>Buyers are down 36% from the peak. Total money through the platform is down only 12.8%.</strong> The entire difference is spend per buyer, which has risen <em>every single year</em> since 2017, from $119 to $368.</p>
+<p>That is the central fact about this market: <strong>fewer buyers, each much larger.</strong></p>
+<p>Inside the archive, per-gig sales activity fell in every category at once:</p>
+<table>
+<tr><th>category</th><th>fall in review accrual</th></tr>
+<tr><td>writing</td><td>−42.9%</td></tr>
+<tr><td>translation</td><td>−37.2%</td></tr>
+<tr><td><strong>audio</strong></td><td><strong>−35.5%</strong></td></tr>
+<tr><td>coding</td><td>−35.2%</td></tr>
+<tr><td><strong>video</strong></td><td><strong>−28.6%</strong></td></tr>
+<tr><td>marketing</td><td>−23.7%</td></tr>
+<tr><td>design</td><td>−13.1%</td></tr>
+</table>
+<p>The two categories in bold are the two the AI-exposure score rates <em>least</em> exposed. Audio is the least exposed of all seven and has the third-largest fall. <strong>Everything fell together, exposed or not</strong> — which is what a platform-wide shock looks like, not what a technology hitting specific kinds of work looks like.</p>
+<p>One important check: an alternative explanation for that table was that buyers simply started leaving reviews less often, which would make sales <em>look</em> like they fell when they hadn't. Fiverr's buyer and revenue numbers have nothing to do with reviewing behaviour, and they fall too. So the direction is real.</p>
+<h3 id="2-3-the-market-restructured-but-not-the-way-anyone-predicted">2.3 The market restructured — but not the way anyone predicted</h3>
+<p>The standard prediction, if AI commoditises freelance work, has five parts. Four are wrong in direction and the fifth is wrong in timing:</p>
+<table>
+<tr><th>prediction</th><th>what actually happened</th></tr>
+<tr><td>prices fall</td><td>prices <strong>rose 41%</strong></td></tr>
+<tr><td>volumes rise as work gets cheap</td><td>buyers <strong>−36%</strong></td></tr>
+<tr><td>the cheap tier grows</td><td>the <strong>$5 tier emptied</strong>, 27.3% → 10.3% — <em>but its steepest drop is 2021Q2, and it slows down after ChatGPT</em></td></tr>
+<tr><td>sellers undercut each other</td><td><strong>price changes became rarer</strong>, 23.6% → 18.3% of quarters, and the drop is <strong>entirely fewer price increases</strong> — actual price cuts are flat at 5–6%</td></tr>
+<tr><td>the winners take everything</td><td>concentration <strong>flat</strong> (Gini 0.64 → 0.61), whether measured across listings or across sellers</td></tr>
+</table>
+<p>The last row is worth pausing on. "AI will let a few super-productive sellers eat the market" is a common prediction. Sales are distributed almost exactly as unequally in 2024 as in 2019.</p>
+<h3 id="2-4-generative-ai-em-is-em-in-this-market-and-we-can-date-it-precisely">2.4 Generative AI <em>is</em> in this market, and we can date it precisely</h3>
+<p>The earlier designs all guessed at AI's presence from outside — an occupation score, or a release date. Then we noticed that gig <strong>titles</strong> were on 100% of our observations and no analysis had ever used them. Sellers who use AI advertise it. So the share of listings advertising AI is a measurement of AI's arrival taken from <em>inside</em> the market.</p>
+<table>
+<tr><th>quarter</th><th>share of new listings advertising AI</th></tr>
+<tr><td>2019Q1 – 2022Q2</td><td>0.0 – 0.4%</td></tr>
+<tr><td>2022Q4 (ChatGPT launches)</td><td>0.5%</td></tr>
+<tr><td><strong>2023Q1</strong></td><td><strong>5.98%</strong></td></tr>
+<tr><td>2023Q3</td><td>3.85%</td></tr>
+</table>
+<p><strong>Twelvefold in a single quarter</strong>, in the first full quarter after ChatGPT. There is no ambiguity about whether AI reached this market.</p>
+<p>Three further things about <em>how</em> it arrived, none of which were expected:</p>
+<ol>
+<li><strong>It came through new sellers, not existing ones.</strong> Of 11,425 listings we</li>
+<p>watch continuously from 2022 to 2024, <strong>22</strong> ever changed their title to advertise AI. Twenty-two. AI entered as new listings by new entrants.</p>
+<li><strong>It entered above the median price, not below it.</strong> Median AI gig <strong>$30</strong> vs</li>
+<p>non-AI <strong>$25</strong>, and AI is over-represented in the top price bands. It did not arrive as a flood of cheap work.</p>
+<li><strong>A new product category appeared: explicitly human work.</strong> Listings selling</li>
+<p>"no AI" / "100% human" are <strong>exactly zero</strong> in every quarter through 2023Q1 and appear from 2023Q2 onward.</p>
+</ol>
+<h3 id="2-5-the-timing-does-not-line-up-and-this-is-the-crux">2.5 The timing does not line up, and this is the crux</h3>
+<p>We took the six series in this project that turned at some point and asked, for each, <em>which date fits the turn best?</em> — testing every candidate quarter rather than assuming one.</p>
+<table>
+<tr><th>what turned</th><th>when it turned</th></tr>
+<tr><td>per-gig transaction proxy</td><td><strong>2020Q4</strong></td></tr>
+<tr><td>cheap-end performance</td><td><strong>2020Q3</strong></td></tr>
+<tr><td>the $5 tier</td><td><strong>2021Q2</strong></td></tr>
+<tr><td>how often sellers repriced</td><td><strong>2021Q3</strong></td></tr>
+<tr><td>Fiverr's active buyers</td><td><strong>2021</strong></td></tr>
+<tr><td>corporate spend share on the platform (external data)</td><td><strong>2021Q4</strong></td></tr>
+</table>
+<p><strong>All six fall in the same eighteen months, 2020Q3 – 2021Q4.</strong> None of them was dated by us in advance; each came out of a search. And generative AI was not in commercial use in these categories in any of those quarters.</p>
+<p>Ranked against the actual AI milestones, ChatGPT's quarter comes <strong>11th out of 15</strong> candidate dates for the transaction turn, and the image-model dates come last. The only AI date that fits well is GPT-3's API beta in June 2020 — and it fits with the <em>wrong sign</em>, because June 2020 is when the pandemic boom started.</p>
+<h3 id="2-6-the-direct-before-and-after-test-on-twenty-named-launches">2.6 The direct before-and-after test on twenty named launches</h3>
+<p>The above searches for turning points. The obvious complementary test is the simple one: <strong>take each real launch date and compare the months before with the months after.</strong></p>
+<p>We did that for 20 launches, month by month, matching each tool to the category it should have hit (Copilot → coding, Midjourney → design, ChatGPT → writing and translation, ElevenLabs and Suno → audio, and so on), using the other categories as a comparison group.</p>
+<p>Every result was checked against the <strong>12 months before</strong> the launch, when the tool did not exist. If prices were already moving that way beforehand, the post-launch movement is not the launch.</p>
+<table>
+<tr><th>result</th><th>how many of the 20</th></tr>
+<tr><td>no effect at all</td><td>11</td></tr>
+<tr><td>an effect — but the same or bigger effect was already there beforehand</td><td>7</td></tr>
+<tr><td>survives the check</td><td><strong>2</strong></td></tr>
+</table>
+<p><strong>Two survivors is fewer than luck predicts.</strong> About 60 statistical tests at the usual threshold produce roughly three false positives by chance. And one of the two is that same June 2020 pandemic date.</p>
+<p>The image models are the clearest illustration. Design prices fall 4.5–5.1% at <em>every</em> image-model launch date — which looks like a smoking gun until you see that design prices were falling <em>faster</em> in the twelve months before each one. Design was already sliding before image AI existed.</p>
+<p><strong>One half of this test we ran and then threw away.</strong> The same design applied to sales volume lit up at 11 of 20 launches, with a nonsensical pattern — image tools appearing to <em>increase</em> design orders while text tools cut writing's. So we invented <strong>12 fake launch dates in 2019</strong>, before any of these tools existed, and ran the identical test. It found "effects" at <strong>9 of the 12 fake dates.</strong></p>
+<table>
+<tr><th>test</th><th>false-positive rate on fake dates</th><th>should be</th></tr>
+<tr><td>prices</td><td><strong>8%</strong> (1 of 12)</td><td>5%</td></tr>
+<tr><td>sales volume</td><td><strong>75%</strong> (9 of 12)</td><td>5%</td></tr>
+</table>
+<p>The sales-volume version fires at any date you hand it, so it measures nothing. Those eleven results are not reported as findings anywhere. The price version passes the same check, which is exactly why its null result is worth something.</p>
+<h3 id="2-7-why-this-is-not-just-our-method-can-t-see-anything">2.7 Why this is not just "our method can't see anything"</h3>
+<p>This is the strongest objection to everything above, and for most of the project's life we had no answer to it. If your test never finds AI, maybe your test is broken.</p>
+<p>So we pointed the identical procedure — same data, same quarters, same machinery — at something AI demonstrably <em>did</em> change: the share of new listings advertising AI.</p>
+<table>
+<tr><th>what we asked it about</th><th>where ChatGPT's quarter ranks</th></tr>
+<tr><td>the transaction turn</td><td>11th of 15</td></tr>
+<tr><td>the cheap-end turn</td><td>16th of 17</td></tr>
+<tr><td><strong>AI's own diffusion</strong></td><td><strong>1st of 19</strong></td></tr>
+</table>
+<p>And the next three best-fitting dates after 2023Q1 are 2022Q4, 2023Q2 and 2022Q3 — the AI milestone quarters, consecutively, at the top.</p>
+<p><strong>The instrument finds AI immediately when AI is actually there.</strong> So its failure to find AI in prices and market structure is a fact about this market, not a defect in the method.</p>
+<h3 id="2-8-why-nine-attempts-at-proving-causation-all-failed-and-what-that-taught-us">2.8 Why nine attempts at proving causation all failed — and what that taught us</h3>
+<p>Nine identification designs have been run — designs 1 through 8, and design 10 — and all nine failed. That sounds like incompetence until you see the diagnosis, which only emerged at the end:</p>
+<p><strong>Designs 1–8 all looked for AI's effect inside the categories that an external "which jobs are exposed to AI" list said would be hit — and that is not where AI arrived.</strong> AI branding rose platform-wide and concentrated in <strong>coding</strong>, regardless of which tool had just launched. ChatGPT produced no differential AI adoption in writing or translation at all.</p>
+<p>And because AI came in through <em>new listings</em> rather than existing ones, any design that follows the same gigs over time is structurally blind to it: a new entrant is invisible to a method built on within-gig comparison.</p>
+<p>---</p>
+<h2 id="part-3-what-we-cannot-say">Part 3 — What we cannot say</h2>
+<ol>
+<li><strong>We cannot say AI caused any of this.</strong> Not "we found it isn't AI" — we</li>
+<p>found the timing is wrong for an AI story and we cannot identify a causal effect either way. Other things happened in these years: the pandemic hiring boom and its unwind, Fiverr's own push upmarket into business services, the 2022 tech-sector contraction, changes in platform search ranking. Nothing in this data separates them from each other.</p>
+<li><strong>All of the above ends at 2024Q4.</strong> Both Fiverr and Upwork now blame AI for</li>
+<p>their declines explicitly, and they are describing <strong>2025–26</strong> — a period our data barely reaches. We ran two designs on that recent window and both failed, one of them because there simply isn't enough data yet. The recent window is <strong>uninformative</strong>, not null. This is a genuine open question, not a settled one.</p>
+<li><strong>We measured advertised prices, not what people paid.</strong> See 1.4. The order</li>
+<p>data exists, is 2022-onward, and hasn't been extracted yet.</p>
+<li><strong>A null is not a zero.</strong> We can rule out AI effects above a certain size. A</li>
+<p>small effect could hide underneath.</p>
+<li><strong>We cannot see sellers leaving.</strong> The archive stops re-requesting a deleted</li>
+<p>page rather than recording its death — zero 404s across 509,339 captures. Exit would need a live ongoing crawl.</p>
+</ol>
+<p>---</p>
+<h2 id="part-4-what-would-change-the-answer-in-order-of-value">Part 4 — What would change the answer, in order of value</h2>
+<ol>
+<li><strong>Extend the data through 2025–26 with a live crawl.</strong> This is the window</li>
+<p>where both platforms say AI is biting, and we're currently 4–6× too thin to test it. Nothing else on the agenda matters as much.</p>
+<li><strong>Extract the order records.</strong> First deliverable is not an index — it is a</li>
+<p>test of whether the reviews a page displays are selected on price. If they are, every "what buyers paid" number is biased and unusable. Only if that passes do we get real transaction prices.</p>
+<li><strong>Rebuild the AI-exposure measure from richer occupation text.</strong> The current</li>
+<p>one fails to match 36.7% of gigs and the misses are not random.</p>
+<li><strong>Build AI penetration at the niche level</strong> rather than across seven broad</li>
+<p>categories — which is what every failed design actually lacked.</p>
+</ol>
+<p>---</p>
+<h2 id="where-the-numbers-come-from">Where the numbers come from</h2>
+<p>Every figure above appears in <code>drafts/market-structure-answer.md</code> with its source. Analysis scripts are in <code>code/</code>, numbered by step; outputs in <code>runs/</code>. The price index numbers are frozen in <code>data/pilot/paper-numbers.md</code>, and a check script enforces that no draft quotes anything else.</p>
+<table>
+<tr><th>finding here</th><th>full document</th><th>script</th></tr>
+<tr><td>price level and decomposition</td><td>§1.1, §1.2</td><td><code>code/21</code>, <code>23</code>, <code>27</code>, <code>30</code></td></tr>
+<tr><td>what buyers actually paid</td><td>§1.3</td><td><code>code/59-review-order-audit.py</code></td></tr>
+<tr><td>Fiverr Inc. quantities</td><td>§2</td><td><code>code/47-fiverr-inc-external.py</code></td></tr>
+<tr><td>per-category demand falls</td><td>§2</td><td><code>code/46-balanced-demand.py</code></td></tr>
+<tr><td>market structure, five predictions</td><td>§3</td><td><code>code/49</code>, <code>code/51</code></td></tr>
+<tr><td>AI diffusion measured from titles</td><td>§3.7</td><td><code>code/57-ai-diffusion-titles.py</code></td></tr>
+<tr><td>the timing falsification</td><td>§4.3</td><td><code>code/52-ai-timeline-break.py</code></td></tr>
+<tr><td>the positive control</td><td>§4.3.1</td><td><code>code/57-ai-diffusion-titles.py</code></td></tr>
+<tr><td>twenty named launches</td><td>§4.3.2</td><td><code>code/58-ai-launch-events.py</code></td></tr>
+<tr><td>the fake-launch placebo</td><td>§4.3.2</td><td><code>code/58b-launch-placebo.py</code></td></tr>
+</table>
+</body>
+</html>
