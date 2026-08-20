@@ -415,11 +415,151 @@ def fig5():
     write("fig5-linkpath", s)
 
 
+
+
+# =============================================================== figure 6
+def fig6():
+    """Transaction count over the IPI's own time range.
+
+    The only transaction-count series the project has. `orders = GMV / price`,
+    so the figure plots the quotient together with the two series it is made of,
+    all indexed to 2020 = 100 — one axis, because they share a base. The point
+    of showing all three is that the fall in orders is not a fall in dollars:
+    real GMV is still above 2020 and the divergence is entirely price.
+
+    Annual, because Fiverr Inc. reports GMV annually; the archive contributes
+    the price, quarterly, averaged to calendar years by step 47.
+    """
+    m47 = load("m47", "47-fiverr-inc-external.py")
+    fv = m47.load_fvrr()
+    cpi, _ = m47.load_cpi_annual()
+    ipi, _ = m47.load_ipi_annual()
+
+    BASE_Y = 2020
+    g0 = next(r["gmv"] for r in fv if r["year"] == BASE_Y)
+    p0 = ipi[BASE_Y]
+    yrs, gmv_i, prc_i, ord_i = [], [], [], []
+    for r in fv:
+        y = r["year"]
+        if y not in cpi or y not in ipi:
+            continue
+        gi = 100.0 * (r["gmv"] * cpi[BASE_Y] / cpi[y]) / g0
+        pi = 100.0 * ipi[y] / p0
+        yrs.append(y)
+        gmv_i.append(gi)
+        prc_i.append(pi)
+        ord_i.append(100.0 * gi / pi)
+
+    # validated categorical trio (dataviz validator, light surface: all six
+    # checks PASS, worst adjacent CVD dE 20.0)
+    C_ORD, C_GMV, C_PRC = "#4f46e5", "#0891b2", "#b45309"
+    EVT = "#c026d3"
+
+    W, H = 900, 470
+    L, R, T, B = 60, 182, 92, 72
+    pw, ph = W - L - R, H - T - B
+    ymin, ymax = 74.0, 146.0
+    n = len(yrs) - 1
+
+    def X(i):
+        return L + pw * i / n
+
+    def Y(v):
+        return T + ph * (1 - (v - ymin) / (ymax - ymin))
+
+    s = svg_open(W, H, "Implied Fiverr transaction count, 2020-2026",
+                 "Implied order count, real GMV and the real Intelligence Price "
+                 "Index, each indexed to 2020 equals 100, annual. Orders are GMV "
+                 "divided by price, so the three series are an identity. Implied "
+                 "orders peak in 2021 at 133.4 and fall to 82.0 by the twelve "
+                 "months to 2026Q2.")
+
+    s.append(txt(L, 34, "Transactions are falling because dollars stopped growing "
+                 "and price did not", 15.5, INK, "start", "700"))
+    s.append(txt(L, 54, "Implied Fiverr order count over the IPI's time range. "
+                 "Index, 2020 = 100. Annual.", 11.5, MUT))
+
+    # legend (identity is never carried by the line colour alone)
+    for k, (c, lab) in enumerate([(C_ORD, "Implied orders"), (C_GMV, "Real GMV"),
+                                  (C_PRC, "Real IPI price")]):
+        x = L + k * 148
+        s.append(f'<rect x="{x}" y="{70}" width="16" height="3" fill="{c}" rx="1.5"/>')
+        s.append(txt(x + 22, 74, lab, 10.5, INK, "start",
+                     "700" if c == C_ORD else "400"))
+
+    # grid
+    for g in range(80, 141, 20):
+        s.append(path(f"M {L} {Y(g):.1f} L {L+pw} {Y(g):.1f}", LINE, 1))
+        s.append(txt(L - 8, Y(g) + 3.5, str(g), 10, MUT, "end"))
+    # the 2020 base, emphasised
+    s.append(path(f"M {L} {Y(100):.1f} L {L+pw} {Y(100):.1f}", "#c9ced9", 1.4))
+    for i, y in enumerate(yrs):
+        lab = f"{y}*" if y == yrs[-1] else str(y)
+        s.append(txt(X(i), T + ph + 22, lab, 10, MUT, "middle"))
+
+    # ChatGPT, 2022Q4 -> 92% of the way through 2022
+    xe = X(2) + 0.92 * (pw / n)
+    s.append(path(f"M {xe:.1f} {T} L {xe:.1f} {T+ph}", EVT, 1.2, dash="3 3"))
+    s.append(txt(xe + 5, T + 14, "ChatGPT", 9.5, EVT))
+
+    # series: thin components, bold answer, painted last
+    for vals, col, wd in ((gmv_i, C_GMV, 1.9), (prc_i, C_PRC, 1.9),
+                          (ord_i, C_ORD, 2.9)):
+        xs = [X(i) for i in range(len(yrs))]
+        ys = [Y(v) for v in vals]
+        s.append(path(polyline(xs, ys), col, wd))
+        for i, (x, yy) in enumerate(zip(xs, ys)):
+            s.append(f'<circle cx="{x:.1f}" cy="{yy:.1f}" r="4.2" fill="{col}" '
+                     f'stroke="#ffffff" stroke-width="2"><title>'
+                     f'{yrs[i]}: {vals[i]:.1f}</title></circle>')
+
+    # direct labels at the right end
+    for vals, col, lab, wt in ((ord_i, C_ORD, "Implied orders", "700"),
+                               (gmv_i, C_GMV, "Real GMV", "400"),
+                               (prc_i, C_PRC, "Real IPI price", "400")):
+        yy = Y(vals[-1])
+        s.append(txt(L + pw + 10, yy - 3, f"{vals[-1]:.0f}", 12, col, "start", "700"))
+        s.append(txt(L + pw + 10, yy + 11, f"{lab}  {vals[-1]-100:+.0f}%", 10, MUT))
+
+    # the peak, which is the number that matters more than the 2020 comparison
+    pk = max(range(len(ord_i)), key=lambda i: ord_i[i])
+    s.append(f'<circle cx="{X(pk):.1f}" cy="{Y(ord_i[pk]):.1f}" r="7.5" '
+             f'fill="none" stroke="{C_ORD}" stroke-width="1.3" opacity="0.55"/>')
+    s.append(txt(X(pk), Y(ord_i[pk]) - 15, f"peak {yrs[pk]}  {ord_i[pk]:.0f}",
+                 10, C_ORD, "middle", "700"))
+    s.append(txt(X(len(ord_i) - 1) - 6, Y(ord_i[-1]) + 26,
+                 f"-{100*(1-ord_i[-1]/ord_i[pk]):.0f}% from peak", 10, C_ORD, "end", "700"))
+
+    s.append(txt(L, H - 34, "orders = real GMV / real price. GMV and spend per buyer "
+                 "are Fiverr Inc. reported (20-F and quarterly releases), deflated by "
+                 "CPI-U; price is this project's real", 9.5, MUT))
+    s.append(txt(L, H - 21, "GEKS composite, annual mean. * 2026 is the trailing twelve "
+                 "months to 2026Q2. Read the order count as an UPPER BOUND on the "
+                 "decline: the IPI prices the listed", 9.5, MUT))
+    s.append(txt(L, H - 8, "basic package, and 99% of recovered orders are above $50 "
+                 "against a listed median of $25-30, so realised price rose faster than "
+                 "the index.", 9.5, MUT))
+    write("fig6-transactions", s)
+
+
+# =============================================================== runner
+# Named so a single figure can be regenerated without paying for figure 4's
+# subsampling curve, which takes about a minute:  python3 code/34-figures.py fig6
+FIGS = {
+    "fig1": fig1,
+    "fig2": fig2,
+    "fig3": fig3,
+    "fig4": lambda: (print("  computing precision-vs-n curve (subsampling, "
+                           "this takes a minute)..."), fig4(fig4_data()))[-1],
+    "fig5": fig5,
+    "fig6": fig6,
+}
+
+want = [a for a in sys.argv[1:] if not a.startswith("-")] or list(FIGS)
+bad = [w for w in want if w not in FIGS]
+if bad:
+    sys.exit(f"unknown figure(s): {', '.join(bad)}; choose from {', '.join(FIGS)}")
 print("Generating figures -> outputs/figures/")
-fig1()
-fig2()
-fig3()
-print("  computing precision-vs-n curve (subsampling, this takes a minute)...")
-fig4(fig4_data())
-fig5()
+for w in want:
+    FIGS[w]()
 print("done")

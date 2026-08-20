@@ -1,5 +1,148 @@
 # Progress Log
 
+## 2026-08-20 (evening, later) — The per-category sales proxy, finally as a series
+
+`code/62-category-accrual.py` -> `runs/category-accrual.out`,
+`data/pilot/category-accrual.csv`. From a user question: "across the categories,
+what do the number of transactions look like over time". Step 46 had estimated a
+per-category **break** at 2022Q4 and never written the series it broke; Fiverr Inc.
+publishes no category split at all, so per-gig review accrual is the only route.
+
+### What the series shows that the break table could not
+
+| category | peak | 2021Q2 | 2021Q3 | 2022Q4 | 2024Q4 |
+|---|---|---:|---:|---:|---:|
+| audio | 2020Q3 | 103.9 | 78.9 | 73.6 | 43.9 |
+| coding | 2020Q3 | 89.4 | 76.5 | 68.9 | 31.8 |
+| design | (2019Q3) | 97.4 | 72.8 | 71.4 | 32.6 |
+| marketing | 2020Q3 | 95.7 | 80.3 | 83.7 | **47.3** |
+| translation | 2020Q3 | 98.9 | 85.5 | 80.0 | **48.5** |
+| video | 2020Q3 | 91.3 | 71.0 | 64.1 | 30.0 |
+| writing | 2020Q3 | 97.5 | 76.3 | 67.8 | **23.7** |
+
+Three things the single break estimate hid:
+
+1. **Six of seven peak in the same quarter, 2020Q3**, and the one exception
+   (design, 2019Q3) sits in the thin early stretch. The fall is not gradual — it
+   is a **step between 2021Q2 and 2021Q3**, simultaneous in all seven, fifteen
+   months before ChatGPT.
+2. **2022Q1-2023Q3 is a plateau, and ChatGPT lands inside it.** Five of seven
+   categories are *higher* in 2023Q3 than in 2022Q3; design rises 67.2 -> 83.8
+   across the whole period the AI story would have it falling. The second real
+   step down is **2023Q4**.
+3. **The end-state ordering contradicts exposure more sharply than step 46 did.**
+   The two most AI-exposed categories finish at opposite ends: writing worst at
+   **23.7**, translation second-best at **48.5**. An exposure story has to explain
+   both with the same mechanism, and it cannot.
+
+### On the website, as small multiples — and why not seven overlaid lines
+
+`docs/data.json` (new `category_transactions`, written by step 62's
+`write_site_block` — same arrangement and same warning as step 47's block: **step
+18 writes data.json whole, so rerunning it drops this**), `docs/index.html`,
+`docs/ipi.js` (`drawCategoryTx`). From a user instruction: "plot the transaction
+trends across categories on the website".
+
+The first attempt was seven overlaid lines in the site's existing category
+palette. It was abandoned on a measurement, not a preference: those seven colours
+fail a colour-vision-deficiency check on all 21 pairs — worst CVD pair
+translation/audio at **ΔE 6.1 (deutan)**, and translation/video at **ΔE 13.2 for
+normal vision**, below the 15 floor, meaning hard to separate even with full
+colour vision. No re-stepping of seven hues cleared it; three attempts all failed
+at least one pairwise check, which is the known ceiling for seven categorical
+slots under all-pairs CVD.
+
+**Faceting removes the problem at its source** — one series per panel, identity
+carried by the panel title, hue reduced to decoration. It also happens to be the
+better chart for this finding, because the finding is "they move together, then
+separate at the very end": a ghost of the all-category mean sits behind every
+panel so both halves of that sentence are readable at a glance. Shared y-scale
+across panels, the thin 2018Q4–2019Q3 stretch shaded rather than dropped, 2021Q3
+and 2022Q4 marked, per-panel hover carrying the raw rate, the cell count and the
+capture span, and a full table underneath.
+
+The palette defect is **not** fixed — it still affects the hero price chart,
+where seven lines are overlaid and hue is the only identity cue. Filed as
+`plans/tech-debt-tracker.md` **TD2** rather than repainted, because the
+category→colour map is used in the sparklines and freelancer panels too and that
+is a site-wide change the user did not ask for.
+
+### Identification, stated in the script rather than discovered later
+
+Within a gig, age and calendar quarter move one-for-one, so gig FE + age FE +
+quarter FE is exactly collinear in its linear part — the age-period-cohort
+problem. **The shape is identified; the trend is not.** Sections B and C are
+labelled accordingly, and the peak quarter is singled out in section D as the one
+statistic that survives it. A capture-span diagnostic (A0) was added for the same
+reason: mean quarters-per-observation widens **1.2 -> 1.75** across the window, so
+part of the 2024 fall is the archive capturing gigs less often, not the market.
+
+Base is the **2020 four-quarter mean**, not a single quarter: 2018Q4-2019Q3 hold
+4.1k-5.9k observations against 9k-11k later and the raw rates swing sixfold across
+them, so any one early quarter would have set every later level by its own noise.
+2020 = 100 also matches step 47's platform series, so the two read together.
+
+No paper section, figure or frozen number touched. The series is descriptive and
+is not a demand series — review-propensity drift (Phase 1) is still untested.
+
+
+## 2026-08-20 (evening) — The transaction count got a chart, and the website got the chart
+
+`code/34-figures.py` (new `fig6`, plus a named runner), `code/47-fiverr-inc-external.py`
+(new `write_site_block`), `docs/data.json`, `docs/index.html`, `docs/ipi.js`,
+`outputs/figures/fig6-transactions.svg`. From a user instruction: "make a chart
+that shows the number of transactions over the time range on ipi", then "add it
+to the website".
+
+### What the chart plots, and why it plots three lines
+
+The project has exactly one transaction-count series: `orders = real GMV / real
+IPI price`, from step 47. It is a **quotient**, and the interesting thing about
+it is that the numerator did not fall — real GMV is **+11.3%** against 2020
+while the real price is **+35.8%**, which is the whole of the **-18.0%** in
+orders. A single line would have hidden that, so the figure draws all three,
+indexed to 2020 = 100. Same base, so one axis — never two scales.
+
+| year | real GMV | real price | implied orders |
+|---|---:|---:|---:|
+| 2020 | 100.0 | 100.0 | 100.0 |
+| **2021** | 139.3 | 104.5 | **133.4 (peak)** |
+| 2022 | 137.9 | 112.3 | 122.8 |
+| 2023 | 138.5 | 125.5 | 110.3 |
+| 2024 | 128.3 | 130.0 | 98.7 |
+| 2025 | 121.8 | 136.2 | 89.5 |
+| 2026 (TTM Q2) | 111.3 | 135.8 | **82.0 (-38.6% from peak)** |
+
+Annual, because Fiverr reports GMV annually; the archive supplies the price.
+The ChatGPT marker sits at 2022Q4, **after** the 2021 peak, which is the point.
+
+### Two structural notes worth remembering
+
+- **`write_site_block` lives in step 47, not step 18.** The series is a quotient
+  of step 18's index and Fiverr's reported GMV, so it can only be formed once
+  `data.json` exists. The consequence: **rerunning step 18 silently drops the
+  block** (it writes `data.json` whole), and the site card then hides itself
+  rather than erroring. Rerun 47 after 18.
+- **Step 34 now takes figure names.** `python3 code/34-figures.py fig6`
+  regenerates one figure without paying for figure 4's subsampling curve. No
+  argument still builds all six.
+
+### The website card
+
+A second card under the hero chart: legend, line chart with a crosshair
+tooltip carrying buyers and spend-per-buyer, a full data table underneath (the
+table is the accessibility route, not an extra), and four bullets that state
+the upper-bound caveat and the timing. Series colours are a three-hue set run
+through a colour-vision-deficiency validator — worst adjacent pair dE 20.0, all
+six checks pass — rather than picked by eye.
+
+### What it does not do
+
+No new estimate. Every number is step 47's, unchanged. The card says in its own
+text that nothing here identifies a cause, because a chart with a ChatGPT line
+on it invites exactly that reading.
+
+
 ## 2026-08-20 (later still) — The plain summary was still assuming finance vocabulary
 
 `drafts/plain-summary.md`, `tests/structure-master.test.md`. From two user

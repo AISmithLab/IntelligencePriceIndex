@@ -512,6 +512,299 @@ function drawChart(cats, comp) {
   }
 }
 
+// ---- transactions: the implied order count ---------------------------------
+// The only transaction-count series the project has. Fiverr Inc. reports GMV
+// (dollars) and never an order count; orders = GMV / price, and the IPI is the
+// price. Orders, real GMV and real price are all indexed to the same base year,
+// so they share ONE axis -- and they have to be drawn together, because the
+// finding is that the quotient falls while the numerator does not.
+//
+// Series colours are the three-hue set validated for colour-vision deficiency
+// (worst adjacent pair dE 20.0, all six checks pass on this surface); identity is
+// carried by a legend and end-of-line labels as well as by hue, never hue alone.
+const TX_COLORS = { orders: "#4f46e5", gmv_real: "#0891b2", price_real: "#b45309" };
+const TX_SERIES = [
+  { key: "gmv_real",   name: "Real GMV",       w: 2,   lead: false },
+  { key: "price_real", name: "Real IPI price", w: 2,   lead: false },
+  { key: "orders",     name: "Implied orders", w: 3.2, lead: true  },
+];
+
+function drawTransactions() {
+  const box = document.getElementById("txchart");
+  const TX = DATA && DATA.transactions;
+  if (!box) return;
+  if (!TX) {                                  // older data.json: hide the whole card
+    const card = box.closest("section");
+    if (card) card.style.display = "none";
+    return;
+  }
+  [...box.querySelectorAll("svg")].forEach(s => s.remove());
+  const tip = document.getElementById("txtip");
+  const W = box.clientWidth || 900, H = 340, m = { t: 16, r: 118, b: 30, l: 62 };
+  const yrs = TX.years, n = yrs.length;
+  const series = TX_SERIES.map(s => ({ ...s, vals: TX[s.key], color: TX_COLORS[s.key] }));
+
+  const all = series.flatMap(s => s.vals).filter(v => v != null);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = Math.max((hi - lo) * 0.16, 1); lo -= pad; hi += pad;
+  const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
+
+  const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
+
+  for (const tk of niceTicks(lo, hi, 5)) {
+    svg.appendChild(el("line", { _svg: 1, x1: m.l, x2: W - m.r, y1: Y(tk), y2: Y(tk),
+      stroke: tk === 100 ? "#cfcfcf" : "#eee", "stroke-width": 1,
+      "stroke-dasharray": tk === 100 ? "4 3" : "" }));
+    svg.appendChild(el("text", { _svg: 1, x: m.l - 6, y: Y(tk) + 3, "text-anchor": "end",
+      "font-size": 11, fill: "#999" }, [String(tk)]));
+  }
+  const yMid = m.t + (H - m.t - m.b) / 2;
+  svg.appendChild(el("text", { _svg: 1, x: 13, y: yMid, "text-anchor": "middle",
+    "font-size": 11, "font-weight": 600, fill: "#6b7280",
+    transform: `rotate(-90 13 ${yMid.toFixed(1)})` },
+    [`index (${TX.base_year} = 100)`]));
+  yrs.forEach((y, i) => svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8,
+    "text-anchor": "middle", "font-size": 11, fill: "#999" }, [y])));
+
+  // the event marker: a date, not a result. Placed where it falls inside its year.
+  if (TX.event) {
+    const ei = yrs.findIndex(y => parseInt(y, 10) === TX.event.year);
+    if (ei >= 0 && ei < n - 1) {
+      const ex = X(ei) + TX.event.frac * (X(ei + 1) - X(ei));
+      svg.appendChild(el("line", { _svg: 1, x1: ex, x2: ex, y1: m.t, y2: H - m.b,
+        stroke: "#c026d3", "stroke-width": 1.2, "stroke-dasharray": "3 3" }));
+      svg.appendChild(el("text", { _svg: 1, x: ex + 5, y: m.t + 12, "font-size": 10,
+        fill: "#c026d3" }, [TX.event.label]));
+    }
+  }
+
+  for (const s of series) {
+    const d = s.vals.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(" ");
+    svg.appendChild(el("path", { _svg: 1, d, fill: "none", stroke: s.color,
+      "stroke-width": s.w, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    s.vals.forEach((v, i) => svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v),
+      r: s.lead ? 4.2 : 3.4, fill: s.color, stroke: "#fff", "stroke-width": 2 })));
+    // end-of-line label, so no series depends on colour alone to be identified
+    svg.appendChild(el("text", { _svg: 1, x: W - m.r + 9, y: Y(s.vals[n - 1]) - 2,
+      "font-size": 12, "font-weight": 700, fill: s.color }, [s.vals[n - 1].toFixed(0)]));
+    svg.appendChild(el("text", { _svg: 1, x: W - m.r + 9, y: Y(s.vals[n - 1]) + 12,
+      "font-size": 10, fill: "#6b7280" },
+      [`${s.name} ${(s.vals[n - 1] - 100 >= 0 ? "+" : "−")}${Math.abs(s.vals[n - 1] - 100).toFixed(0)}%`]));
+  }
+
+  // the peak matters more than the base-year comparison: the decline is measured
+  // from 2021, not from 2020, and quoting only "vs 2020" understates it.
+  const ord = TX.orders;
+  const pk = ord.indexOf(Math.max(...ord));
+  if (pk > 0) {
+    svg.appendChild(el("circle", { _svg: 1, cx: X(pk), cy: Y(ord[pk]), r: 7.5,
+      fill: "none", stroke: TX_COLORS.orders, "stroke-width": 1.3, opacity: 0.55 }));
+    svg.appendChild(el("text", { _svg: 1, x: X(pk), y: Y(ord[pk]) - 14, "text-anchor": "middle",
+      "font-size": 10, "font-weight": 700, fill: TX_COLORS.orders },
+      [`peak ${yrs[pk]} · ${ord[pk].toFixed(0)}`]));
+    svg.appendChild(el("text", { _svg: 1, x: X(n - 1) - 6, y: Y(ord[n - 1]) + 24,
+      "text-anchor": "end", "font-size": 10, "font-weight": 700, fill: TX_COLORS.orders },
+      [`−${(100 * (1 - ord[n - 1] / ord[pk])).toFixed(0)}% from peak`]));
+  }
+
+  const guide = el("line", { _svg: 1, x1: 0, x2: 0, y1: m.t, y2: H - m.b,
+    stroke: "#bbb", "stroke-width": 1, opacity: 0 });
+  svg.appendChild(guide);
+  const hit = el("rect", { _svg: 1, x: m.l, y: m.t, width: Math.max(1, W - m.l - m.r),
+    height: H - m.t - m.b, fill: "transparent" });
+  svg.appendChild(hit);
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect(), sx = W / r.width;
+    const px = (ev.clientX - r.left) * sx;
+    let i = Math.round((px - m.l) / ((W - m.l - m.r) / (n - 1)));
+    i = Math.max(0, Math.min(n - 1, i));
+    guide.setAttribute("x1", X(i)); guide.setAttribute("x2", X(i)); guide.setAttribute("opacity", 1);
+    const rows = series.slice().reverse().map(s =>
+      `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i].toFixed(1)}</b></div>`).join("");
+    tip.innerHTML = `<b>${yrs[i]}</b> <span style="color:var(--faint);font-weight:400">· ${TX.base_year}=100 · ${TX.buyers_m[i].toFixed(2)}M buyers · $${TX.spend_per_buyer[i]}/buyer</span>${rows}`;
+    tip.style.display = "block";
+    const tx = X(i) / sx, left = Math.min(tx + 12, r.width - tip.offsetWidth - 6);
+    tip.style.left = Math.max(0, left) + "px";
+    tip.style.top = (ev.clientY - r.top + 12) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
+  box.appendChild(svg);
+
+  // legend (always present for 2+ series) and the table view of the same numbers
+  const lg = document.getElementById("txlegend");
+  if (lg) {
+    lg.innerHTML = "";
+    series.slice().reverse().forEach(s => lg.appendChild(el("span", { class: s.lead ? "lead" : "",
+      html: `<span class="sw" style="background:${s.color}"></span>${s.name}` })));
+  }
+  const tb = document.getElementById("txrows");
+  if (tb) {
+    tb.innerHTML = "";
+    yrs.forEach((y, i) => {
+      const tr = el("tr", pk === i ? { class: "peak" } : {});
+      tr.appendChild(el("td", {}, [y]));
+      tr.appendChild(el("td", {}, [TX.buyers_m[i].toFixed(2)]));
+      tr.appendChild(el("td", {}, ["$" + TX.spend_per_buyer[i]]));
+      tr.appendChild(el("td", {}, [TX.gmv_usd_m[i].toFixed(0)]));
+      tr.appendChild(el("td", {}, [TX.gmv_real[i].toFixed(1)]));
+      tr.appendChild(el("td", {}, [TX.price_real[i].toFixed(1)]));
+      tr.appendChild(el("td", { class: "hl" }, [TX.orders[i].toFixed(1)]));
+      tb.appendChild(tr);
+    });
+  }
+  const nt = document.getElementById("txnote");
+  if (nt) nt.textContent = TX.note;
+}
+
+// ---- transactions by category: small multiples -----------------------------
+// SEVEN OVERLAID LINES WOULD BE THE WRONG CHART HERE, and not for taste. The
+// site's seven category colours cannot be told apart pairwise under colour-vision
+// deficiency (worst pair dE 6.1 deutan) and one pair is below the normal-vision
+// floor too (dE 13.2), so identity carried by hue alone would fail for some
+// readers on some pairs. Faceting removes the problem at its source: one series
+// per panel, named by its own title, with hue reduced to decoration. It also
+// suits the finding, which is that the seven move TOGETHER and separate only at
+// the very end -- a ghost of the all-category mean sits behind every panel so
+// that "together" and "apart" are both readable at a glance.
+function drawCategoryTx() {
+  const box = document.getElementById("ctxchart");
+  const CT = DATA && DATA.category_transactions;
+  if (!box) return;
+  if (!CT) { const card = box.closest("section"); if (card) card.style.display = "none"; return; }
+  [...box.querySelectorAll("svg")].forEach(s => s.remove());
+  const tip = document.getElementById("ctxtip");
+
+  const cats = Object.keys(CT.index).sort((a, b) => labelOf(a).localeCompare(labelOf(b)));
+  const qs = CT.quarters, n = qs.length;
+  const W = box.clientWidth || 900;
+  const cols = W < 560 ? 1 : (W < 820 ? 2 : 3);
+  const rows = Math.ceil(cats.length / cols);
+  const gapX = 16, gapY = 34, padL = 34, padT = 20, padB = 26;
+  const pw = (W - padL - gapX * (cols - 1)) / cols, ph = 104;
+  const H = padT + rows * (ph + gapY) + padB;
+
+  // one shared scale across every panel, or the panels cannot be compared
+  const all = cats.flatMap(c => CT.index[c]).filter(v => v != null);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = Math.max((hi - lo) * 0.12, 2); lo -= pad; hi += pad;
+
+  // the all-category mean, drawn behind each panel as a reference ghost
+  const ghost = qs.map((_, i) => {
+    const v = cats.map(c => CT.index[c][i]).filter(x => x != null);
+    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
+  });
+  const qIdx = q => qs.indexOf(q);
+  const thinTo = qIdx(CT.thin_until);
+  const evI = CT.event ? qIdx(CT.event.quarter) : -1;
+  const stI = CT.step ? qIdx(CT.step.quarter) : -1;
+
+  const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
+  const line = (xs, ys, color, w, op, dash) => el("path", { _svg: 1,
+    d: xs.map((x, k) => `${k ? "L" : "M"}${x.toFixed(1)} ${ys[k].toFixed(1)}`).join(" "),
+    fill: "none", stroke: color, "stroke-width": w, opacity: op,
+    "stroke-linejoin": "round", "stroke-linecap": "round",
+    ...(dash ? { "stroke-dasharray": dash } : {}) });
+
+  cats.forEach((c, k) => {
+    const ox = padL + (k % cols) * (pw + gapX);
+    const oy = padT + Math.floor(k / cols) * (ph + gapY);
+    const X = i => ox + (i / (n - 1)) * pw;
+    const Y = v => oy + (1 - (v - lo) / (hi - lo)) * ph;
+    const col = colorOf(c);
+
+    svg.appendChild(el("rect", { _svg: 1, x: ox, y: oy, width: pw, height: ph,
+      fill: "#fbfcfe", stroke: "#eef0f5", "stroke-width": 1, rx: 3 }));
+    // the thin early panel, marked rather than dropped
+    if (thinTo > 0) svg.appendChild(el("rect", { _svg: 1, x: ox, y: oy,
+      width: Math.max(0, X(thinTo) - ox), height: ph, fill: "#1c2230", opacity: 0.045 }));
+    // 100 = the 2020 base
+    svg.appendChild(el("line", { _svg: 1, x1: ox, x2: ox + pw, y1: Y(100), y2: Y(100),
+      stroke: "#cfcfcf", "stroke-width": 1, "stroke-dasharray": "4 3" }));
+    if (stI >= 0) svg.appendChild(el("line", { _svg: 1, x1: X(stI), x2: X(stI),
+      y1: oy, y2: oy + ph, stroke: "#6b7280", "stroke-width": 1, "stroke-dasharray": "2 3", opacity: .55 }));
+    if (evI >= 0) svg.appendChild(el("line", { _svg: 1, x1: X(evI), x2: X(evI),
+      y1: oy, y2: oy + ph, stroke: "#c026d3", "stroke-width": 1.1, "stroke-dasharray": "3 3" }));
+
+    const idx = CT.index[c];
+    const keep = idx.map((v, i) => [i, v]).filter(([, v]) => v != null);
+    svg.appendChild(line(keep.map(([i]) => X(i)), keep.map(([i]) => Y(ghost[i])),
+      "#9aa1ad", 1.6, 0.42, "4 3"));
+    svg.appendChild(line(keep.map(([i]) => X(i)), keep.map(([, v]) => Y(v)), col, 2, 1));
+
+    const pk = qIdx(CT.peak[c]);
+    if (pk >= 0 && idx[pk] != null) svg.appendChild(el("circle", { _svg: 1,
+      cx: X(pk), cy: Y(idx[pk]), r: 3.6, fill: col, stroke: "#fff", "stroke-width": 1.6 }));
+
+    svg.appendChild(el("text", { _svg: 1, x: ox, y: oy - 6, "font-size": 11.5,
+      "font-weight": 700, fill: "#1c2230" }, [labelOf(c)]));
+    const last = keep.length ? keep[keep.length - 1][1] : null;
+    if (last != null) svg.appendChild(el("text", { _svg: 1, x: ox + pw, y: oy - 6,
+      "text-anchor": "end", "font-size": 11, "font-weight": 700, fill: col },
+      [`${last.toFixed(0)} · peak ${CT.peak[c]}`]));
+
+    // y labels only on the leftmost column, to keep the grid uncluttered
+    if (k % cols === 0) [40, 80, 120].forEach(tk => {
+      if (tk < lo || tk > hi) return;
+      svg.appendChild(el("text", { _svg: 1, x: ox - 6, y: Y(tk) + 3.5,
+        "text-anchor": "end", "font-size": 9.5, fill: "#9aa1ad" }, [String(tk)]));
+    });
+    // x labels only on the bottom row
+    if (Math.floor(k / cols) === rows - 1 || k >= cats.length - cols) {
+      [0, Math.floor((n - 1) / 2), n - 1].forEach(i =>
+        svg.appendChild(el("text", { _svg: 1, x: X(i), y: oy + ph + 14,
+          "text-anchor": i === 0 ? "start" : (i === n - 1 ? "end" : "middle"),
+          "font-size": 9.5, fill: "#9aa1ad" }, [qs[i]])));
+    }
+
+    const hit = el("rect", { _svg: 1, x: ox, y: oy, width: pw, height: ph, fill: "transparent" });
+    hit.addEventListener("mousemove", ev => {
+      const r = svg.getBoundingClientRect(), sx = W / r.width;
+      let i = Math.round((((ev.clientX - r.left) * sx) - ox) / (pw / (n - 1)));
+      i = Math.max(0, Math.min(n - 1, i));
+      const v = idx[i], rw = CT.raw[c][i];
+      tip.innerHTML = `<b>${labelOf(c)} · ${qs[i]}</b>`
+        + `<div><span class="k" style="background:${col}"></span>index: <b>${v == null ? "–" : v.toFixed(1)}</b>`
+        + `<span style="color:var(--faint)"> (2020=100)</span></div>`
+        + `<div style="color:var(--mut)">${rw == null ? "" : rw.toFixed(1) + " reviews/gig/qtr raw · "}`
+        + `${(CT.n[c][i] || 0).toLocaleString()} obs`
+        + `${CT.mean_dq[i] ? " · span " + CT.mean_dq[i].toFixed(2) + "q" : ""}</div>`
+        + (i <= thinTo ? `<div style="color:var(--down)">thin panel — read as noise</div>` : "");
+      tip.style.display = "block";
+      const left = Math.min(X(i) / sx + 12, r.width - tip.offsetWidth - 6);
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = (ev.clientY - r.top + 12) + "px";
+    });
+    hit.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+    svg.appendChild(hit);
+  });
+  box.appendChild(svg);
+
+  // table view: the relief the contrast WARN obligates, and the only place the
+  // full series is legible number by number
+  const th = document.getElementById("ctxhead"), tb = document.getElementById("ctxrows");
+  if (th && tb) {
+    th.innerHTML = ""; tb.innerHTML = "";
+    th.appendChild(el("th", { scope: "col" }, ["Quarter"]));
+    cats.forEach(c => th.appendChild(el("th", { scope: "col" }, [labelOf(c)])));
+    qs.forEach((q, i) => {
+      const tr = el("tr", i <= thinTo ? { style: "opacity:.55" } : {});
+      tr.appendChild(el("td", {}, [q + (i <= thinTo ? " ·thin" : "")]));
+      cats.forEach(c => {
+        const v = CT.index[c][i];
+        tr.appendChild(el("td", { class: CT.peak[c] === q ? "hl" : "" },
+                            [v == null ? "–" : v.toFixed(1)]));
+      });
+      tb.appendChild(tr);
+    });
+  }
+  const nt = document.getElementById("ctxnote");
+  if (nt) nt.innerHTML = `<span>${CT.note}</span>`
+    + `<span><span class="dash" style="border-top-color:#9aa1ad"></span>all-category mean</span>`
+    + `<span><span class="dot" style="background:#c026d3"></span>ChatGPT 2022Q4</span>`
+    + `<span><span class="dot" style="background:#6b7280"></span>common step down 2021Q3</span>`;
+}
+
 // ---- highlighted-move descriptions (list under the chart) ------------------
 function renderMoveNotes(comp, cats) {
   const ul = document.getElementById("movenotes");
@@ -744,6 +1037,8 @@ function render() {
   const showComposite = mainChecked.length >= 2;   // composite is a 2+ category basket
 
   drawChart(cats, comp);                 // every checked line; composite from main only
+  drawTransactions();                    // independent of the category selection
+  drawCategoryTx();                      // small multiples, also selection-independent
   renderMoveNotes(comp, mainChecked);
   renderInspector();
   // the highlighted-move legend only applies when composite highlights are drawn

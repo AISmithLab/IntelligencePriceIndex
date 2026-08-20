@@ -87,6 +87,54 @@ def load_ipi_annual():
     return {y: float(np.mean(v)) for y, v in by_year.items()}, months
 
 
+
+def write_site_block(fv, rows, g0, p0, ipi):
+    """Merge the transaction series into `docs/data.json` for the website.
+
+    Written here rather than in step 18 because the series is a QUOTIENT of the
+    index step 18 builds and Fiverr Inc.'s reported GMV, so it can only be formed
+    once data.json exists. Consequence to remember: **rerunning step 18 drops this
+    block**, because step 18 writes data.json whole. Rerun step 47 after it.
+
+    Everything is an index on 2020 = 100 so the site can draw orders, GMV and price
+    on ONE axis — they share a base, and orders = GMV / price is an identity, which
+    is the whole point of showing the three together.
+    """
+    by_year = {r["year"]: r for r in fv}
+    years, orders, gmv_real, price_real, buyers, spend, gmv_usd = [], [], [], [], [], [], []
+    for y, per, gmv, c, rg, pr in rows:
+        gi = 100.0 * rg / g0
+        pi = 100.0 * pr / p0
+        years.append(f"{y}*" if per != "FY" else str(y))
+        orders.append(round(100.0 * gi / pi, 1))
+        gmv_real.append(round(gi, 1))
+        price_real.append(round(pi, 1))
+        buyers.append(by_year[y]["buyers"])
+        spend.append(by_year[y]["spend"])
+        gmv_usd.append(by_year[y]["gmv"])
+    b0 = buyers[0]
+    block = {
+        "base_year": rows[0][0],
+        "years": years,
+        "orders": orders,
+        "gmv_real": gmv_real,
+        "price_real": price_real,
+        "buyers_index": [round(100.0 * b / b0, 1) for b in buyers],
+        "buyers_m": buyers,
+        "spend_per_buyer": spend,
+        "gmv_usd_m": gmv_usd,
+        "event": {"label": "ChatGPT", "year": 2022, "frac": 0.92},
+        "note": ("Implied orders = real GMV / real IPI price. GMV and spend per buyer "
+                 "are Fiverr Inc. reported; the price is this project's real GEKS "
+                 "composite, annual mean. * trailing twelve months to 2026Q2."),
+    }
+    d = json.loads(DATAJSON.read_text())
+    d["transactions"] = block
+    DATAJSON.write_text(json.dumps(d, indent=2))
+    print(f"\n  wrote transactions block -> {DATAJSON.relative_to(BASE)} "
+          f"({len(years)} years, orders {orders[0]:.0f} -> {orders[-1]:.0f})")
+
+
 def main():
     fv = load_fvrr()
     cpi, _ = load_cpi_annual()
@@ -165,6 +213,8 @@ def main():
     op = 100 * (100 * peak[4] / g0) / (100 * ipi[peak[0]] / p0)
     print(f"     peak implied orders was {peak[0]} at {op:.1f}; "
           f"now {oi:.1f}, i.e. {100*(oi/op-1):+.1f}% from peak")
+
+    write_site_block(fv, rows, g0, p0, ipi)
 
     # ---- does this corroborate step 46? ----
     print("\n" + "=" * 88)

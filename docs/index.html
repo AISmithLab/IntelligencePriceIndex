@@ -132,6 +132,27 @@
     /* chart ----------------------------------------------------------------- */
     #chart { position: relative; width: 100%; margin-top: 4px; }
     #chart svg { display: block; width: 100%; height: auto; }
+    #txchart { position: relative; width: 100%; margin-top: 4px; }
+    #txchart svg { display: block; width: 100%; height: auto; }
+    #ctxchart { position: relative; width: 100%; margin-top: 4px; }
+    #ctxchart svg { display: block; width: 100%; height: auto; }
+    .txlegend { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 0 2px;
+                font-size: 11.5px; color: var(--ink); }
+    .txlegend span.sw { display: inline-block; width: 18px; height: 3px;
+                        border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+    .txlegend .lead { font-weight: 700; }
+    .txtable { width: 100%; border-collapse: collapse; font-size: 11.5px;
+               margin-top: 12px; }
+    .txtable th, .txtable td { padding: 4px 6px; border-bottom: 1px solid var(--line-2);
+                               text-align: right; white-space: nowrap; }
+    .txtable th { color: var(--mut); font-weight: 600; font-size: 10.5px;
+                  text-transform: uppercase; letter-spacing: .04em; }
+    .txtable th:first-child, .txtable td:first-child { text-align: left; }
+    .txtable td.hl { font-weight: 700; color: var(--ink); }
+    .txtable tr.peak td { background: var(--hi); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0;
+                margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+                border: 0; }
     .tip { position: absolute; pointer-events: none; background: #fff;
            border: 1px solid var(--line); box-shadow: 0 6px 20px -6px rgba(17,24,39,.28);
            font-size: 12px; padding: 8px 10px; border-radius: 8px; white-space: nowrap;
@@ -341,6 +362,101 @@
           <span><span class="dot" style="background:#dc2626"></span>price drop</span>
         </div>
         <ul class="movenotes" id="movenotes"></ul>
+      </section>
+
+      <section class="card">
+        <div class="headline">
+          <h2 class="charttitle">Transactions &mdash; the implied order count</h2>
+          <div class="sub">Index, 2020 = 100 &middot; annual &middot;
+            <b>orders = real GMV &divide; real IPI price</b></div>
+          <ul class="fxbullets">
+            <li><b>The archive contains no transactions.</b> Fiverr Inc. (NYSE: FVRR) reports
+              <b>GMV</b> &mdash; every order added up at what the buyer paid &mdash; but never an
+              order count. GMV is dollars; splitting it into a count needs a price, and the IPI is
+              a price. So the count below is this project's index doing a job no published figure
+              does, over the IPI's own time range.</li>
+            <li><b>The fall in orders is not a fall in dollars.</b> Real GMV is still
+              <b>above</b> its 2020 level. Every bit of the divergence is price: real GMV
+              <b>+11.3%</b> against a real price <b>+35.8%</b>, which leaves implied orders
+              <b>&minus;18.0%</b> against 2020 and <b>&minus;38.6%</b> from the 2021 peak.
+              Behind it is a composition shift Fiverr reports directly &mdash; active buyers
+              <b>4.20M &rarr; 2.70M</b> while spend per buyer rose every single year, $119 (2017)
+              to $368. Fewer buyers, each much larger.</li>
+            <li><b>Read the count as an upper bound on the decline, not an estimate of it.</b>
+              The divisor is the <b>listed</b> basic package, and buyers almost never buy it:
+              of the order amounts recovered from the archived pages, <b>99% are above $50</b>
+              against a listed median of $25&ndash;30. If realised price rose faster than the
+              listed index &mdash; which Fiverr's upmarket push implies &mdash; orders fell by
+              less than this.</li>
+            <li><b>The turn predates generative AI.</b> Implied orders peak in <b>2021</b>, and
+              the archive's own within-gig transaction proxy turns in <b>2020Q4</b> &mdash; both
+              before ChatGPT, marked on the chart. Buyer growth hit exactly <b>+0.0% in 2022</b>
+              after +44.7% and +23.5% in 2020&ndash;21, an era that fits ChatGPT and
+              post-pandemic normalisation equally well. Nothing here identifies a cause.</li>
+          </ul>
+          <div class="txlegend" id="txlegend"></div>
+        </div>
+        <div id="txchart"><div class="tip" id="txtip"></div></div>
+        <table class="txtable" id="txtable">
+          <caption class="sr-only">Fiverr transaction quantities, 2020 to the twelve months ending 2026Q2</caption>
+          <thead>
+            <tr>
+              <th scope="col">Year</th>
+              <th scope="col">Buyers (M)</th>
+              <th scope="col">Spend / buyer</th>
+              <th scope="col">GMV ($M)</th>
+              <th scope="col">Real GMV</th>
+              <th scope="col">Real price</th>
+              <th scope="col">Implied orders</th>
+            </tr>
+          </thead>
+          <tbody id="txrows"></tbody>
+        </table>
+        <div class="chartnote" id="txnote"></div>
+      </section>
+
+      <section class="card">
+        <div class="headline">
+          <h2 class="charttitle">Transactions by category</h2>
+          <div class="sub">Within-gig review accrual, age-adjusted &middot; index,
+            2020 four-quarter mean = 100 &middot; one panel per category</div>
+          <ul class="fxbullets">
+            <li><b>Fiverr publishes no category split</b> of GMV or buyers, so the
+              platform order count above cannot be broken apart. The only category-level
+              quantity in this project is <b>review accrual per gig</b> &mdash; how fast a
+              listing gains reviews &mdash; measured within each listing so that gigs
+              entering and leaving the panel cannot move it. Direction is corroborated by
+              Fiverr's own books; magnitude is not.</li>
+            <li><b>Six of the seven peak in the same quarter, 2020Q3</b>, and the fall is
+              a <b>step between 2021Q2 and 2021Q3</b> that happens in all seven at once
+              &mdash; roughly 15 to 20 index points each, fifteen months before ChatGPT.
+              Design's 2019Q3 peak sits in the shaded thin-panel stretch and should be
+              read as noise.</li>
+            <li><b>ChatGPT lands inside a plateau.</b> From 2022Q1 to 2023Q3 every
+              category sits between 58 and 84, and <b>five of the seven are higher in
+              2023Q3 than in 2022Q3</b> &mdash; design rises 67.2 to 83.8 across exactly
+              the window an AI story would have it falling. The next real step down is
+              <b>2023Q4</b>, a year after the launch.</li>
+            <li><b>The end-state contradicts AI exposure.</b> On the pre-registered
+              Eloundou ranking the two most exposed categories finish at opposite ends:
+              <b>writing worst at 23.7</b>, <b>translation second-best at 48.5</b>. Least
+              exposed of all seven is audio, at 43.9. An exposure story would have to
+              produce both ends from one mechanism.</li>
+            <li><b>What is and is not identified.</b> Within a gig, age and calendar
+              quarter move one-for-one, so the <b>shape</b> of each panel is identified
+              and its <b>trend is not</b> &mdash; part of every downward slope is listings
+              getting older. The <b>peak quarter</b> is the statistic that survives.
+              Separately, the archive captures gigs less often late in the window (mean
+              span 1.2 &rarr; 1.75 quarters), so some of the 2024 fall is the crawl.</li>
+          </ul>
+        </div>
+        <div id="ctxchart"><div class="tip" id="ctxtip"></div></div>
+        <table class="txtable" id="ctxtable">
+          <caption class="sr-only">Age-adjusted review-accrual index by category, 2018Q4 to 2024Q4</caption>
+          <thead><tr id="ctxhead"></tr></thead>
+          <tbody id="ctxrows"></tbody>
+        </table>
+        <div class="chartnote" id="ctxnote"></div>
       </section>
       </div>
 

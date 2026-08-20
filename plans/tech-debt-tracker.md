@@ -14,6 +14,7 @@ The decomposition also shows the exhibit cannot say what §3.4 claims. Splitting
 
 | # | What | Why Deferred | Priority | Added |
 |---|------|-------------|----------|-------|
+| TD2 | **The site's seven category colours are not distinguishable pairwise.** `data.json.colors` fails a colour-vision-deficiency check on all 21 pairs: worst CVD pair translation `#e87ba4` vs audio `#1baf7a` at **ΔE 6.1 (deutan)**, and translation vs video `#e34948` at **ΔE 13.2 for NORMAL vision** — below the 15 floor, i.e. hard to tell apart even with full colour vision. Three colours are also under 3:1 contrast on the card surface (audio 2.74, marketing 2.11, translation 2.62). This affects the **existing hero price chart**, where seven lines are overlaid and hue is the only identity cue. | Repainting changes the look of a chart the user built, and the category→colour mapping is used in the table sparklines and freelancer panels too, so it is a site-wide edit rather than a one-file fix. Step 62's new panel **sidesteps it by faceting** (one series per panel, identity in the title), so nothing new depends on the fix. | medium | 2026-08-20 |
 
 <details><summary>TD1 as originally filed (kept for the audit trail)</summary>
 
