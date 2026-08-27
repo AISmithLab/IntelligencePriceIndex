@@ -1,6 +1,255 @@
 # Progress Log
 
-## 2026-08-20 (evening, latest) — A volume card with no price index in it
+## 2026-08-27 (latest) — Notebook: price series, GEKS-Jevons, and a two-way FE event study
+
+**Motivation.** `balanced-prices.csv` is gitignored (88 MB), so the notebook
+could not be run from a clone — it fell through `first_present()` to the thin
+`pilot-prices.csv` without saying so.
+
+**Distribution fix.** The panels compress ~11x, which nobody had checked:
+
+| file | raw | gzip |
+|---|---|---|
+| `balanced-prices.csv` | 88.6 MB | **7.9 MB** |
+| `expanded-prices.csv` | 25.8 MB | **2.9 MB** |
+| `balanced-gig-category.csv.gz` (new, distilled from the 51 MB manifest) | — | 0.9 MB |
+
+All three are now committed and un-ignored; the raw CSVs stay ignored. Round-trip
+verified identical (`a.equals(b)`, 292,447 rows). `pd.read_csv` reads `.gz`
+transparently, so no analysis code changed. Verified by cloning the repo to a
+temp dir and executing the notebook there: **85 s, 0 errors, full 292k-row panel**.
+
+**New code.** `code/64-event-study-twfe.py` — tidy panel builder (steps 19/21
+filters: `is_gig`, known category, `0 < price <= 10000`, gig-quarter median) plus
+`balanced_sample()`, `event_study()` and `pretrend_test()`. Two-way FE by
+within-gig demeaning (Frisch-Waugh), SEs clustered on gig, no statsmodels
+dependency — the notebook must run on a bare clone. The GEKS index is **imported
+from `code/21-geks-index.py` unchanged**, not reimplemented.
+
+**Notebook.** `notebooks/00-explore.ipynb` gains §6 prices over time, §7
+GEKS-Jevons by category with bootstrap bands, §8 event study around the ChatGPT
+launch (2022-11-30 → cut 2022Q4, base 2022Q3). Series truncated at 2024Q4 per the
+open todo blocker on the thin 2025-26 tail.
+
+**Result (2020Q1-2024Q4, 16,128 gigs observed on both sides of the launch).**
+- Pre-trend **+0.047 log points/quarter (t = 42)**, linear to within ±0.02 across
+  11 pre-launch quarters. The market was repricing hard for two years before
+  ChatGPT existed.
+- **No break at the launch.** 2022Q4 and 2023Q1 sit on the pre-trend. This
+  reproduces the papers' null on an estimator they do not use.
+- Post-period **decelerates**: 2024Q4 lands −0.213 log points (≈ −19%) below the
+  extrapolated pre-trend, and the sign is consistent across all seven categories
+  (−0.078 translation to −0.264 writing).
+- **Not claimed as an effect.** No control group, and the gap rests on
+  extrapolating a linear trend 8 quarters past its last data point. Step 49's
+  mean-reversion failure mode produces the same picture with no treatment. The
+  notebook says this in-line so a reader cannot lift the number out of context.
+
+Smallest pre-slope and smallest post-gap are both **translation**, the category
+most exposed on any AI crosswalk — the opposite ordering to the commoditisation
+hypothesis. Not pursued here; noted for the exposure work.
+
+
+
+## 2026-08-26 — Jupyter, and the three tiers the 124 GB actually splits into
+
+From a user question ("can I work with the data in a Jupyter notebook?"). Nothing
+was installed: no `jupyter`, no `pandas`, no venv. The `code/*.py` tree runs on
+stdlib `csv` + `numpy` + `sklearn` under `/usr/bin/python3` with packages in
+`~/.local`, and that is deliberate — pandas appears in zero of the 63 scripts.
+
+**Install decision.** PEP 668 blocks a plain `--user` install on this Ubuntu
+24.04 image. Two options: a project venv, or `--user --break-system-packages`.
+Chose the latter, because `numpy`/`scipy`/`sklearn`/`matplotlib` already live in
+`~/.local` and a venv does **not** inherit the user site (venvs set
+`ENABLE_USER_SITE=False`), so a venv would have needed its own copy of the whole
+scientific stack and would have run notebooks in a *different* environment from
+the pipeline scripts. `--break-system-packages` writes only to `~/.local`, never
+to system dirs. Installed: `jupyterlab 4.6.3`, `ipykernel`, `pandas 3.0.5`,
+`pyarrow 25.0.1`, `duckdb 1.5.5`.
+
+**The storage survey the question forced.** 124 GB under `data/`, flat files, no
+database, splitting into three tiers that need three different tools:
+
+| tier | where | size | tool |
+|---|---|---|---|
+| derived indices | `data/pilot/*.csv`, `docs/*.json` | KB | `pd.read_csv` |
+| extracted price panel | `data/pilot/{balanced,recent,expanded}-prices.csv` | 4–85 MB | `pd.read_csv` (292,447 x 13, 1.2 s, 106 MB resident) |
+| pipeline intermediates | `data/cdx-index/*.tsv` | 1.3–5.8 GB | **duckdb** |
+| raw archived pages | `data/pilot/html*/` | 86 GB | `gzip.open`, one at a time |
+
+duckdb scans the headerless 1.3 GB `gig-month-index.tsv` in **3.5 s** — the
+category census (design 5.66M snapshots / 266,849 gigs, writing 3.29M/167,861,
+coding 2.22M/154,034, video 1.79M/62,328, marketing 1.03M/79,934, audio
+907k/32,940, translation 476k/22,771) is now a one-liner rather than a script.
+**Note the duckdb gotcha found by test:** the parameterised form
+`read_csv(..., columns=$cols, params={"cols": {...}})` is *silently ignored* —
+duckdb falls back to dialect sniffing and then fails on a headerless TSV. The
+column struct must be rendered inline via f-string.
+
+**Output:** `notebooks/00-explore.ipynb`, 16 cells, executed end-to-end under
+`jupyter nbconvert --execute` with **0 errors** before being shipped clean. It
+covers all four tiers plus the lineage hook — `prices.csv:file_path` points back
+to the exact `.html.gz` a price came from — and the download logs as the cheap
+index into the 86 GB HTML store (`recent-download-log.tsv`: 27,521 rows, 15,150
+`200`, 12,336 `fail`, 32 `404`, 3 `403`).
+
+**Not done:** no notebook server was started. On a remote VM that needs either an
+SSH tunnel or `--ip=0.0.0.0`, and binding a public port is the user's call.
+
+## 2026-08-25 — A page is a two-month window: what a live crawl can and cannot recover
+
+`code/63-live-recovery-calibration.py` -> `runs/live-recovery-calibration.out`,
+`code/63b-recovery-reach.py` -> `runs/recovery-reach.out`. From a user question
+about project direction given the missing 2025-26 data. The 2026-08-20 entry
+established that the archive is closed after 2024Q3 and will never reopen. The
+only remaining route to the dark window is that gig pages carry `created_at`
+per displayed order -- an ORDER date, not a capture date -- so a page fetched
+today describes the past. **These two steps measure how far into the past, and
+whose past.** No new collection: stored HTML plus the 2026-08-21 sitemap.
+
+### The reach curve — the number the crawl design turns on
+
+Pooling 11,698 displayed orders over 2,966 captures from 2024-01 on, lag =
+capture month - order month:
+
+| lag (months) | share | cumulative |
+|---|---:|---:|
+| 0-2 | 62.1% | 62.1% |
+| 3-5 | 18.5% | 80.6% |
+| 6-11 | 8.5% | 89.1% |
+| 12-23 | 7.0% | 96.2% |
+| 24+ | 3.8% | 100.0% |
+
+**Median lag 2 months.** A page is not an archive of a gig's history, it is a
+window on its last quarter. 74.7% of displayed orders are within 3 months,
+90.2% within 12.
+
+**Consequence for cadence.** A quarter not crawled while it is fresh is
+recoverable only through the 7% tail, and that tail decays. This is the same
+loss mechanism that took 2025, arriving through a different door. Cadence is
+not an operational detail of the forward panel; it *is* the forward panel.
+
+**Consequence for the back-fill.** The tail is thin but it is not nothing. One
+full sweep of the 289,273 sitemap gigs at 3.9 displayed orders per page is
+~1.13M displayed orders; the 12-23 month band is 7.0% of them, ~79k orders, at
+54-57% priced => **~44k dated, price-banded orders covering 2024-09 to 2025-08**
+-- against zero coverage today. Extrapolated from per-page rates, not measured
+at scale, and conditional on the pilot reproducing 3.9 orders per page.
+
+### Does a late page reproduce the quarter? On price, yes
+
+Part A holds survivorship fixed by construction: 2023 orders recovered from
+contemporaneous captures (202301-202406) vs from late captures (202410-202612),
+**within the same gigs**. 8,224 panel gigs have captures in both windows; 1,500
+sampled, 254 yielded 2023 orders in both arms.
+
+| arm | orders | %priced | median $ | >=$200 | rating | repeat |
+|---|---:|---:|---:|---:|---:|---:|
+| early (contemporaneous) | 13,744 | 61.5% | 150 | 29.4% | 4.926 | 37.6% |
+| late (lag 1-3 yrs) | 748 | 59.9% | 150 | 33.9% | 4.904 | 35.7% |
+
+Band shares agree to within a few points, with a **mild tilt toward expensive
+orders in the late arm** (-5.0pp at \$50-100, +2.4pp at \$1k+). The medians are
+identical and the gig-clustered bootstrap returns [+0, +0] -- but that CI is
+**degenerate on band discreteness**, not evidence of precision, since band
+midpoints put nearly every resample's median on the same value. The band table
+is the real evidence and the honest reading is *close, tilting slightly rich*.
+
+What does not survive is volume: **2.9 in-year orders per early page vs 0.22
+per late page, a 13x decay**, median 13 vs 0 per gig. Composition holds; count
+collapses. This is the reach curve seen from the other side.
+
+### Whose past — survivorship is severe and selected
+
+Part B matches the 53,855-gig stored panel against the 2026-08-21 sitemap.
+**17,287 still listed: 32.1%.**
+
+Attrition rises monotonically with age -- 2.2% of gigs last seen in 2018 are
+alive, 6.4% (2020), 19.4% (2022), 44.5% (2024). **That gradient is the check
+that the sitemap measures death rather than partial indexing**: a partial index
+would match a flat share of every cohort. Survival is also strongly selected:
+
+| quartile | % still live (by price) | % still live (by review count) |
+|---|---:|---:|
+| Q1 low | 22.4% | 20.8% |
+| Q4 high | 43.8% | 55.0% |
+
+A live fetch reaches the expensive, high-volume survivors. Orders placed in
+2025 at listings that have since died are **unreachable at any effort**, and
+they are disproportionately the cheap, thin end -- the end the commoditisation
+hypothesis is about.
+
+### Verdict
+
+Recovering the dark window from live pages is **viable and bounded, not clean**.
+Price composition validated (A); volume thin and survivor-selected (B). It
+yields a bounded estimate with a stated correction, never a series comparable
+to the archive era.
+
+The larger result is about direction: because a page is a two-month window, the
+project's long run is **forward, not backward**. The sitemap snapshots begun
+2026-08-19 are the asset; the back-fill is a one-off salvage of ~44k orders.
+
+### Open lever, for the pilot to settle
+
+Pages display ~4 of a median 168 reviews. If the paginated reviews endpoint is
+reachable, recovery per gig rises by up to ~30x and the reach curve flattens --
+which would turn the salvage into a genuine 2025 panel. Untested; it is the
+first thing the live pilot should answer.
+
+## 2026-08-20 (night, latest) — Why the archive stops in October 2024
+
+Diagnostic pass over the raw CDX (`data/cdx-index/raw/*.tsv`, 60.0M rows, 31 s
+awk scan). From a user question: "why is there less data for 2025 2026". The
+paper already says the trailing edge is closed; it did not say **why**, and the
+reason turns out to be sharper than indexing lag.
+
+### The cliff is in the archive, not in our filter
+
+All fiverr.com captures, any URL, any status, before any of our processing:
+
+| month | captures | 200 | 403 | 403% |
+|---|---:|---:|---:|---:|
+| 202409 | 631,594 | 515,607 | 4,582 | 0.7% |
+| 202410 | 171,258 | 137,516 | 1,971 | 1.2% |
+| 202411 | 141,063 | 76,469 | 3,693 | 2.6% |
+| 202412 | 84,488 | 42,096 | 1,608 | 1.9% |
+| 202501 | 80,108 | 34,360 | 561 | 0.7% |
+| 202502 | 20,727 | 5,384 | 588 | 2.8% |
+| **202508** | **251,431** | 12,322 | **194,667** | **77.4%** |
+| 202602 | 19,528 | 3,304 | 9,108 | 46.6% |
+| 202603 | 2,020 | 253 | 1,420 | 70.3% |
+
+**Two distinct events, not one.**
+
+1. **October 2024 — the crawl stops.** Volume falls 3.7x in one month and 30x
+   by February 2025, with the 403 rate still near zero. Nobody was blocked; the
+   archive simply stopped crawling Fiverr at scale. What survives shifts from
+   gig pages to `/categories/`, `/hire/`, and redirect chains — 3xx runs 36-42%
+   of all captures across 202411-202501, and `/login?return=self_view_page`
+   starts appearing as a *captured page* rather than a redirect.
+2. **August 2025 — the crawl resumes and is refused.** 186k requests in one
+   month, **166,618 of them gig-page-shaped 403s**, plus 19,095 429s. The 403
+   share then stays elevated (12.8% in 202512, 46.6% in 202602, 70.3% in
+   202603). Fiverr deployed something that refuses the archive's crawler.
+
+**Not caused by us.** The CDX index was pulled 2026-03-22 and never refreshed;
+our three crawls ran 2026-03, 2026-06/07, and 2026-08. The August **2025** wave
+predates all of them.
+
+### Consequence
+
+"Re-harvesting recovers nothing" (§3.2) is true for a stronger reason than the
+draft gives: the 2025-26 gap is not an indexing lag that will fill in, it is an
+origin refusing the crawler. **Nothing after 2024Q3 will ever arrive**, and a
+live forward crawl — already required for exit (`n_404 = 0`) — is now also the
+only route to any post-2024 observation at all. §3.2 should say so.
+
+Replay quality degrades on the same schedule: our fetch failure rate is 1.7% for
+2024 captures, **16.0% for 2025, 37.1% for 2026**.
+
+## 2026-08-20 (evening, latest-1) — A volume card with no price index in it
 
 `code/62-category-accrual.py` (new `pooled` series), `docs/data.json`,
 `docs/index.html`, `docs/ipi.js` (`drawVolume`). From a user correction:

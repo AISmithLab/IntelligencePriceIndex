@@ -36,6 +36,15 @@ data/pilot/html-expanded/
 # Regenerable from the manifests + code/38, code/41 and the pipeline drivers.
 # 85 MB / 25 MB price files and their logs would exceed GitHub's limits on a
 # public repo; the small pilot-scale equivalents above stay tracked.
+#
+# UPDATE 2026-08-27: the RAW csv stays ignored, but the gzip does not. These
+# panels compress ~11x (88.6 -> 7.9 MB, 25.8 -> 2.9 MB), which is smaller than
+# pilot-prices.csv, already tracked. `pd.read_csv` reads .gz transparently, so
+# `notebooks/00-explore.ipynb` picks up the full balanced panel on a fresh clone
+# instead of silently falling back to the thin pilot. Do not add *.csv.gz here.
+# The category lookup (balanced-gig-category.csv.gz, 0.9 MB) is committed for the
+# same reason -- it is distilled from balanced-manifest-1200.tsv, which is 51 MB
+# and ignored by the *-manifest*.tsv rule above.
 data/pilot/balanced-prices.csv
 data/pilot/expanded-prices.csv
 data/pilot/gig-status-ledger.tsv
