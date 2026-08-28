@@ -595,8 +595,30 @@ function drawVolume() {
       fill: "none", stroke: VOL_ACCRUAL, "stroke-width": 1.3, opacity: .55 }));
     svg.appendChild(el("text", { _svg: 1, x: X(qn(qs[pk])), y: Y(acc[pk]) - 14,
       "text-anchor": "middle", "font-size": 10, "font-weight": 700, fill: VOL_ACCRUAL },
-      [`peak ${qs[pk]} · ${acc[pk].toFixed(0)}`]));
+      [`accrual peak ${qs[pk]} · ${acc[pk].toFixed(0)}`]));
   }
+  // The 2022Q1-2023Q3 plateau ends in a RALLY, not a slide, and leaving it
+  // unmarked made the stretch look flatter than it is -- 2023Q3 is the busiest
+  // quarter since 2021Q4. It is a local high inside a decline, labelled as one.
+  let lh = -1;
+  for (let i = 0; i < qs.length; i++)
+    if (qs[i] >= "2022Q1" && qs[i] <= "2023Q3" && acc[i] != null &&
+        (lh < 0 || acc[i] > acc[lh])) lh = i;
+  if (lh >= 0) {
+    svg.appendChild(el("circle", { _svg: 1, cx: X(qn(qs[lh])), cy: Y(acc[lh]), r: 6,
+      fill: "none", stroke: VOL_ACCRUAL, "stroke-width": 1.2, opacity: .45,
+      "stroke-dasharray": "2 2" }));
+    svg.appendChild(el("text", { _svg: 1, x: X(qn(qs[lh])), y: Y(acc[lh]) - 12,
+      "text-anchor": "middle", "font-size": 9.5, fill: VOL_ACCRUAL, opacity: .85 },
+      [`local high ${qs[lh]} · ${acc[lh].toFixed(0)}`]));
+  }
+  // active buyers peaks in a DIFFERENT year from accrual, which is the whole
+  // reason an unqualified "peak" label was wrong here
+  let bp = 0;
+  bidx.forEach((v, i) => { if (v > bidx[bp]) bp = i; });
+  svg.appendChild(el("text", { _svg: 1, x: X(bx[bp]), y: Y(bidx[bp]) - 12,
+    "text-anchor": "middle", "font-size": 9.5, "font-weight": 700, fill: VOL_BUYERS },
+    [`buyers peak ${byrs[bp]}`]));
   if (!narrow) {
     const lastA = keep[keep.length - 1];
     [[Y(lastA[1]), X(qn(qs[lastA[0]])), VOL_ACCRUAL, "Review accrual", lastA[1], qs[lastA[0]]],
@@ -754,8 +776,15 @@ function drawTransactions() {
       fill: "none", stroke: TX_COLORS.orders, "stroke-width": 1.3, opacity: 0.55 }));
     svg.appendChild(el("text", { _svg: 1, x: X(pk), y: Y(ord[pk]) - 14, "text-anchor": "middle",
       "font-size": 10, "font-weight": 700, fill: TX_COLORS.orders },
-      [`peak ${yrs[pk]} · ${ord[pk].toFixed(0)}`]));
-    svg.appendChild(el("text", { _svg: 1, x: X(n - 1) - 6, y: Y(ord[n - 1]) + 24,
+      [`orders peak ${yrs[pk]} · ${ord[pk].toFixed(0)}`]));
+    // real GMV peaks in a different year from orders. Marking only the orders peak
+  // invited "but GMV peaked in 2023" -- which is true of the NOMINAL series and
+  // is exactly the confusion this label removes.
+  const gm = TX.gmv_real, gp = gm.indexOf(Math.max(...gm));
+  svg.appendChild(el("text", { _svg: 1, x: X(gp), y: Y(gm[gp]) - 12,
+    "text-anchor": "middle", "font-size": 9.5, "font-weight": 700, fill: TX_COLORS.gmv_real },
+    [`real GMV peak ${yrs[gp]}`]));
+  svg.appendChild(el("text", { _svg: 1, x: X(n - 1) - 6, y: Y(ord[n - 1]) + 24,
       "text-anchor": "end", "font-size": 10, "font-weight": 700, fill: TX_COLORS.orders },
       [`−${(100 * (1 - ord[n - 1] / ord[pk])).toFixed(0)}% from peak`]));
   }
