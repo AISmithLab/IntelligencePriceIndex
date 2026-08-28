@@ -1,6 +1,50 @@
 # Progress Log
 
-## 2026-08-27 (latest) — Notebook: price series, GEKS-Jevons, and a two-way FE event study
+## 2026-08-28 (latest) — Notebook §7: 35 fine-grained categories, nominal and real
+
+**Ask.** Two GEKS-Jevons charts in `notebooks/00-explore.ipynb` — one with general
+inflation still in it, one with it taken out — and finer categories than the seven
+broad domains.
+
+**What changed.** §7 was one chart of 7 nominal lines; it is now a build cell, two
+2x4 small-multiple grids (one panel per family holding its narrow lines, plus a
+last panel with the 7 domains for scale), a summary table and a reading note.
+Estimator, taxonomy and deflator are all **imported, none reimplemented**:
+`code/21-geks-index.py` (GEKS), `code/16-subclassify-narrow.py` (the narrow split),
+`code/23-real-index.py`'s `cpi-quarterly.csv` (CPI-U SA), wired together by
+`code/66-narrow-real-geks.py`. Both grids share one y-axis, so the vertical gap
+between them *is* CPI-U.
+
+**Coverage.** All **35 narrow buckets** clear 20/20 quarters at `pair_density`
+**1.00** on the balanced panel (36,449 gigs in window) — step 16's thin-subcategory
+warning was about the recent *monthly* manifest; quarterly matched-model is a much
+easier gate. Nothing hit the <100-gig fold-back rule. Narrow SEs are bootstrapped
+(100 gig resamples); the broad lines carry no band so they skip the bootstrap. The
+deflator is a per-quarter constant with no sampling error, so the nominal SEs apply
+unchanged to the real levels — no separate real bootstrap, as in step 23.
+
+**Result (2020Q1 -> 2024Q4, CPI-U +22.3%).**
+- Deflation removes about a fifth of every line and changes **no** sign: real
+  increases run **+3% to +155%** across the 35 buckets.
+- The only two intervals covering zero are the translation pair — **Subtitles &
+  Transcribe +3.1% real [-12.1, +21.0]** and **Translation +5.5% [-3.0, +14.8]**.
+  The most AI-exposed cell on the project's crosswalks is the one place a flat real
+  price shows up. `translation · other` (the keyword remainder, and the family's
+  largest bucket) does *not* behave like them: +51.2%.
+- Fastest real risers: Email & Funnels +155%, Ads & PPC +144%, UI/UX & Web +144%,
+  Automation & Bots +142%. Slowest after translation: Illustration +20%, Logo &
+  Brand +30%, SEO +39%.
+- **No break at the ChatGPT line on either chart at either level** — the fine split
+  does not rescue the null, it localises the one flat series.
+
+**Verified.** Notebook executed end to end with nbconvert, 0 errors, 6 figures;
+outputs stripped again before saving (repo convention).
+
+**Note.** `code/66-narrow-real-geks.py` and `data/pilot/balanced-narrow-geks.csv`
+are still untracked — the notebook now imports the former, so it has to be
+committed before the notebook runs from a clone.
+
+## 2026-08-27 — Notebook: price series, GEKS-Jevons, and a two-way FE event study
 
 **Motivation.** `balanced-prices.csv` is gitignored (88 MB), so the notebook
 could not be run from a clone — it fell through `first_present()` to the thin
