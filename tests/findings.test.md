@@ -1,7 +1,7 @@
 # Tests: Findings
 
 **Draft file:** drafts/sections/findings.md
-**Last reviewed:** 2026-08-06
+**Last reviewed:** 2026-08-28
 
 ## Reviewer Simulation
 
@@ -17,6 +17,7 @@
 | R8 | "You report a real rise of +40.7% and then spend a section explaining it away. What is left that is actually about AI?" | major | **PASS (by concession)** | §4.4 concludes that after inflation and reputation "the residual is smaller than the headline and is not separately identified," and §4.7 states that the pilot cannot attribute it on any margin. §5.2 sets out four readings the data cannot distinguish. The paper concedes the point rather than defending a residual it cannot measure — which is the reviewer's desired outcome, though a reviewer may reasonably ask whether the title still fits. |
 | R9 | "Your category table is sorted and invites a ranking. Do you rank or not?" | major | **PASS** | §4.3 states in bold that the table is not a ranking, gives the overlapping intervals for the top three (audio 221–292, translation 190–307, marketing 214–252) and says which-is-highest is not determined by these data. The one genuine separation (design 117–129 vs audio 221–292) is stated as such. §6.1 repeats it because point-estimate orderings are what get quoted onward. |
 | R10 | "Six of seven categories miss your own precision standard, yet you report all seven to one decimal place." | minor | **PASS** | Every quoted figure carries its band in the same table (§4.3), failing cells are marked in a dedicated column, and §4.3 explains that the precision ordering tracks matched-gig density rather than category identity. The historical segment for the three not-identified categories is withheld entirely rather than banded. |
+| R11 | "Your category levels are an artefact of two choices you do not report: Jevons averages *log* ratios on a right-skewed distribution, and the sampling frame. Show me the same estimator gives the same ordering on another frame." | major | **FAIL** | **Opened 2026-08-28** from the notebook §7 fine-grained run. Both halves of the critique land. **Skew:** coding's matched 2020Q1→2024Q4 log changes are 0.00 / 0.69 / 2.07 at the 20th/50th/90th percentile, so the plotted mean-of-logs level (+145% nominal) sits far above the median-of-logs read (+74%). It is not outlier contamination — 1% trimming moves it 0.5 index points — it is the whole right tail, and the paper reports only the mean. **Frame:** the same step-21 estimator ranks coding **first (+145%)** on the balanced frame and **fourth (+112%)** on the published panel frame, where audio leads at +259%. R9 already says the table is not a ranking; this is the evidence for *why*, and it is stronger than the overlapping-intervals argument currently given. Needs: report the median-of-logs variant beside the index, and state the frame dependence in §4.3 rather than leaving it to a reader who has both files. Diagnostics live in `code/66-narrow-real-geks.py` (`geks_variant`, `floor_shares`) and notebook §7. |
 
 ## User Requirements
 
