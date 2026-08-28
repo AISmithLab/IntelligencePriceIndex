@@ -1,6 +1,32 @@
 # Progress Log
 
-## 2026-08-28 (latest) — marketing: high, and it survives every check coding fails
+## 2026-08-28 (latest) — second merge with AP, and two bugs fixed in her cells
+
+`origin/mockup` moved again: the same author re-pushed `00-explore.ipynb` from the
+same stale base, so the push again dropped §7's real chart, the check cell, the §9
+heading and the `geks_df` alias. Merged by hand a second time, keeping her newest
+cells verbatim except for two fixes — **the notebook she pushed contains both
+errors in its own committed outputs**:
+
+- `NameError: geks_df` (cells 32, 34). §7 renamed that table when it moved to 35
+  categories. Fixed by aliasing `geks_df = nom_b` in the §7 build cell, so her code
+  reads the broad nominal table under its old name and needs no edit.
+- `KeyError: 'pre_fitted_index'` (cell 34 §8 plot). `pre` and `post` are copies
+  taken *before* the fitted columns are added to `g`, so the columns do not exist on
+  them. Fixed to `g.loc[pre.index, ...]` / `g.loc[post.index, ...]`, which is what
+  the code intends.
+- Her `statsmodels` cell stays guarded — statsmodels is not a project dependency and
+  the notebook must run on a bare clone. It prints a skip pointing at §8.
+
+Verified: **39 cells, 0 errors, 7 figures.** The `KeyError` fix is structural
+(`pre.index` is a row subset of `g`) and is not exercised here, because statsmodels
+is absent on this machine and the cell skips.
+
+**Coordination note.** Two pushes in a row have been made from a base that predates
+§7, and each one silently deleted work. Worth agreeing that the notebook is edited
+from a fresh pull, or split so two people are not writing the same file.
+
+## 2026-08-28 — marketing: high, and it survives every check coding fails
 
 **Trigger.** User: marketing seems really high. It is — +211% nominal / +172% real
 at the broad level — and unlike coding it holds up. Same battery plus two new tests,
