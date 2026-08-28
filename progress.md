@@ -1,6 +1,62 @@
 # Progress Log
 
-## 2026-08-28 (latest) — Notebook §7: 35 fine-grained categories, nominal and real
+## 2026-08-28 (latest) — merge: a second author's composite pre-trend, and a chart that came back
+
+`origin/mockup` had moved: a second author (AP) edited `00-explore.ipynb` on
+GitHub, appending a composite pre-trend analysis — geometric mean across the seven
+broad GEKS domains, log-linear trend fitted on pre-launch quarters only, post
+period read as a gap against the extrapolation. Their edit was made against the
+pre-§7 notebook, so the merge as GitHub resolved it **dropped the deflated (real)
+chart** and left their cells calling `geks_df`, a name §7 no longer defined.
+
+Resolved by hand, keeping both sides:
+- the real chart is back, with the §7 robustness cell;
+- their cells are kept verbatim as **§9**, with a heading that says what the design
+  is and that §8 runs the same test on a within-gig estimator;
+- `geks_df = nom_b` aliased in the §7 build cell, so their code reads the broad
+  nominal table under its old name and needs no edit;
+- their `statsmodels` cell is guarded — statsmodels is not a project dependency and
+  the notebook must run on a bare clone; it prints a skip and points at §8.
+
+Verified: 39 cells, **0 errors, 7 figures**, statsmodels absent on this machine.
+Their composite reproduces §8's shape — flat gap through 2022, negative after.
+
+## 2026-08-28 — §7 robustness: the coding line is skew and frame, not a bug
+
+**Trigger.** User: the coding trend looks suspiciously high. It does, and the
+suspicion lands on the estimator and the sampling frame rather than on the chart.
+
+**New in `code/66-narrow-real-geks.py`:** `geks_variant()` (the same GEKS walk with
+the bilateral aggregator swapped — median-of-logs instead of the mean Jevons is
+defined as) and `floor_shares()`. Both are diagnostics; the plotted index is
+unchanged. A cell in §7 runs them.
+
+**Three findings, in size order.**
+1. **Skew, not outliers.** Coding's matched 2020Q1→2024Q4 log changes run
+   0.00 / 0.69 / 2.07 at the 20th/50th/90th — the typical matched coding gig
+   exactly doubled ($25→$50), the top decile went eight-fold ($10→$80). Jevons
+   averages logs, so the plotted level (**+145%**) sits far above the median-of-logs
+   read (**+74%**). **1% trimming moves it 0.5 index points**, so this is the whole
+   right tail, not a few bad rows.
+2. **Frame dependence.** Same estimator, panel frame the site publishes: coding is
+   **fourth (+112%)** behind audio (+259%). On the balanced frame it is first. "Coding
+   rose fastest" is a property of the frame.
+3. **The cheap end carries the leverage, but does not explain the ranking.**
+   Listings entering at ≤$10 reprice **2-3x faster per observed quarter** than dearer
+   ones in every family, and a $5→$50 move is +2.30 log points against +0.18 for
+   $500→$600. **The obvious floor-erosion story fails as an explanation of the
+   ordering**: translation is the most floor-heavy family (64.5% at or below $5 in
+   2020, still 32.7% in 2024) and is the flattest series on the chart.
+
+**Unchanged by all three:** the within-family ordering and the nominal/real gap,
+including the flat translation result (real +3.1% and +5.5%, both intervals
+covering zero).
+
+**Also confirmed:** the deflation is arithmetically right — CPI-U rose only 22.3%
+across five years while these series moved 40-200%, so the real chart still rises
+steeply. That is the deflator being small, not the deflator being missing.
+
+## 2026-08-28 — Notebook §7: 35 fine-grained categories, nominal and real
 
 **Ask.** Two GEKS-Jevons charts in `notebooks/00-explore.ipynb` — one with general
 inflation still in it, one with it taken out — and finer categories than the seven

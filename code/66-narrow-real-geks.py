@@ -36,7 +36,8 @@ family, so dropping them would hide most of the gigs. They are labelled as
 remainders so nobody reads them as a named niche.
 
 Library use (imported by notebooks/00-explore.ipynb section 7):
-    add_narrow, nested_by, geks_table, load_deflator, deflate
+    add_narrow, nested_by, geks_table, load_deflator, deflate,
+    geks_variant, floor_shares
 CLI:
     python3 code/66-narrow-real-geks.py [--boot N] [--broad]
         writes data/pilot/balanced-narrow-geks.csv and prints the summary table
@@ -200,6 +201,65 @@ def geks_table(nested, cpi, n_boot=N_BOOT, seed=SEED, window_start=START_Q):
                   if d else pd.DataFrame())
 
     return _df(nom), _df(real), _df(ses), pd.DataFrame(diags)
+
+
+def geks_variant(nested, agg=np.median, window_start=START_Q):
+    """The same GEKS walk with the *bilateral aggregator* swapped out.
+
+    A Jevons bilateral is the MEAN of within-gig log price ratios -- that is the
+    definition, and `geks_index` implements it. But the distribution of those log
+    ratios is heavily right-skewed on this panel (coding's 2020Q1->2024Q4 deciles
+    run 0.00 / 0.69 / 2.07 at the 20th / 50th / 90th), and the mean of a skewed
+    log distribution sits well above its median. Swapping in the median answers
+    "how much did the typical matched gig reprice?" instead of "what is the mean
+    log repricing?", and the gap between the two is a direct read on how much of a
+    category's level is skew rather than a broad move.
+
+    This is a diagnostic, not an index: the median variant is not transitive-by-
+    construction in the same clean way and is not what the papers report. It reuses
+    step 21's internals so the walk itself is identical.
+    """
+    out = {}
+    for cat, panel_cat in nested.items():
+        by_q, quarters = geks._log_panel(panel_cat, window_start)
+        if len(quarters) < 2:
+            continue
+        lnP = {}
+        for i, s_q in enumerate(quarters):
+            for t_q in quarters[i + 1:]:
+                common = by_q[s_q].keys() & by_q[t_q].keys()
+                if len(common) >= geks.MIN_MATCH:
+                    d = float(agg([by_q[t_q][g] - by_q[s_q][g] for g in common]))
+                    lnP[(s_q, t_q)] = d
+                    lnP[(t_q, s_q)] = -d
+        for q in quarters:
+            lnP[(q, q)] = 0.0
+        lv = geks._geks_levels(lnP, quarters, quarters[0])
+        if quarters[0] in lv:
+            out[cat] = {q: 100.0 * np.exp(v - lv[quarters[0]]) for q, v in lv.items()}
+    return (pd.DataFrame(out).sort_index(key=lambda s: s.map(q_to_int))
+            if out else pd.DataFrame())
+
+
+def floor_shares(gq, by="category", price_col="price_basic"):
+    """Share of listings at or below Fiverr's old $5 floor, and at or below $10,
+    in the first and last year of the window.
+
+    The floor is why a matched-model index on this market runs hot: a $5 listing
+    that becomes $50 is +2.3 log points and counts exactly as much in a Jevons
+    bilateral as a $500 listing that becomes $600 (+0.18). Categories differ a lot
+    in how much of their 2020 mass sat on the floor, so they differ in how much of
+    their index is floor erosion."""
+    d = gq.copy()
+    d["year"] = d.quarter.str[:4]
+    first, last = d.year.min(), d.year.max()
+    out = {}
+    for cat, sub in d.groupby(by, observed=True):
+        a, b = sub[sub.year == first][price_col], sub[sub.year == last][price_col]
+        out[cat] = {f"pc_le5_{first}": 100 * (a <= 5).mean(),
+                    f"pc_le5_{last}": 100 * (b <= 5).mean(),
+                    f"median_{first}": a.median(), f"median_{last}": b.median()}
+    return pd.DataFrame(out).T
 
 
 def build(prices=PRICES_CSV, categories=CATEGORY_CSV, level="narrow",
