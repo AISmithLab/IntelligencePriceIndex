@@ -1,6 +1,27 @@
 # Progress Log
 
-## 2026-08-28 (latest) — §7 robustness: the coding line is skew and frame, not a bug
+## 2026-08-28 (latest) — merge: a second author's composite pre-trend, and a chart that came back
+
+`origin/mockup` had moved: a second author (AP) edited `00-explore.ipynb` on
+GitHub, appending a composite pre-trend analysis — geometric mean across the seven
+broad GEKS domains, log-linear trend fitted on pre-launch quarters only, post
+period read as a gap against the extrapolation. Their edit was made against the
+pre-§7 notebook, so the merge as GitHub resolved it **dropped the deflated (real)
+chart** and left their cells calling `geks_df`, a name §7 no longer defined.
+
+Resolved by hand, keeping both sides:
+- the real chart is back, with the §7 robustness cell;
+- their cells are kept verbatim as **§9**, with a heading that says what the design
+  is and that §8 runs the same test on a within-gig estimator;
+- `geks_df = nom_b` aliased in the §7 build cell, so their code reads the broad
+  nominal table under its old name and needs no edit;
+- their `statsmodels` cell is guarded — statsmodels is not a project dependency and
+  the notebook must run on a bare clone; it prints a skip and points at §8.
+
+Verified: 39 cells, **0 errors, 7 figures**, statsmodels absent on this machine.
+Their composite reproduces §8's shape — flat gap through 2022, negative after.
+
+## 2026-08-28 — §7 robustness: the coding line is skew and frame, not a bug
 
 **Trigger.** User: the coding trend looks suspiciously high. It does, and the
 suspicion lands on the estimator and the sampling frame rather than on the chart.
