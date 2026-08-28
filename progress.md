@@ -1,6 +1,37 @@
 # Progress Log
 
-## 2026-08-28 (latest) — merge: a second author's composite pre-trend, and a chart that came back
+## 2026-08-28 (latest) — marketing: high, and it survives every check coding fails
+
+**Trigger.** User: marketing seems really high. It is — +211% nominal / +172% real
+at the broad level — and unlike coding it holds up. Same battery plus two new tests,
+one of which is now in §7's check cell.
+
+- **Churn (new, in the notebook).** Marketing's listings are the shortest-lived on
+  the panel: median **9 quarters** between first and last capture against design's
+  33. That made entry composition the obvious suspect. Restricting to gigs spanning
+  8+ quarters (36,449 → 25,401 gigs) moves the marketing level **210.79 → 210.69,
+  0.04%**, and moves no other domain by more than 0.2. 30 of 190 bilaterals change;
+  the levels do not. Churn is not carrying any of these indices.
+- **Leave-one-out.** No single gig is worth more than **16 of 305** index points
+  (5%) in Ads & PPC at 2024Q3.
+- **Thinness.** Ads & PPC matches a median of **61** gigs per quarter pair, minimum
+  10; email_funnel median 31, minimum 9. Not a MIN_MATCH=3 artefact.
+- **Frame.** Marketing reads **+282% on the published panel frame** against +211%
+  here — it replicates *higher* elsewhere, where coding's rank collapses from 1st
+  to 4th.
+- **What it does have is width.** Email & Funnels reads **373 at 2024Q2** against
+  321 and 318 either side, 95% band **[284, 491]**. The visible spike in the nominal
+  chart is inside the noise and must not be read as an event.
+
+Marketing keeps the skew haircut every line has: median-of-logs 157.8 against the
+plotted 210.8, so the typical matched marketing gig is nearer +58% than +111%.
+
+**Also noted, not yet chased:** entrants price *below* incumbents in marketing
+($15 vs $30 at 2023Q1), coding and design. §6's prose asserts the opposite, citing
+step 57 §4 — but step 57's finding was about **AI-labelled** entrants specifically.
+The general claim as §6 words it is not supported by this panel.
+
+## 2026-08-28 — merge: a second author's composite pre-trend, and a chart that came back
 
 `origin/mockup` had moved: a second author (AP) edited `00-explore.ipynb` on
 GitHub, appending a composite pre-trend analysis — geometric mean across the seven
