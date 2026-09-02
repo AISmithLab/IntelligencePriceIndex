@@ -1,6 +1,360 @@
 # Progress Log
 
-## 2026-08-28 (latest) — second merge with AP, and two bugs fixed in her cells
+## 2026-09-01 (evening, latest) — the price model is in the notebook, as §10
+
+From a user instruction. `notebooks/00-explore.ipynb` gains **§10 — the price model —
+task value, inflation, reputation, and AI exposure**: 15 cells, three charts, and every
+number reproducing `runs/price-model/model.md` to the printed digit.
+
+**It imports step 76 rather than restating it.** §10 calls `build_panel`, `design`,
+`fe_ols`, `qdummies`, `mde` and `load_slug_exposure` out of `code/76-price-model.py`, the
+same convention §7 uses for step 21's GEKS estimator and §8 for step 64's event study. So
+the notebook and the script are one fit, not two implementations that agree today.
+
+**Two small changes to step 76 were needed to make §10 clone-runnable.** `PRICES` now
+falls back from `balanced-prices.csv` (88 MB, gitignored) to `balanced-prices.csv.gz`
+(7.9 MB, committed), and `build_panel(prices, category)` takes paths so the notebook can
+hand it the ones its preflight resolved. The script's own behaviour on this machine is
+unchanged.
+
+**What §10 shows, in the order the user posed the question.**
+- *Deflation* removes **−10.2%** of mean log price before anything is estimated.
+- *Reputation and task value*, with a chart that makes the fixed-effect argument
+  visible: task value SD **1.249** log points against reputation 0.175, the quarter
+  path 0.078 and a 0.348 residual. Seven times the spread of everything time-varying
+  put together — which is why a proxy would be mis-measuring the largest term.
+- *The pre-registered AI test*: `Exposure x Post` −0.0333 (t −1.35) against an MDE of
+  **0.0689**, printed side by side so the silence reads as a silence.
+- *The battery* as a six-row verdict table (A FAIL, B FAIL, C PASS, D FAIL, E 2.03x,
+  F UNDERPOWERED), with the four significant pre-period interactions printed beneath.
+- *The exploratory measure* and why its +13.76% per 10pp is not a finding.
+
+**The chart that carries the argument** is the new one: `Exposure x` every quarter, base
+2019Q4 — the same base gate A uses, so the four ringed points are exactly the four the
+gate counts. It shows the exposure gap **opening across 2021, entirely before ChatGPT
+exists, and then flat for the whole post-period**. The divergence a DiD would have
+attributed to AI had already happened. That is a more legible statement of the failure
+than the coefficient table, and it is the first time the project has drawn it.
+
+Beside it, §10.5 plots step 75's AI share by category (the 2023Q1 wall) against the
+coefficient before and after category trends — +13.76% collapsing to +0.73% — so the
+standing rule has a picture attached to it.
+
+Notebook executes clean end to end from a fresh kernel (§3 duckdb and §9's statsmodels
+guards unchanged) and the run is committed, so the charts are visible without running it.
+
+## 2026-09-01 (evening, later) — the price model: reputation is solid, the AI term is a silence
+
+Built to the user's specification: deflate posted prices with CPI-U, estimate task value
+(x) and reputation (z), then ask whether the remaining variation tracks AI exposure after
+ChatGPT under gig and quarter fixed effects. `code/76-price-model.py` →
+`runs/price-model/model.md`, plan in `plans/active/price-model.md`.
+
+    ln(real price)_it = a_i + d_t + b1*ln(1+reviews)_it + b2*rating_it
+                        + g*(Exposure_c x Post_t) + e_it
+
+Panel **169,337 gig-quarter observations / 15,676 gigs, 2019Q4–2024Q4**, gigs seen both
+sides of 2022Q4, real in 2020Q1 dollars by step 23's convention, gig-clustered SEs.
+
+**What is estimated cleanly.**
+- **Reputation.** A doubling of cumulative reviews carries **+7.33%** real price
+  (b=0.1021, t=25.9). That independently **replicates step 22/27's +7.7%** on a different
+  panel, in real terms. Rating adds **+10.4%** per point (t=2.81).
+- **Task value.** Time-invariant, so it is the gig fixed effect, recovered post-fit and
+  written to `task-value.csv`. SD **1.249 log points** across 15,676 gigs — an order more
+  variation than anything time-varying here, which is the argument for keeping it a fixed
+  effect rather than proxying it. Medians: coding +2.14, marketing +2.11, video +2.00,
+  writing +1.89, audio +1.80, design +1.75, **translation +0.80**.
+- Deflation removes **−10.2%**: mean ln price 3.2929 nominal → 3.1858 real.
+
+**The AI term is null, and the null is not informative.** `Exposure x Post` =
+**−0.0333 (se 0.0246, t −1.35)**, −1.95% across the exposure spread. The MDE at 80% power
+is **0.0689** — the point estimate sits **below** it, so this rules out nothing. It is a
+silence, not a zero.
+
+**And it fails the step-29 battery anyway.**
+- **A parallel trends — FAIL.** 4 of 11 pre-launch interactions significant (2021Q3–2022Q2,
+  t −2.05 to −2.36). Per the prereg the DiD is dead, synthetic control the only fallback.
+- **B trend race — FAIL.** Adding `Exposure x trend` **flips the sign**, −0.0333 → +0.0358;
+  the trend term itself is significant (t −2.24).
+- **C placebo — PASS** (−0.0595, t −1.78). *Deviation recorded:* the prereg's 2019Q2 break
+  sits before this panel opens, making `Post` all-ones and the estimate vacuous — the first
+  run printed a NaN t and a false PASS. Moved to the pre-period midpoint, 2021Q2.
+- **D first differences — FAIL.** +0.0081 (t +0.59).
+- **E inference.** Gig clustering inflates the SE **2.03×** (0.0121 → 0.0246), the same
+  order as step 22's 1.93× error.
+
+**The exploratory measure looked like a finding and was not — this is the day's most
+useful result.** Step 75's market-measured AI share enters directly (it varies by category
+*and* quarter, so both FEs leave it identified) and returns **+1.2888, t +11.23** — a 10pp
+rise in a category's AI-branded share associated with **+13.76%** real price, CI +11.2% to
++16.3%. Large, tight, and exactly the shape step 29 warned about. **Adding one linear trend
+per category collapses it to +0.0727 (t +0.84), a 10pp effect of +0.73%.** It was measuring
+"coding rose and translation did not", not AI. First differences leave it marginal
+(+0.1434, t +2.03), but the trend test is the decisive one for a category-by-quarter
+regressor. **New standing rule: any category-by-quarter regressor gets category-specific
+trends before it is quoted.**
+
+**Bottom line.** Net of inflation, task value and reputation, there is no detectable
+association between AI exposure and real price on this panel — and the design is not
+powered to rule out a small one. What the data does support is the reputation treadmill.
+
+## 2026-09-01 (late) — what a balanced seven-category panel can actually be, and a market-derived AI measure
+
+User stated the goal: **balanced data across categories, to model price on task value,
+inflation, AI exposure and reputation.** That reframes the collection question, and the
+answer changes with it.
+
+**`code/75-ai-slug-diffusion.py` → `runs/ai-slug-diffusion/diffusion.md`.** Step 57 dates
+in-market AI diffusion at 2023Q1 from gig titles, but only over the 384,983 gig-date
+observations that were downloaded — a sample with seams (2024Q2 holds 10,600 observations,
+2024Q3 holds 52,087, and the raw share jumps 1.38% → 3.26% across that seam) and thin tails
+(~2,000/quarter from 2025). The slug **is** the title and it is in `urlkey` for every
+capture, so the same measure runs over the whole index: **1,772,000 distinct gigs**, no
+crawl, and no dependence on step 04, so the classifier leak cannot bias it. Step 57's
+audited classifier is imported verbatim, guards included; the pre-2022Q4 false-positive
+floor reproduces at **0.025%** (379 of 1,544,517 gigs) against step 57's ~0.02%.
+
+- **The break is confirmed at 2023Q1 with 4.6× the sample.** Entry-cohort AI_GEN share runs
+  0.00–0.16% for eighteen quarters, then **0.16% → 4.97%** in one quarter. Stock share
+  0.10% → 1.94%, peaking 2.89% in 2024Q1.
+- **By category it is enormously uneven** — this is the finding. 2022Q4 → 2023Q1 AI_GEN
+  share of entering gigs: **coding 0.50% → 14.68%**, writing 0.19% → 6.00%, audio
+  0.25% → 3.01%, design 0.04% → 2.27%, video 0.05% → 1.33%, **marketing 0.00% → 0.35%**,
+  **translation 0.00% → 0.00%**.
+- **This ranking contradicts the pre-registration.** `transaction-volume-prereg.md` locks
+  HIGH = {translation, writing} and LOW = {video, audio} off Eloundou's occupation scores.
+  Measured inside the market, **translation is the least AI-branded of the seven** and
+  coding — quarantined in the prereg — is far the most. Using step 75's measure as
+  treatment is therefore a **new pre-registration, not a substitution into the existing
+  one**. Recorded before any outcome was estimated on it.
+
+**What balance can actually be (computed from the v2 gig summary).** The largest quota all
+seven categories can meet, per adjacent pair, is set by **translation in 29 of 30 pairs**:
+
+| categories | floor | longest contiguous window | v1 | v2 |
+|---|---|---|---|---|
+| all seven | 500 | 2019Q4→2024Q4 | 20 pairs | 20 pairs |
+| all seven | 600 | 2019Q4→2024Q1 | 17 pairs | 17 pairs |
+| six (no translation) | 1000 | v1 2019Q4→2023Q2 / v2 2019Q4→2024Q4 | **14 pairs** | **20 pairs** |
+| six (no translation) | 1200 | v1 2020Q4→2023Q1 / v2 2019Q4→2023Q2 | **9 pairs** | **14 pairs** |
+
+Two conclusions, and they point opposite ways:
+
+- **With translation in, the re-classification buys exactly nothing** — v1 and v2 are
+  identical at every floor, because translation binds everywhere and gains 0 gigs from the
+  leak fix. A balanced seven-category panel is **~500 matched gigs per pair over
+  2019Q4–2024Q4**, and no amount of collecting changes that.
+- **With translation out, it buys the post-AI window.** At 1000/pair the v1 panel ends
+  **2023Q2** — one quarter past the break — and the v2 panel runs to **2024Q4**, seven
+  quarters past. For a model whose AI term only starts moving in 2023Q1, that is the
+  difference between an unidentifiable coefficient and an estimable one.
+
+**Revises the earlier entry today.** That entry recommended against the re-classification
+on the grounds that the main draft makes no category-level AI claim. Against *this* goal
+the recommendation inverts: category balance **is** the objective, and the leak is
+category-uneven (audio +30% supply on binding pairs, coding +24%, marketing +15%,
+translation +0%).
+
+Not yet done: no crawl launched; the translation decision is open; step 75's measure is
+not pre-registered as treatment for anything.
+
+## 2026-09-01 (evening) — yes, there is more to collect, and the biggest piece is a bug fix
+
+Question: can we collect more data? Answered end to end, with the crawl costed but
+**not launched**. Three new steps, artifacts in `runs/uncollected-headroom/`.
+
+**A defect in step 04, found while building the re-classification.**
+`04-classify-categories.py` reads the gig slug off the `original` column with a
+`"fiverr.com/" in url` test. The CDX index also carries the pre-HTTPS capture form
+`http://fiverr.com:80/<seller>/<slug>`, which contains no `fiverr.com/` substring, so the
+fallback splits the whole URL on `/` and returns **the empty string between the scheme's
+two slashes**. Every such snapshot is classified on an empty slug and labelled
+`uncategorized` regardless of content. Sizes: **431,196 distinct gigs** step 04 left
+uncategorized that its own keyword rule labels correctly once the slug comes from
+`urlkey`, and **26,075 gigs labelled inconsistently across their own snapshots** — right
+in the https captures, `uncategorized` in the `:80` ones.
+
+**The defect is confined to 2010-2014.** `:80` rows: 2011 206k, 2012 379k, 2013 344k,
+2014 222k, and **zero from 2015 on**. So it does not touch the published series (window
+2018Q3+) and it does not explain the `uncategorized` bucket steps 67/68 censused. It does
+explain why that bucket looked so large: of 983,861 distinct uncategorized gigs,
+**705,081 (72%) are `:80`-form**, i.e. pre-2015 listings that were never really
+uncategorized. It also corrects step 68 in the other direction — `families.md`'s
+denominator of 289,613 came from a gig-id extractor that collapses every `:80` URL to a
+single key, so that report happened to measure the right population by accident.
+
+**`code/72-reclassify-v2.py`** re-labels in three stages — step 04's own rule on the
+`urlkey` slug (parse fix), then step 68's new families, then step 68's leakage stems —
+and writes `gig-month-index-v2.tsv`, the projection `41-balanced-manifest.py` consumes.
+Staging in that order also makes the label a pure function of the gig id, which the v1
+labels are not: step 41's gig summary takes the category off whichever row sorts first
+and the sort key excludes the category column, so an inconsistently-labelled gig gets an
+arbitrary one of its labels.
+
+**`code/41-balanced-manifest.py`** gained `--projection/--gigsum/--out-manifest/--out-report/--categories`
+so an alternate label set can be costed without touching the shipped v1 paths.
+
+**`code/74-supply-delta.py` → `supply-delta.md`. What the re-labelling is worth in the
+window that matters.** Of 210 (category, adjacent-pair) cells from 2018Q3, **91 were
+below the 1200 target under v1**. v2 raises supply in **55** of them and lifts **14 to
+target**, adding 5,751 matched gigs where supply is the binding constraint:
+
+- **audio +30%** mean supply on its binding pairs (535 → 699), 4 pairs lifted to target
+- **coding +24%** (508 → 632), 3 lifted; **marketing +15%** (682 → 785), 6 lifted
+- design +8%, writing +7%, video +1%
+- **translation: 29 binding pairs, 0 improved, 0 gigs added.** Third independent
+  confirmation that translation's thinness is an archive ceiling, not a classifier artefact.
+
+**`code/73-collection-cost.py` → `collection-cost.md`. What a crawl would cost**, from
+constants measured on the two completed crawls (98.0% of rows return a page, 7.83 rows/s
+at step 08's `--max-rate 10`, 128 KB/page gzipped), counting only rows with no matching
+`<seller>/<date>_<slug>` file in the three html trees (386,440 pages on disk):
+
+- **Leak-fix backfill** (`leakfix-manifest-1200.tsv`, seven collected domains under v2
+  labels): 303,147 rows but only **33,187 to fetch — 4.2 GB, 1h11m**, because 89% is
+  already downloaded. Concentrated exactly where it is needed: audio 9,227 requests,
+  coding 9,140, marketing 5,883.
+- **New families** (`newfam-manifest-1200.tsv`, the ten families from step 68):
+  **102,677 to fetch — 12.9 GB, 3h39m**, 26,210 new gigs.
+
+**The negative result on the new families.** Step 67's headline — `uncategorized` is the
+densest label in the index, median 7,146 matched gigs per pair — **does not survive
+decomposition**. Split into collectable families, **every single cell is archive-exhausted
+below target**: photography peaks at 781 matched gigs in its best pair, gaming at 808, and
+the other eight run in the low hundreds or tens — thinner than translation (median 715),
+already the thinnest shipped domain. That density was an artefact of aggregating unrelated
+work into one bucket. Collecting them buys ten new categories at translation-grade
+precision or worse; it does not buy a dense panel.
+
+**Where this leaves the question.** More data exists, in this order of value per unit of
+cost: (1) re-classify with v2 and rebuild — **no crawl at all**, and it is a correction the
+paper owes regardless; (2) the leak-fix backfill, 1h11m for the audio/coding/marketing
+cells the to-do has flagged as supply-pinned since 08-30; (3) the new families, 3h39m for
+ten thin series. Nothing here touches the 2024Q4+ ceiling, which stays exhausted for every
+domain under v2 as well.
+
+Not yet done: no crawl launched (awaiting the go-ahead), and step 04 itself is unpatched —
+step 72 fixes the labels downstream of it rather than re-running the classifier.
+
+## 2026-09-01 (later) — the step-04 leak is non-random, but it moves levels, not trends
+
+Acted on the top `plans/todo.md` item. Two tests, both **no crawl**, artifacts in
+`runs/uncollected-headroom/`.
+
+**The test bed nobody noticed we had.** Every category-targeted collection (`38`, `41`,
+`13`) selected gigs *by step-04 label*, so none of them can contain a leaked gig — they
+are censored by construction. The 500-seller pilot (`06c`/`07`) sampled **sellers** and
+took their gigs whatever the label, so it is category-blind and already holds **585
+uncategorized gigs with 5,639 extracted price rows on disk**. That made the price test free.
+
+**`code/70-leak-price-bias.py` → `leak-price-bias.md`.** Within each domain, gigs step 04
+KEPT vs gigs it LEAKED (uncategorized, but step 68's broader stems say the domain):
+
+- **Price level differs.** Design's leaked gigs are priced **$35 against $15 kept**
+  (+0.847 log, p=0.007); coding's are **$15 against $25** (−0.511, p=0.037). The leak is
+  not random with respect to price level.
+- **Price trend does not.** Within-gig Δlog first-to-last is statistically
+  indistinguishable in all five testable domains — largest gap writing −0.257, p=0.138.
+- AI-vocabulary test there is **uninformative**, not reassuring: the pilot's own AI rate
+  is 2/524 in design, so it had no power.
+
+**`code/71-leak-vintage.py` → `leak-vintage.md`.** The high-power version, full population
+(22.7M index rows, 88k leaked gigs against the kept populations):
+
+- **AI vocabulary in the slug differs in four of six testable domains.** Design leaked
+  **0.76% vs 0.10% kept** (7.6×, p=6e-99); audio **1.24% vs 0.12%** (10×, p=8e-41). Both
+  point the way the to-do feared — the classifier preferentially drops AI-era listings.
+  Coding runs the *other* way (0.36% leaked vs 4.01% kept) and that is **mechanical**:
+  coding's keyword list already contains `ai-`, `machine-learning`,
+  `artificial-intelligence`, so an AI coding listing cannot leak.
+- **Vintage differs in five of six.** Design leaked gigs are newer (19.6% first seen
+  2023Q1+ vs 15.1%), audio newer; marketing, coding and video *older*.
+
+**What this means.** The concern is confirmed in direction — the miss correlates with
+the treatment in design and audio — so it cannot be waved off. But the magnitudes are
+small in absolute terms (AI slug rates 0.1–1.2%; vintage gaps 2–5pp), and step 70 shows
+the quantity a chained matched-model index actually consumes — the **trend** — does not
+differ, while level gaps are absorbed by the gig fixed effect. **Provisional read: the
+published index is defensible; the exposed claims are the ones about category
+composition and category-level AI exposure, not the price series.**
+
+Not yet done: re-classification with broadened stems is still unwritten, and step 70's
+per-domain leaked cells are tens of gigs, so its trend null bounds the bias loosely
+rather than proving it absent.
+
+## 2026-09-01 — non-English slugs are not a hidden reservoir; the imbalance is two different problems
+
+Question: can we collect more for the thin categories? Answered against what 08-30's
+census already measured, plus one new negative result.
+
+**New measurement.** `code/69-nonenglish-headroom.py` → `runs/uncollected-headroom/nonenglish.md`.
+Step 04's keyword lists are English stems only, so a listing worded `traducir-del-espanol-al-ingles`
+or `escribo-articulos` matches nothing and falls to `uncategorized`. That was the obvious
+candidate reservoir for translation, which 08-30's leakage table gave nothing back. It is not:
+**1,880 gigs total** across all seven domains (design 654, audio 471, writing 322, translation
+251, coding 94, marketing 72, video 16), and the translation row is partly false positives
+(`legenda` matching "legendary", `traductor` matching an English slug). Negligible.
+**Translation's thinness is a real archive ceiling, not a classifier artefact.**
+Caveat: gig-id normalisation in this script keeps the `http://fiverr.com:80/` prefix, so its
+denominator (1,023,120) double-counts against step 68's 289,613; the hit counts are inflated
+the same way, which only strengthens the negative.
+
+**The imbalance is two different things, and only one of them is a data problem.**
+
+- The **balanced collection** (what the paper uses) is already even — 29k–53k extracted rows
+  per domain (design 52,755 / writing 45,282 / coding 44,382 / video 43,011 / marketing 39,789
+  / audio 38,077 / translation 29,151), and **all 35 narrow subcategories chain 20 quarters**.
+  Design *looks* bigger only because the taxonomy gives it 7 subcategories against translation's 3.
+- The **website** (`docs/data.json`) is severely uneven: panel gigs design 1,466, coding 462,
+  writing 368, marketing 294, video 235, audio 55, **translation 28**. It is built from the
+  *recent* collection, and `13-recent-manifest.py` takes every qualifying gig per category with
+  no quota — so it inherits the archive's shape. This is a manifest choice, fixable without a crawl
+  design change, by applying `41-balanced-manifest.py`'s per-(category, adjacent-pair) quota.
+
+**What collection cannot fix.** `runs/history-headroom/balanced-coverage.md` marks `*` where the
+archive is exhausted at target 1200: translation at 28 of 30 pairs, audio ~15, marketing ~14, and
+**every pair from 2024Q4 onward for all seven domains**. Downloading more buys nothing there.
+
+Priority unchanged from 08-30: the step-04 leak fix first (no crawl; +29% audio, +14% marketing
+— the two domains actually pinned by supply), then the `uncategorized` bucket.
+
+## 2026-08-30 — censused the categories both collections skipped
+
+Question: is there more data to collect *across categories*? Measured rather than
+guessed, over the whole CDX index. Two new steps, artifacts in `runs/uncollected-headroom/`:
+
+- `code/67-uncollected-headroom.py` → `census.md`. Counts matched gigs per adjacent
+  quarter pair — the unit a chained matched-model index consumes — for every step-04
+  label over 2018Q3–2026Q1. **`uncategorized` is the densest label in the index**:
+  median **7,146** matched gigs per link against design's 6,420, from 253,491 distinct
+  gigs (87,061 spanning ≥2 quarters). Both shipped collections quota only the seven
+  domains and take none of it. `data_entry` (median 346) and `data_analysis` (180, and
+  **one link at 0**, so it cannot chain) are collectable but thin — translation-grade.
+- `code/68-uncategorized-families.py` → `families.md`. Splits the bucket by distinct
+  gig. **33.8% is ten identifiable new families** — photography 22.7k, gaming 17.1k,
+  education 15.2k, social-engagement 13.2k, e-commerce ops 7.4k, legal 6.8k, lifestyle
+  6.6k, accounting 5.1k, engineering/CAD 2.3k, customer service 1.5k. Taxonomy rows
+  **T9, T10 and T12 were never given keyword lists** in step 04, which is why they are
+  in here rather than in a series.
+
+**The finding that was not the point of the exercise: step 04 leaks.** 88,320 uncategorized
+gigs (30.5% of the bucket) belong to a domain *already collected* — they fail only because
+step 04 matches exact substrings, so `develop-or-customize-drupal-websites` misses coding's
+`web-develop`/`app-develop`/`developer`. Sized against what each label already holds:
+**audio +29%, coding +16%, marketing +14%, design +13%, writing +8%, video +3%.** This is a
+property of the shipped index, not only of the headroom: category membership is decided by
+how a seller worded a slug, and nothing has established that the misses are random with
+respect to price or AI exposure. Note the direction is not obviously benign — AI-era
+listings tend to be worded in newer vocabulary than the 2023-era keyword lists.
+
+The remaining 35.7% (103,398 gigs) is a genuine long tail: finance/trading, coaching,
+sourcing, wellness, novelty listings.
+
+No collection launched and no plan committed — this is the measurement that would decide
+one. Three candidate directions logged in `plans/todo.md`.
+
+## 2026-08-28 — second merge with AP, and two bugs fixed in her cells
 
 `origin/mockup` moved again: the same author re-pushed `00-explore.ipynb` from the
 same stale base, so the push again dropped §7's real chart, the check cell, the §9
