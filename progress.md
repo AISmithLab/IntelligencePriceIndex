@@ -1,5 +1,44 @@
 # Progress Log
 
+## 2026-09-03 — §11.4a: the within-gig reputation slope on the natural scale
+
+From a user instruction — "price increases 7.7 percent when review counts double within
+one single gig, help me plot this". Notebook §11.4a, one markdown cell and two code
+cells inserted after §11.4's `design/logo` panel. It reuses the `y` / `X` / `igig` /
+`bC` objects §11.4 already builds rather than refitting, so there is still one spec C in
+the section.
+
+**The chart answers the two questions the coefficient cannot.**
+
+*Is it a straight line?* The left panel is a Frisch–Waugh partial-residual plot: gig,
+quarter and rating are swept out of the price **and** out of the review count, so the
+plotted line's slope is spec C by construction — the cell asserts the FWL slope equals
+`bC` to 1e-9 — and only the shape is free. Fourteen equal-count bins with gig-clustered
+95% CIs.
+
+*Does it hold across the range?* Not exactly. A quadratic in `ln(1+reviews)` is
+**−0.00277 (t −2.51)**, so strict log-linearity is **rejected**. The departure is small
+and monotone: **+8.14%** per doubling at 10 reviews, +7.23% at 100, +6.29% at 1,000,
+**+5.63%** at 5,000, against the pooled +7.62%. The median gig-quarter carries 111
+reviews (p90 965), so the linear coefficient is a fair summary over the mass — but it is
+now reported as an approximation rather than a functional form. This is logged as R12 in
+`tests/findings.test.md`.
+
+*What does the rate buy?* +7.6% per doubling is a rate, not an outcome, and it only pays
+if listings accumulate doublings. The right panel is the distribution of doublings each
+listing actually travels, first quarter to last: median **1.53**, p90 4.63, and **38%
+never manage even one**. At spec C's slope the median listing's entire review history is
+worth **+11.9%** in real price. A secondary top axis converts doublings to implied price
+gain directly.
+
+**Decisions.** X-axis is doublings rather than log points, so the coefficient is legible
+off the chart. The histogram's last bar is a clipped `6+` tail (3.0% of listings) and is
+labelled as such so it is not misread as a mode. Outputs are executed and embedded
+(prerequisite cells run in a real kernel, outputs spliced in), per the convention that
+committed charts are visible without running the notebook.
+
+**Outputs.** `notebooks/00-explore.ipynb` §11.4a; `tests/findings.test.md` U6 and R12.
+
 ## 2026-09-03 — a task taxonomy, a reference task value, and reputation's sign reversal
 
 From a user instruction: build a detailed taxonomy for the categories, average prices
