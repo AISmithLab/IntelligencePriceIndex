@@ -1,5 +1,88 @@
 # Progress Log
 
+## 2026-09-03 — a task taxonomy, a reference task value, and reputation's sign reversal
+
+From a user instruction: build a detailed taxonomy for the categories, average prices
+per category as the reference task value, then fit a model for how reputation
+influences price. Two new scripts, `code/77-task-taxonomy.py` and
+`code/78-reputation-price.py`, output to `runs/taxonomy/`.
+
+**Why it is not step 76 again.** Step 76 put task value in a gig fixed effect. That
+was the honest home for it, but a fixed effect that *absorbs* task value can never
+*report* it — `a_i` came back with an SD of 1.249 log points and no way to say what
+any part of it was. Anchoring on a taxonomy node instead makes task value a number
+you can print and rank, and leaves the between-seller comparison alive, which is the
+comparison the reputation question is actually about.
+
+**The taxonomy.** Two levels: step 04's seven domains, and a new subcategory layer
+matched on the deliverable phrase extracted from the title (`<seller>: I will <X> for
+$N on fiverr.com`, 99.99% coverage). Rules are ordered and first-match-wins, most
+specific first. **65 nodes**, 77.5% of gigs in a named subcategory, thin nodes folded
+into `<domain>/other`.
+
+**Reference task value** runs **$6.66** (`translation/subtitling`) to **$59.38**
+(`marketing/content_strategy`), a spread of 2.188 log points. Reported twice: the raw
+node mean as specified, and a reputation-adjusted version (the node fixed effect from
+a joint fit), because a node full of well-reviewed veterans carries their standing in
+its mean. Correlation 0.970, mean absolute gap 0.094 log points, max 0.375 —
+the ranking survives, individual nodes move.
+
+**Variance:** domain explains **5.7%** of `ln(real price)`, the node **10.9%**, the
+gig **91.4%**. Most of what sets a price is not the kind of work.
+
+**The headline is a sign reversal, and it is the sharpest version of this the project
+has.** Reputation is **+7.62% per doubling within a gig** (t 31) and **−9.08% between
+gigs in the same node** (t −28). Step 25 saw this at category level as "near zero
+versus positive"; holding the task fixed at node level turns the cross-section
+significantly negative. Reading: a high review count marks two things at once — a
+seller who has been around, which raises price, and one running a cheap high-volume
+operation, which lowers it. Between sellers the second dominates; within a single
+listing only the first can move. **Neither number should be quoted without the other.**
+
+**Reputation pays for every task, but at very different rates.** Per-node slopes are
+positive in all 58 estimated nodes and significant in 45, ranging **+1.84%**
+(`translation/localization`) to **+27.11%** (`translation/interpreting`). Commodity
+translation clusters at the bottom — subtitling +2.97%, transcription +2.65%,
+document translation +3.54% — and consultative work at the top: site builders +22.0%,
+funnels +14.7%, paid ads +13.9%. The rate also tapers with level, from +8.1% per
+doubling at 10 reviews to +5.6% at 5,000.
+
+**Diagnostics run on step 76 in the same session, none of which were in the repo:**
+the `ln(1+reviews)` functional form was inherited from step 22, never tested — nine
+nonparametric review-decile dummies fit at within-R² 0.13477 against the log term's
+0.13476, so the form is vindicated but the `+1` is inert (no gig-quarter has zero
+reviews). Linear tenure is **not separable** from gig + quarter fixed effects, so
+step 76's elasticity is identified only off curvature in review accumulation;
+stripping each gig's own linear trend leaves 45.4% of the variation and *raises* the
+coefficient to +0.150 (t 30). And **`runs/price-model/model.md` misattributes its
+sample cut** — 79,876 in-window rows are dropped, but only 11,115 go to missing
+reputation columns; the other 68,761 go to the before/after balance requirement.
+
+**Open:** the domain assignment is still step 04's, and the subcategory layer makes
+its leak countable rather than repaired — `translation/voiceover_leak` is 721 gigs
+whose deliverable is a voice over. The taxonomy has not been validated against a
+hand-labelled sample.
+
+**Now in the notebook as §11** (15 cells, four charts), importing steps 77 and 78 rather
+than restating them — the same convention §10 uses for step 76. Every printed number
+reproduces `runs/taxonomy/*.md`. The chart that carries the argument is §11.4's pair: one
+node (`design/logo`), the same rows, plotted twice — once as one point per listing
+(slope −0.038) and once with each listing centred on its own mean (slope +0.091). The
+reversal is visible without a regression.
+
+**Two corrections made while wiring it up, both from checking rather than assuming.**
+(1) Step 77 was reporting reference values on the **full** panel while step 78 fit on
+rows carrying both reputation columns, so the project briefly held two different
+reference task values — `marketing/content_strategy` was \$67.11 in one and \$59.38 in
+the other. Step 77 now computes on the estimation sample and says so; every downstream
+figure was re-propagated. (2) The §11.3 scatter was captioned as showing the reversal
+"before any regression". It does not: `adjusted` comes from the fit containing β₁, so the
+gap is ≈ β₁ × (node mean log reviews − grand mean). Measured correlation **0.978** — the
+chart is near-mechanical. The caption now states this and prints the correlation, and the
+sign is credited to spec B where it is actually estimated.
+
+Plan: `plans/active/task-taxonomy-reputation.md`.
+
 ## 2026-09-01 (evening, latest) — the price model is in the notebook, as §10
 
 From a user instruction. `notebooks/00-explore.ipynb` gains **§10 — the price model —
