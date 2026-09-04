@@ -1,5 +1,52 @@
 # Progress Log
 
+## 2026-09-04 — live collection: Mercor works in one request, Fiverr pages are walled, Fiverr sitemaps are not
+
+Tested direct collection against both sites. Two new steps, real data on disk.
+
+**Fiverr gig pages are hard-blocked, and this is now measured rather than assumed.**
+15 gig pages, 3s apart, honest browser UA: **15/15 HTTP 403**. Retried with complete
+standard browser headers (Accept, Accept-Language, Sec-Fetch-*, keep-alive): still 403.
+`https://www.fiverr.com/` itself 403s on the first request, so it is **not** a rate
+limit. The body is a PerimeterX CAPTCHA wall (`px-captcha`). Getting past it would need
+CAPTCHA-solving, proxy rotation or fingerprint spoofing — circumvention of an access
+control, refused. **This closes `todo` PRIORITY 0b**: its question (1), the paginated
+reviews endpoint, cannot even be tested because no HTML is served, so the archive
+back-fill is dead by the plan's own abandonment criteria.
+
+**But `code/80-fiverr-sitemap-census.py` recovers what the project had recorded as
+impossible.** Step 39 found `n_404 = 0` across 509,339 Wayback captures — the archive
+stops re-requesting a delisted URL rather than recording its death, so exit was
+unmeasurable. Fiverr publishes its live inventory as sitemaps, listed in its own
+robots.txt and served *without* the PerimeterX wall. Eight requests:
+
+- **291,068 live gig URLs**, 2026-09-04
+- **12,720 of the panel's 39,933 gigs (31.9%) still listed**
+- survival by year of last panel observation: **2.2%** (2018), 3.3%, 6.5%, 9.9%, 19.3%,
+  29.8%, **55.0%** (2024)
+
+This is an exit hazard, and it bears on §4.4's unresolved survivorship gap and on the
+standing objection that the index is computed on survivors. Absence is *not listed*,
+which is a **lower bound** — a gig may be paused, unindexed or rotated out rather than
+dead. It carries **no prices**; it cannot extend the index.
+
+**`code/79-mercor-board.py` needs no crawler at all.** `work.mercor.com/jobs` server-
+renders every open listing into `__NEXT_DATA__`, so one GET is the whole cross-section.
+robots.txt allows `/jobs/`; `/apply/`, `/api/`, `/interview/` untouched. **394 open
+listings, 100% rate coverage**, median hourly band **$70–$100**. Carries capacity fields
+the Wayback copies lack — `remainingSlots` (11,418 open slots), `suppliedSlots`,
+`recentCandidatesCount`, `hoursPerWeek`, `postedAt`.
+
+**Stated before it gets misused:** Mercor listings are employer-posted *hourly rate
+bands* for contract roles, not seller-posted fixed prices for deliverables. They are not
+comparable to Fiverr gig prices and **must not be spliced into the IPI**. Separate,
+demand-side series. Today's file is a cross-section; the panel only accrues by re-running
+(the `version` field increments on a genuine edit, separating a reprice from a re-crawl).
+
+**Outputs.** `data/mercor/board-2026-09-04.csv` (+ `board-latest.csv`),
+`data/fiverr-live/gig-urls-2026-09-04.txt.gz` (5.9 MB),
+`runs/live-collection/survival-2026-09-04.md`.
+
 ## 2026-09-03 — §11.4a: the within-gig reputation slope on the natural scale
 
 From a user instruction — "price increases 7.7 percent when review counts double within
