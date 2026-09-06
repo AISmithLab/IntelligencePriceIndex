@@ -3,11 +3,29 @@
 Step 1.1: Download raw CDX index for fiverr.com gig pages from the Wayback Machine.
 
 Queries CDX API for each letter prefix (a-z), paginating through all results.
-Stores raw CDX records as TSV files in data/cdx-index/raw/.
-
 Fields retrieved: urlkey, timestamp, original, statuscode, digest, length
+
+THE WINDOW IS AN ARGUMENT, NOT A CONSTANT. The original run (2026-03-22) pulled
+all time into `data/cdx-index/raw/` -- 60.0M records, 2011..2026-03. Re-running a
+WINDOW is not redundant, for two reasons measured on prefix `q` (2026-09-06):
+
+  * Wayback ingests captures with lag. The March pull saw 212 gig-shaped HTTP-200
+    captures in 2025+; the same query today returns 252. **+19%** appeared after
+    the fact, and nothing in the March files says so.
+  * The March pull's right edge is March 2026. Everything after is simply absent
+    (the index holds 13 records for 2026-03 and none later).
+
+So a refresh is how 2025-2026 accrues. It is cheap: 2025+ is ~0.6M of the 60.0M
+rows, because the archive was largely walled out of Fiverr after 2024Q3 -- 38% of
+2025+ captures are 403 PerimeterX pages and only 19% are 200.
+
+Usage:
+    python3 01-download-cdx-index.py                    # 2025-01-01 -> now, into raw-2025/
+    python3 01-download-cdx-index.py --from 20110101 --to 20261231 --out raw
+    python3 01-download-cdx-index.py --prefixes qxz     # resume a subset
 """
 
+import argparse
 import asyncio
 import aiohttp
 import os
@@ -16,8 +34,11 @@ import time
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-RAW_DIR = BASE_DIR / "data" / "cdx-index" / "raw-2025"
-RAW_DIR.mkdir(parents=True, exist_ok=True)
+
+# Set by parse_args() from argv; module-level so both request builders see one window.
+RAW_DIR = None
+FROM_TS = "20250101000000"
+TO_TS = None  # defaults to now, so a refresh always runs to the present edge
 
 CDX_API = "https://web.archive.org/cdx/search/cdx"
 FIELDS = "urlkey,timestamp,original,statuscode,digest,length"
@@ -32,8 +53,8 @@ async def get_num_pages(session, prefix):
         "url": f"fiverr.com/{prefix}",
         "matchType": "prefix",
         "showNumPages": "true",
-        "from": "20250101000000",
-        "to": "20251231235959"
+        "from": FROM_TS,
+        "to": TO_TS,
     }
     for attempt in range(RETRY_LIMIT):
         try:
@@ -63,8 +84,8 @@ async def download_page(session, prefix, page, num_pages):
         "output": "text",
         "fl": FIELDS,
         "page": str(page),
-        "from": "20250101000000",
-        "to": "20251231235959"
+        "from": FROM_TS,
+        "to": TO_TS,
     }
     for attempt in range(RETRY_LIMIT):
         try:
@@ -143,13 +164,30 @@ async def download_prefix(session, semaphore, prefix):
         return prefix, total_lines, True
 
 
-async def main():
-    prefixes = list("abcdefghijklmnopqrstuvwxyz")
+def parse_args():
+    """--from / --to / --out / --prefixes, all optional."""
+    global RAW_DIR, FROM_TS, TO_TS
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--from", dest="ts_from", default="20250101000000")
+    ap.add_argument("--to", dest="ts_to", default=None,
+                    help="default: now, so the pull runs to the present edge")
+    ap.add_argument("--out", default="raw-2025",
+                    help="subdirectory of data/cdx-index/ (default raw-2025; the "
+                         "all-time March 2026 pull lives in raw/)")
+    ap.add_argument("--prefixes", default="abcdefghijklmnopqrstuvwxyz")
+    args = ap.parse_args()
 
-    # Allow resuming specific prefixes
-    if len(sys.argv) > 1:
-        prefixes = list(sys.argv[1])
-        print(f"Downloading only prefixes: {prefixes}")
+    FROM_TS = args.ts_from.ljust(14, "0")
+    TO_TS = (args.ts_to or time.strftime("%Y%m%d%H%M%S", time.gmtime())).ljust(14, "0")
+    RAW_DIR = BASE_DIR / "data" / "cdx-index" / args.out
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    return list(args.prefixes)
+
+
+async def main():
+    prefixes = parse_args()
+    print(f"Window {FROM_TS} -> {TO_TS}  into data/cdx-index/{RAW_DIR.name}/")
+    print(f"Prefixes: {''.join(prefixes)}")
 
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
 
@@ -174,7 +212,7 @@ async def main():
     print(f"\nTotal records: {total_records:,}")
     if failed:
         print(f"FAILED prefixes: {', '.join(failed)}")
-        print(f"Re-run with: python3 {sys.argv[0]} {''.join(failed)}")
+        print(f"Re-run with: python3 {sys.argv[0]} --prefixes {''.join(failed)}")
     else:
         print("All prefixes downloaded successfully!")
 
@@ -182,6 +220,7 @@ async def main():
     summary_path = RAW_DIR / "download-summary.txt"
     with open(summary_path, "w") as f:
         f.write(f"Download completed: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Window: {FROM_TS} -> {TO_TS}\n")
         f.write(f"Total records: {total_records:,}\n")
         f.write(f"Failed prefixes: {', '.join(failed) if failed else 'none'}\n")
         for prefix, count, success in results:

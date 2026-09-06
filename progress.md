@@ -1,5 +1,52 @@
 # Progress Log
 
+## 2026-09-06 — the 2025-2026 right edge: the archive is thin, but we left 35k captures on the table
+
+The panel's right edge is starved — `supply-delta.md` has design falling 7,093 -> 320
+matched gigs per adjacent quarter pair between 2024Q3->Q4 and 2025Q4->2026Q1, coding
+5,276 -> 63, writing 5,083 -> 55. Every 2025-2026 pair is below every target any
+balanced manifest has used. This session separated *why* into two causes with very
+different remedies.
+
+**Cause one, irreducible: the archive was walled out.** Of all fiverr.com captures
+timestamped 2025+ in the March 2026 pull, **38% are HTTP 403 and only 19% are 200**
+(226,306 vs 111,925). The PerimeterX wall step 80 measured against live gig pages on
+2026-09-04 was already turning the Wayback crawler away through 2025. Gig snapshots per
+month collapse from ~250k in 2024Q3 to 1-5k across 2025. Nothing recovers that. A 403
+capture has a urlkey, a digest and a length, so a naive census counts it as supply; its
+body is a CAPTCHA page and carries no price. **They are dropped, not counted** —
+counting them would roughly double 2025-2026 supply on paper and yield nothing.
+
+**Cause two, ours, and much larger than expected: 34,807 gig-days for 2025+ sit in the
+March index and were never downloaded**, against 8,363 that were. The balanced and
+expanded manifests quota over seven domains and drop `uncategorized`, so everything
+outside that set was indexed all along and never requested. Recovering it roughly
+**doubles matched-pair supply in every 2025-2026 quarter**: 702 -> 1,286
+(2025Q1->Q2), 391 -> 807, 480 -> 832, 541 -> 763. Stated plainly, that is still ~1,200
+matched gigs across *all* categories against a target of 1,200 *per* category — the
+right edge gets twice as good and stays thin.
+
+**A third pool, small but real: Wayback ingests late.** Re-querying prefix `q` on
+2026-09-06 returns 252 gig-shaped 200-status captures in 2025+ against the 212 the
+2026-03-22 pull saw — **+19%**, invisible from inside the March files — and 36 of the 84
+new records fall in 2026Q2-Q3, which the old index does not cover at all (13 records in
+2026-03, none after). This is why the right edge accrues by re-querying, not by waiting.
+
+**`01-download-cdx-index.py` now takes its window as an argument** (`--from/--to/--out/
+--prefixes`, defaulting to 2025-01-01 -> now into `raw-2025/`). The refresh goes to a
+*separate* directory: `raw/` is the provenance record for every number already in the
+draft and overwriting it would make those unreproducible. Step 81 unions the two at read
+time. Pilot-before-scale applied literally here — prefix `q` cost one request and is
+what justified the 2-3h pull; had it returned ~0 the honest answer would have been "the
+archive is exhausted, here is the evidence."
+
+**Outputs.** `code/81-cdx-refresh-delta.py` (separates the three pools, emits a step-08
+manifest), `code/run-refresh-2025-pipeline.sh` (waits out the CDX pull, then
+81 -> 08 -> 09), `data/pilot/refresh-2025-manifest.tsv` (35,030 captures),
+`runs/cdx-refresh-2025/delta.md`, `plans/active/fiverr-2025-2026-backfill.md`.
+Prices land in a **new** file, `refresh2025-prices.csv` — the pilot paper is
+mid-submission and nothing here may move a published figure.
+
 ## 2026-09-04 — live collection: Mercor works in one request, Fiverr pages are walled, Fiverr sitemaps are not
 
 Tested direct collection against both sites. Two new steps, real data on disk.

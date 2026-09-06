@@ -51,3 +51,6 @@ data/pilot/gig-status-ledger.tsv
 data/pilot/expanded-gig-status.tsv
 data/pilot/*-download-log.tsv
 data/pilot/*-download-checkpoint.txt
+
+# CDX refresh raw pulls: regenerable from 01-download-cdx-index.py, GB-scale
+data/cdx-index/raw-2025/
