@@ -191,11 +191,17 @@ def main():
         by_cat[cat] += 1
         rows.append((ts, original, cat, gid, ts[:6]))
 
+    # Atomic. A step-08 pass may be reading this file right now: it loads the
+    # manifest once at startup, so a rename swaps the file safely under it and
+    # the NEXT pass picks up the larger set. A plain "w" would let a live pass
+    # read a half-written manifest.
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
-    with open(MANIFEST, "w") as fh:
+    tmp = MANIFEST.with_suffix(".tsv.tmp")
+    with open(tmp, "w") as fh:
         fh.write("timestamp\toriginal\tcategory\tgig_id\tmonth\n")
         for r in rows:
             fh.write("\t".join(r) + "\n")
+    tmp.replace(MANIFEST)
 
     n_union, n_old, n_new = len(union), len(old), len(new)
     lines = [

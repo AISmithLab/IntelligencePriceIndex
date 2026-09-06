@@ -50,10 +50,10 @@ last one is a paper question and belongs to whoever writes §4.
 
 - [x] Parameterize `01-download-cdx-index.py` with `--from` / `--to` / `--out` / `--prefixes`
 - [x] Pilot the late-ingestion gain on one prefix before committing to a full pull
-- [ ] Run the refresh: `--from 20250101` into `data/cdx-index/raw-2025/` (~2-3h, 26 prefixes)
+- [~] Run the refresh: `--from 20250101` into `data/cdx-index/raw-2025/` (running; slower than estimated — prefix `a` alone is 914 CDX pages, so 5-8h not 2-3h)
 - [x] Write `81-cdx-refresh-delta.py` — separates the three pools, emits a step-08 manifest
 - [ ] Run step 81 against the completed refresh
-- [ ] `08-download-html.py --manifest data/pilot/refresh-2025-manifest.tsv --gzip`
+- [~] `08-download-html.py --manifest data/pilot/refresh-2025-manifest.tsv --gzip` (running in parallel with the refresh at 6/6; ~300 captures/min, ETA ~2h, 99.6% HTTP 200)
 - [ ] `09-extract-prices.py` over the new HTML
 - [ ] Re-run the supply projection and update `supply-delta.md` with the new right edge
 - [ ] Decide whether the recovered supply changes the index window, or only its error bars
@@ -71,10 +71,28 @@ last one is a paper question and belongs to whoever writes §4.
   and has a digest and a length, so a naive census counts it. Its body is a CAPTCHA page
   and carries no price. Counting them would inflate 2025-2026 supply by ~2x on paper
   while yielding nothing.
-- 2026-09-06: **Do not run downloads concurrently with the CDX pull.** Both hit
-  web.archive.org; probing the CDX API during the pull already produced 429s.
+- 2026-09-06: ~~**Do not run downloads concurrently with the CDX pull.**~~ **Reversed
+  the same day** on the user's instruction, and the reversal was right: 35,030 of the
+  ~35k manifest captures come from the *March* pull and do not depend on the refresh at
+  all, so serialising bought nothing and cost hours. The download runs alongside at
+  `--concurrency 6 --max-rate 6` instead of 10/10, which leaves headroom for the CDX
+  pull. Observed: 300 captures/min, 471/473 HTTP 200, no 429s on either job.
+- 2026-09-06: **Step 81 writes the manifest atomically** (temp + rename). Step 08 loads
+  its manifest once at startup, so a rename swaps safely under a live pass; a plain
+  `open(..., "w")` would have let pass 1 read a half-written file.
+- 2026-09-06: **One writer per checkpoint.** The driver waits for the in-flight
+  download to exit before starting pass 2 — two step-08 processes appending to one
+  checkpoint would interleave lines and corrupt the resume set.
 
 ## Progress
 
 - 2026-09-06: Diagnosis complete, downloader parameterized, refresh launched, step 81
-  written and smoke-tested. Awaiting the pull.
+  written and smoke-tested.
+- 2026-09-06: Verified the premise end-to-end before committing to the download —
+  fetched three manifest captures and parsed them. 2025-01 and **2026-07** captures are
+  real gig pages with real `packageList` prices and no `px-captcha` wall; one 2025-12
+  capture returned 200 with no price block, so **35,030 is an upper bound on extraction
+  yield, not a forecast**. The 2026-07 capture is past the right edge of everything
+  currently in the index.
+- 2026-09-06: Download pass 1 started alongside the refresh. Three jobs live: CDX pull,
+  step 08, and the driver waiting to sequence 81 -> passes 2-3 -> 09.
