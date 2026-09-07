@@ -65,3 +65,9 @@ data/pilot/*-download-checkpoint.txt
 data/cdx-index/raw-2025/
 data/cdx-index/raw-2025-pilot/
 data/cdx-index/raw-2025-partial-*/
+
+# Order panel from step 86: 682k rows / 118 MB, over GitHub's file limit and
+# regenerable by re-scanning the stored HTML. The quarterly series distilled from
+# it (realised-value-series.csv, ~2 KB) IS tracked, as is its report.
+data/pilot/order-panel-all.csv
+data/pilot/order-panel-pilot.csv

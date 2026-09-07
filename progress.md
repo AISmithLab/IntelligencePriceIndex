@@ -1,5 +1,63 @@
 # Progress Log
 
+## 2026-09-07 (night) — 682k realised orders recovered from HTML already on disk; the obvious series would have been an artefact
+
+The wall blocks new page fetches. It does not touch the 86 GB of HTML already
+downloaded — and step 59 had established that a gig page embeds a `reviews` object
+dated by **order** date, carrying what the buyer paid. Nothing downstream of step 09
+had ever read those fields at scale.
+
+`code/86-order-panel.py` scans all **397,698 stored captures** across the three HTML
+corpora and dedupes on `encrypted_order_id`, keeping the earliest capture that showed
+each order. It recovers **681,668 distinct orders**, and 2025 — the year the
+listed-price panel loses — is thick:
+
+| order quarter | orders | gigs |
+|---|---:|---:|
+| 2025Q1 | 10,236 | 4,479 |
+| 2025Q2 | 7,360 | 3,296 |
+| 2025Q3 | 7,233 | 2,912 |
+| 2025Q4 | 6,602 | 2,250 |
+| 2026Q1 | 898 | 450 |
+| 2026Q2 | 12 | 3 |
+| 2026Q3 | 11 | 6 |
+
+**2026 is independently confirmed dead** by this route as well — 23 orders across Q2-Q3,
+because these records come from captures, and the captures stopped.
+
+**The obvious analysis would have produced a spectacular false finding, and this is the
+main result of the session.** Plotting bucket shares straight off the published field
+shows orders under $50 going from ~0% of the market in 2022-23 to **~54% in 2025** — a
+collapse in what buyers pay, arriving right on the AI timeline. It is an artefact, twice
+over:
+
+1. **Sub-$50 orders carried no price bucket at all before ~2024Q2.** In 2022Q3, 46% of
+   orders have no price field and the cheapest bucket that exists is `$50-$100`. By
+   2024Q3 missingness is ~0 and `$0-$50` alone is 50%. The apparent `<$50` share tracks
+   *coverage* almost exactly: 54-67% coverage -> 0-13%, 94% -> 42%, 100% -> ~50%.
+2. **The labels changed.** `$5-$20` and `$20-$50` vanish and `$0-$50` appears at the
+   same moment, so bins built on published labels straddle a break.
+
+`code/87-realised-value-series.py` conditions on **$50+**, where the boundaries
+50/100/200/400/800 are unchanged across every era. On that footing the series is
+**flat**: the median bin is **$100-200 in all 17 quarters** from 2022Q1 to 2026Q1, and
+the composition drifts $50-100 **+4.8pp**, $100-200 **-3.6pp**, $200-400 **-2.5pp**,
+$400-800 **-0.4pp**, $800+ **+1.6pp** — a mild hollowing of the middle with both tails
+thickening, not a decline. The cost of the fix is stated rather than hidden: the series
+says nothing about the sub-$50 segment, which is roughly half of all orders.
+
+**This bears directly on the paper's AI-exposure null.** Step 76 found `Exposure x Post`
+at -0.0333 (t -1.35) on listed prices and could not rule anything out. Realised values on
+a stable bucket scheme are flat across the same window, which is a second, independent
+non-result rather than a contradiction — and it is now the thing that would have to be
+explained away by anyone claiming a realised-price collapse.
+
+**Outputs.** `code/86-order-panel.py`, `code/87-realised-value-series.py`,
+`data/pilot/realised-value-series.csv`, `runs/order-panel/reach-all.md`,
+`runs/order-panel/realised-value.md`. The 118 MB order panel itself is gitignored and
+regenerable. **Still open:** the 2026 window needs the tier-1 browser collector; nothing
+on disk reaches it.
+
 ## 2026-09-07 (late) — correction: Wayback is throttling us, and 2026 is a wall, not an absence
 
 The operator saw a **429** on web.archive.org for 2026 queries. That resolved an ambiguity
