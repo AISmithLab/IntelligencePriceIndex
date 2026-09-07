@@ -1,5 +1,50 @@
 # Progress Log
 
+## 2026-09-07 — the 2025-2026 backfill collected in full, and the right edge is exhausted anyway
+
+The overnight pipeline finished: **35,938 pages, 35,925 price rows, 100.0% extraction**,
+into `data/pilot/refresh2025-prices.csv`. `code/82-refresh-supply.py` replaces
+yesterday's projection with the realised number, measured on collected prices rather
+than on index supply.
+
+**The projected level landed; the projected gain did not.** All-category matched pairs
+at 2025Q1->2025Q2 go **1,093 -> 1,285** against a projected 702 -> 1,286. The *after* is
+right to within one gig — the *before* was understated by ~390 gigs already on disk. So
+the gain is **1.12x, not the 1.83x the to-do carried**. The whole right edge
+(2024Q4->2026Q1) moves **5,846 -> 6,520**. On the seven published domains: **34,164 ->
+34,433, 1.01x**. Nothing in the draft moves.
+
+**The reason is the finding, and it is worse than the 403 wall.** **22,947 of 24,345
+(94.3%)** of the refresh's gigs are priced in exactly one quarter; only **884** carry an
+adjacent quarter pair. A matched-model bilateral needs two visits, so a one-shot capture
+is worth nothing to the index however cleanly it extracts. And this is **not** collection
+loss: the manifest itself holds only **893** gigs with an adjacent pair, so **99.0% of
+the recoverable pairs were recovered**. The pool is genuinely exhausted.
+
+**The archive's revisit rate broke at the same moment its volume did — newly measured.**
+Share of gigs captured in a year that Wayback revisited in an adjacent quarter:
+
+| 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | **2025** | **2026** |
+|---|---|---|---|---|---|---|---|---|
+| 74.1% | 81.6% | 80.2% | 75.8% | 76.4% | 75.4% | 74.3% | **44.1%** | **34.5%** |
+
+Flat for seven years, then it breaks. Matched-model supply is the *product* of
+gigs-captured (60,009 -> 8,132) and this rate, so the right edge loses twice over. The
+403 wall was the first column; the second had not been measured and roughly halves what
+survives it.
+
+**Decision, and it settles the top to-do item: the recovered supply changes the error
+bars, not the index window.** No 2025-2026 pair reaches target in any category — design's
+best is 337 against 1,200. "Restate both papers' scope as through 2024Q3" stands, and this
+is now the evidence for why it cannot be extended by *collecting harder*. Ten new families
+(photography, data_entry, gaming, ...) become differenceable at all, but none reach 30
+matched gigs in any single pair: existence, not measurement.
+
+**Outputs.** `code/82-refresh-supply.py`, `runs/cdx-refresh-2025/supply-realised.md`,
+`data/pilot/refresh2025-prices.csv` (35,925 rows, untracked — 11 GB of HTML behind it).
+Re-querying CDX is still worth it for **2026Q2-Q3**, which the March pull never covered;
+re-collecting 2025 is not.
+
 ## 2026-09-06 — the 2025-2026 right edge: the archive is thin, but we left 35k captures on the table
 
 The panel's right edge is starved — `supply-delta.md` has design falling 7,093 -> 320

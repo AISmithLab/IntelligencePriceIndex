@@ -34,6 +34,14 @@ projection to one row per multi-quarter gig (a quarter bitmask), which does fit
 in RAM; the greedy selection runs over that; pass B re-streams the projection to
 emit snapshot rows for the chosen gigs.
 
+ALTERNATE LABEL SETS. The projection carries whatever category 40-history-headroom.py
+wrote, which is step 04's. `--projection` points this at a different one --
+`72-reclassify-v2.py` emits `gig-month-index-v2.tsv`, which fixes step 04's
+leak and adds the new families -- so the same quota logic can cost a collection
+over labels the shipped manifest cannot address. Pass `--gigsum`, `--out-manifest`
+and `--out-report` alongside it; the defaults are the shipped v1 paths and are
+never overwritten by a v2 run.
+
 Input:  data/cdx-index/gig-month-index.tsv   (from 40-history-headroom.py)
 Output: data/pilot/balanced-manifest.tsv
         runs/history-headroom/balanced-coverage.md
@@ -67,10 +75,10 @@ def qstr(n):
     return f"{n // 4}Q{n % 4 + 1}"
 
 
-def build_gig_summary():
+def build_gig_summary(projection=PROJECTION, gigsum=GIGSUM):
     """Pass A: sorted projection -> one row per multi-quarter gig."""
-    if GIGSUM.exists():
-        print(f"Reusing {GIGSUM}", file=sys.stderr)
+    if gigsum.exists():
+        print(f"Reusing {gigsum}", file=sys.stderr)
         return
 
     print("Pass A: summarising gigs to quarter bitmasks...", file=sys.stderr)
@@ -93,7 +101,7 @@ def build_gig_summary():
         fout.write(f"{cur_gid}\t{cur_cat}\t{lo}\t{mask}\t{len(months)}\n")
         n_out += 1
 
-    with open(PROJECTION) as fin, open(GIGSUM, "w") as fout:
+    with open(projection) as fin, open(gigsum, "w") as fout:
         for line in fin:
             gid, ym, _ts, cat = line.rstrip("\n").split("\t")
             if gid != cur_gid:
@@ -110,13 +118,15 @@ def build_gig_summary():
     print(f"  {n_in:,} rows -> {n_out:,} multi-quarter gigs", file=sys.stderr)
 
 
-def load_gigs(start_q):
+def load_gigs(start_q, gigsum=GIGSUM, keep_cats=None):
     """Load the summary, keeping only gigs with >=2 quarters at/after start."""
     floor = qnum(start_q)
     gigs = []
-    with open(GIGSUM) as f:
+    with open(gigsum) as f:
         for line in f:
             gid, cat, lo, mask, months = line.rstrip("\n").split("\t")
+            if keep_cats is not None and cat not in keep_cats:
+                continue
             lo, mask, months = int(lo), int(mask), int(months)
             qs = [lo + i for i in range(mask.bit_length()) if mask >> i & 1]
             qs = [q for q in qs if q >= floor]
@@ -137,12 +147,27 @@ def main():
                     help="one page per gig-month (the legacy convention) or per "
                          "gig-quarter. The index is quarterly, so 'quarter' is "
                          "the granularity it consumes and costs ~2x less.")
+    ap.add_argument("--projection", type=Path, default=PROJECTION,
+                    help="sorted (gig, month, ts, category) projection to read")
+    ap.add_argument("--gigsum", type=Path, default=GIGSUM,
+                    help="per-gig quarter-bitmask cache; must match --projection")
+    ap.add_argument("--out-manifest", type=Path, default=OUT_MANIFEST)
+    ap.add_argument("--out-report", type=Path,
+                    default=OUT_DIR / "balanced-coverage.md")
+    ap.add_argument("--categories", default=None,
+                    help="comma-separated label whitelist (default: all in the "
+                         "projection)")
     args = ap.parse_args()
 
-    build_gig_summary()
+    if (args.projection != PROJECTION) != (args.gigsum != GIGSUM):
+        ap.error("--projection and --gigsum must be overridden together, or the "
+                 "cache will be read against the wrong label set")
+    keep = set(args.categories.split(",")) if args.categories else None
+
+    build_gig_summary(args.projection, args.gigsum)
 
     print(f"Loading gig summaries (>= {args.start})...", file=sys.stderr)
-    gigs = load_gigs(args.start)
+    gigs = load_gigs(args.start, args.gigsum, keep)
     print(f"  {len(gigs):,} candidate gigs", file=sys.stderr)
 
     # Pairs a gig can serve: consecutive quarters it is present in both of.
@@ -201,7 +226,8 @@ def main():
     floor = qnum(args.start)
     written = 0
     last_key = None
-    with open(PROJECTION) as fin, open(OUT_MANIFEST, "w") as fout:
+    args.out_manifest.parent.mkdir(parents=True, exist_ok=True)
+    with open(args.projection) as fin, open(args.out_manifest, "w") as fout:
         # Column names match what 08-download-html.py reads: `timestamp` and
         # `original` (the plain Fiverr URL -- 08 wraps it in the wayback
         # id_/ template itself).
@@ -222,7 +248,7 @@ def main():
             fout.write(f"{gid}\t{ts}\t{ym}\t{cat}\t"
                        f"https://www.fiverr.com/{gid}\n")
             written += 1
-    print(f"  wrote {written:,} rows to {OUT_MANIFEST}", file=sys.stderr)
+    print(f"  wrote {written:,} rows to {args.out_manifest}", file=sys.stderr)
 
     # Coverage report: where the target is met and where supply is the ceiling.
     cats = sorted({c for _, c, _, _ in gigs})
@@ -248,9 +274,9 @@ def main():
         lines.append(f"| {qstr(q)}->{qstr(q + 1)} | " + " | ".join(cells) + " |")
     lines.append("\n`*` = archive exhausted (selected all available, still under target).\n")
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    (OUT_DIR / "balanced-coverage.md").write_text("\n".join(lines) + "\n")
-    print(f"Wrote {OUT_DIR / 'balanced-coverage.md'}", file=sys.stderr)
+    args.out_report.parent.mkdir(parents=True, exist_ok=True)
+    args.out_report.write_text("\n".join(lines) + "\n")
+    print(f"Wrote {args.out_report}", file=sys.stderr)
 
 
 if __name__ == "__main__":

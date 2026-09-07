@@ -31,6 +31,7 @@ __pycache__/
 .ipynb_checkpoints/
 data/pilot/html-balanced/
 data/pilot/html-expanded/
+data/pilot/html-refresh2025/
 
 # === Enlarged-collection outputs (2026-08) ===
 # Regenerable from the manifests + code/38, code/41 and the pipeline drivers.
@@ -47,6 +48,9 @@ data/pilot/html-expanded/
 # and ignored by the *-manifest*.tsv rule above.
 data/pilot/balanced-prices.csv
 data/pilot/expanded-prices.csv
+# The 2025-2026 backfill panel (35,925 rows). Kept out of the repo for now because
+# it is not in the draft -- step 82 measures it and the draft's numbers do not move.
+data/pilot/refresh2025-prices.csv
 data/pilot/gig-status-ledger.tsv
 data/pilot/expanded-gig-status.tsv
 data/pilot/*-download-log.tsv

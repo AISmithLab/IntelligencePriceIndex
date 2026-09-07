@@ -1,0 +1,48 @@
+Scanning the March 2026 all-time pull (2025+ slice)...
+  a.tsv: 22,341 in window, 7,372 gig/200 so far
+  b.tsv: 29,539 in window, 9,473 gig/200 so far
+  c.tsv: 258,446 in window, 11,790 gig/200 so far
+  d.tsv: 270,793 in window, 14,606 gig/200 so far
+  e.tsv: 276,764 in window, 16,588 gig/200 so far
+  f.tsv: 284,607 in window, 18,345 gig/200 so far
+  g.tsv: 349,392 in window, 20,034 gig/200 so far
+  h.tsv: 366,234 in window, 21,930 gig/200 so far
+  i.tsv: 371,239 in window, 23,576 gig/200 so far
+  j.tsv: 377,880 in window, 26,270 gig/200 so far
+  k.tsv: 383,552 in window, 28,062 gig/200 so far
+  l.tsv: 396,254 in window, 29,952 gig/200 so far
+  m.tsv: 413,592 in window, 36,106 gig/200 so far
+  n.tsv: 423,880 in window, 38,540 gig/200 so far
+  o.tsv: 427,066 in window, 39,480 gig/200 so far
+  p.tsv: 435,539 in window, 42,517 gig/200 so far
+  q.tsv: 436,280 in window, 42,729 gig/200 so far
+  r.tsv: 448,004 in window, 45,886 gig/200 so far
+  s.tsv: 569,557 in window, 53,243 gig/200 so far
+  t.tsv: 579,865 in window, 55,674 gig/200 so far
+  u.tsv: 583,684 in window, 56,201 gig/200 so far
+  v.tsv: 587,501 in window, 57,487 gig/200 so far
+  w.tsv: 591,533 in window, 58,509 gig/200 so far
+  x.tsv: 592,084 in window, 58,684 gig/200 so far
+  y.tsv: 593,633 in window, 59,167 gig/200 so far
+  z.tsv: 595,954 in window, 59,826 gig/200 so far
+  -> 43,170 distinct March gig-days
+Scanning the refresh...
+  a.tsv: 8,212 in window, 2,865 gig/200 so far
+  b.tsv: 11,379 in window, 4,029 gig/200 so far
+  c.tsv: 24,455 in window, 4,752 gig/200 so far
+  d.tsv: 24,749 in window, 4,886 gig/200 so far
+  e.tsv: 26,482 in window, 5,441 gig/200 so far
+  f.tsv: 29,146 in window, 5,660 gig/200 so far
+  h.tsv: 30,104 in window, 5,936 gig/200 so far
+  i.tsv: 30,971 in window, 6,229 gig/200 so far
+  j.tsv: 31,365 in window, 6,348 gig/200 so far
+  r.tsv: 33,269 in window, 7,251 gig/200 so far
+  s.tsv: 79,072 in window, 7,251 gig/200 so far
+  t.tsv: 79,853 in window, 7,522 gig/200 so far
+  -> 5,756 distinct refresh gig-days
+Reading download logs...
+  download-log.tsv: 23,798 successful rows
+  expanded-download-log.tsv: 67,377 successful rows
+  balanced-download-log.tsv: 291,997 successful rows
+  balanced-pilot-log.tsv: 1,946 successful rows
+  pilot-log.tsv: 440 successful rows

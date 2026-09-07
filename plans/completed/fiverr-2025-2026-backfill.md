@@ -1,6 +1,6 @@
 # Plan: recover what 2025-2026 Fiverr data still exists
 
-**Status:** active
+**Status:** completed — the pool is collected and the ceiling is measured
 **Created:** 2026-09-06
 **Goal:** lift the panel's starved 2025Q1-2026Q3 right edge as far as the archive allows, and establish what the ceiling actually is.
 
@@ -96,3 +96,43 @@ last one is a paper question and belongs to whoever writes §4.
   currently in the index.
 - 2026-09-06: Download pass 1 started alongside the refresh. Three jobs live: CDX pull,
   step 08, and the driver waiting to sequence 81 -> passes 2-3 -> 09.
+
+## Outcome (2026-09-07) — collected in full, and the ceiling is lower than the projection
+
+The pipeline ran to completion: **35,938 pages downloaded** (of a 36,223 manifest;
+285 permanent failures), **35,925 price rows** extracted at a 100.0% success rate into
+`data/pilot/refresh2025-prices.csv`. `code/82-refresh-supply.py` measures what that
+bought, on collected prices rather than on index supply.
+
+**The projected level landed; the projected gain did not.** Across all 20 categories,
+2025Q1->2025Q2 matched pairs go **1,093 -> 1,285**. The plan projected 702 -> 1,286.
+The *after* is right to within one gig; the *before* was understated by ~390, because
+the baseline omitted gigs already collected. So the honest figure is **1.12x, not
+1.83x**. Over 2024Q4->2026Q1 the whole right edge moves **5,846 -> 6,520 (+674)**.
+On the seven published domains alone it is **34,164 -> 34,433 (+269), 1.01x**.
+
+**Why, and this is the finding: the 2025+ archive is one-shot captures.**
+**22,947 of 24,345 (94.3%)** of the refresh's gigs are priced in exactly one quarter,
+and only **884** carry an adjacent pair. A gig seen once cannot be differenced at any
+price. This is not download loss — the manifest itself holds only **893** gigs with an
+adjacent pair, so **99.0% of the recoverable pairs were recovered**. The ceiling is the
+index.
+
+**The archive's revisit rate broke at the same time its volume did.** Share of gigs
+captured in a year that Wayback revisited in an adjacent quarter: **74-82% flat across
+2018-2024**, then **44.1% (2025)** and **34.5% (2026)**. Matched-model supply is the
+product of gigs-captured and revisit-rate, so the right edge loses twice over. The 403
+wall explains the first column; this explains the second, and it had not been measured.
+
+**Decision: the recovered supply changes the error bars, not the index window.** No
+2025-2026 pair reaches any target on any category — the best is design at 337
+(2025Q3->Q4) against 1,200. The window stated in `todo`'s "restate BOTH papers' scope
+as through 2024Q3" stands, and this plan is now the evidence for *why* it cannot be
+extended by collection. Ten new families become differenceable at all (photography 62,
+data_entry 44, gaming 35 matched gigs over five pairs) but none reach 30 in a single
+pair, so they are existence, not measurement.
+
+**What this closes.** Re-querying the CDX index is worth doing again only for late
+ingestion at the true right edge (2026Q2-Q3, which the March pull did not cover at
+all); re-collecting 2025 is exhausted. `runs/cdx-refresh-2025/supply-realised.md` is
+the record.

@@ -1,0 +1,14 @@
+Pass 1: re-labelling and projecting...
+  ...2,000,000 rows, 1,801,708 kept
+  ...4,000,000 rows, 3,597,720 kept
+  ...6,000,000 rows, 5,402,100 kept
+  ...8,000,000 rows, 7,210,245 kept
+  ...10,000,000 rows, 8,777,057 kept
+  ...12,000,000 rows, 10,546,862 kept
+  ...14,000,000 rows, 12,337,206 kept
+  ...16,000,000 rows, 14,141,691 kept
+  ...18,000,000 rows, 15,945,170 kept
+  ...20,000,000 rows, 17,736,065 kept
+  ...22,000,000 rows, 19,544,478 kept
+  scanned 22,739,659; kept 20,215,714; dropped 0 non-200 / 262,028 reserved
+Pass 2: external sort by gig, month, timestamp...
