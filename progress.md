@@ -1,5 +1,74 @@
 # Progress Log
 
+## 2026-09-07 (evening) — both archives are empty for 2026; the live route is built, validated and waiting
+
+Yesterday's plan left one small item open: re-query CDX for **2026Q2-Q3**, which the
+March 2026 pull never covered. Done, and the answer is a negative on two archives.
+
+**Wayback stopped crawling Fiverr after 2026Q1.** A fresh pull of prefix `z` over the
+full `20250101 -> 20260907` window — the first look this project has had past 2026-03 —
+gives captures per quarter of 459 / 212 / 393 / 207 / **173** for 2025Q1..2026Q1, then
+**11** and **10** for 2026Q2 and 2026Q3, of which exactly **one** is a 200. This is *not*
+the PerimeterX wall: 403s do not rise, the captures simply stop. Extrapolated across 26
+prefixes it is a low-hundreds pool with near-zero gig-shaped 200s and, since a matched
+pair needs two visits, **no usable pairs**.
+
+**Common Crawl was never considered by this project, and is closed too.** It publishes
+monthly indexes through August 2026, so it looked like the obvious alternative. But
+`fiverr.com/*` returns **one index block** in `CC-MAIN-2026-34` — and the same in
+`CC-MAIN-2025-33` and `CC-MAIN-2024-33`. Of 200 sampled records, 128 are 403 and 72 are
+301; filtering to status 200 returns **29 records, every one of them `robots.txt`**. CC
+never crawled Fiverr gigs at all. Recorded in `runs/cdx-refresh-2025/2026-edge.md` so
+neither archive is re-tried.
+
+**Wayback also began refusing our connections mid-run.** The 26-prefix refresh launched at
+23:00 UTC and never got a page count: `TimeoutError`, then `Connection refused` from
+207.241.237.3, the host's only A record, while `archive.org` itself answered 200 and the
+`z` pilot had succeeded twenty minutes earlier. Either an IA outage or an IP-level block
+after yesterday's ~11 GB download and 499 rate-limit hits. The run was **stopped rather
+than left retrying**; per-page checkpoints mean it resumes with one command. That refresh
+is still worth finishing **for 2025**, where 14 of 26 prefixes were never pulled — and not
+for 2026.
+
+**So the only surface still carrying 2026 prices is a live gig page** — and steps 63/63b
+had already validated that route on stored HTML, before any of this: late-fetched pages
+show **no price selection** (median realised value late minus early **+0 USD**, bootstrap
+CI **[+0, +0]**), and displayed orders sit at **median lag 2 months**, 74.7% within three.
+A page opened in 2026-09 is therefore mostly a window onto **2026Q2-Q3**. The cost is
+survivorship: only **26.2%** of the panel's 63,190 gigs are still listed, skewed rich
+(43.8% of the top listed-price quartile against 22.4% of the bottom).
+
+**Three steps built and validated this session.** `83-live-target-list.py` draws 1,400
+targets stratified over category x panel review-count quartile (cuts 16/70/249) round-robin
+under seed 83, so **any prefix of the list is balanced** — the operator can stop at page 40
+and still hold a probability sample rather than the head of a ranking; tiers (140/560/1,400)
+are cumulative cuts on that one order. `84-make-collector.py` emits a paste-in browser
+collector: same-origin in the session the operator established themselves, one request per
+4-9s (~9/min), keeping only the two JSON blobs the pipeline reads (~12 KB, not the 1.3 MB
+page), and **halting on three consecutive 403s** — if the wall re-engages that is a finding,
+not an obstacle. No CAPTCHA solving, proxy rotation or fingerprint spoofing; that was
+refused on 2026-09-04 and stays refused. Fiverr's robots.txt permits gig pages for
+`User-Agent: *` and advertises them in `sitemap_gigs.xml.gz`. `85-ingest-live-capture.py`
+turns the capture into panel rows plus realised-order rows, and its report always prints
+the three stacked selections: survivorship, relevancy-ranked display, and price
+**bucketing** — Fiverr publishes "$50-$100", not an amount, so `paid_mid` is an assumption.
+
+**Pilot-before-scale, applied to the tooling itself.** The whole chain was dry-run on 60
+stored 2025 pages *before* anyone spent a browser session, and it caught two defects: the
+`reviews` slice matched the first inner object (2 bytes for a gig with 368 reviews,
+because the search for `{` began past the brace inside the key), and `title` was taking
+the packageList's package name ("Basic") instead of the gig's og:title. Both fixed;
+`runs/live-collection/ingest-validation-2026-09-07.md` keeps the record.
+
+**Outputs.** `code/83-live-target-list.py`, `code/84-make-collector.py`,
+`code/85-ingest-live-capture.py`, `data/fiverr-live/live-targets-2026-09-04.tsv`,
+`data/fiverr-live/collector-tier1-2026-09-07.js`, `runs/cdx-refresh-2025/2026-edge.md`,
+`runs/live-collection/targets-2026-09-04.md`,
+`runs/live-collection/ingest-validation-2026-09-07.md`,
+`plans/active/fiverr-2026-live-collection.md`. **Next is a human step:** run the tier-1
+collector (140 gigs, ~15 minutes) and decide from it whether the wall holds at this pace
+and what a page actually yields.
+
 ## 2026-09-07 — the 2025-2026 backfill collected in full, and the right edge is exhausted anyway
 
 The overnight pipeline finished: **35,938 pages, 35,925 price rows, 100.0% extraction**,
