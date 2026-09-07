@@ -1,5 +1,49 @@
 # Progress Log
 
+## 2026-09-07 (late) — correction: Wayback is throttling us, and 2026 is a wall, not an absence
+
+The operator saw a **429** on web.archive.org for 2026 queries. That resolved an ambiguity
+this evening's earlier entry could not, and forced a recount that overturned part of it.
+
+**The 429 means IA is up and rate-limiting us**, after yesterday's ~11 GB download and 499
+rate-limit hits. So the stalled 26-prefix refresh is **paused, not dead**: it resumes on
+its checkpoints once the throttle clears. `code/01-download-cdx-index.py` now takes
+`--min-interval` and `--concurrency`, and its default global pace is slowed 0.75s -> 1.5s.
+
+**The recount overturns the earlier reading of 2026.** That reading came off prefix `z`
+alone — half of one small prefix, 1,465 records — and said the captures "simply stop" with
+403s "not rising". Recounted on the **79,853 records from 12 prefixes** pulled a day
+earlier, kept at `data/cdx-index/raw-2025-partial-20260906/`:
+
+| quarter | captures | 403 share | status 200 | distinct gig pages |
+|---|---:|---:|---:|---:|
+| 2025Q4 | 12,601 | 1.0% | 2,239 | 940 |
+| 2026Q1 | 9,734 | 18.1% | 1,180 | 563 |
+| **2026Q2** | 1,204 | **89.3%** | 9 | **1** |
+| **2026Q3** | 1,209 | **59.1%** | 152 | **50** |
+
+**The wall is the mechanism, and it is now visible quarter by quarter** — 1.0% -> 18.1%
+-> 89.3% -> 59.1% 403. Wayback kept requesting fiverr.com right through 2026Q3 and was
+refused. Volume also falls ~8x from 2026Q1, so the right edge loses twice, as in 2025.
+
+**There is more in 2026Q3 than claimed:** 50 distinct gig pages at status 200 in a pull
+covering only **14.5%** of those prefixes' pages, which scales to an order of **350-500
+distinct gigs** archive-wide. Worth collecting; the earlier "essentially none" was wrong.
+
+**The conclusion survives, for a different reason and at a different magnitude.** A
+bilateral needs the same gig in two adjacent quarters, and 2026Q2 holds **one** gig-shaped
+200 against 2026Q3's 50 — so 2026Q2->Q3 and 2026Q1->Q2 both give ~0 matched pairs
+archive-wide. The archives are worth finishing for 2025 and for a 2026Q3 count; they are
+not a route to a 2026 price index, so the live-page plan stands unchanged.
+
+**One genuinely new signal: 2026Q3 is recovering.** 403 share falls 89.3% -> 59.1% and
+status-200 captures rise 9 -> 152 between Q2 and Q3 — the first non-monotone quarter since
+the wall began. Whether the wall is easing or IA changed cadence cannot be told from the
+index, but it makes a *later* re-query worth more than this one.
+
+**Outputs.** `runs/cdx-refresh-2025/2026-edge.md` rewritten with a corrections section;
+`code/01-download-cdx-index.py` pacing made configurable and gentler.
+
 ## 2026-09-07 (evening) — both archives are empty for 2026; the live route is built, validated and waiting
 
 Yesterday's plan left one small item open: re-query CDX for **2026Q2-Q3**, which the

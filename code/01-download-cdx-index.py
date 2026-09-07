@@ -67,8 +67,12 @@ FIELDS = "urlkey,timestamp,original,statuscode,digest,length"
 # and took 499 rate-limit hits. Two workers paced through one global token bucket
 # is slower per request and far faster to completion, because it does not spend
 # the run in backoff.
+# 2026-09-07: IA began serving 429s and then refusing connections outright after a
+# ~11 GB day. A 429 is a statement about the IP, so the fix is a slower global pace,
+# not more retries. 1.5s is the new default and --min-interval overrides it; after a
+# throttling episode, start higher (3s+) and let it run overnight.
 MAX_CONCURRENT = 2
-MIN_INTERVAL = 0.75   # seconds between ANY two requests, globally
+MIN_INTERVAL = 1.5    # seconds between ANY two requests, globally
 RETRY_LIMIT = 8       # a long pull will legitimately meet 429s; do not give up early
 RETRY_BACKOFF = 10    # seconds base backoff, doubled per attempt, jittered
 MAX_BACKOFF = 300
@@ -296,7 +300,7 @@ async def download_prefix(session, semaphore, prefix):
 
 def parse_args():
     """--from / --to / --out / --prefixes, all optional."""
-    global RAW_DIR, FROM_TS, TO_TS
+    global RAW_DIR, FROM_TS, TO_TS, MIN_INTERVAL, MAX_CONCURRENT
     ap = argparse.ArgumentParser()
     ap.add_argument("--from", dest="ts_from", default="20250101000000")
     ap.add_argument("--to", dest="ts_to", default=None,
@@ -305,7 +309,15 @@ def parse_args():
                     help="subdirectory of data/cdx-index/ (default raw-2025; the "
                          "all-time March 2026 pull lives in raw/)")
     ap.add_argument("--prefixes", default="abcdefghijklmnopqrstuvwxyz")
+    ap.add_argument("--min-interval", type=float, default=MIN_INTERVAL,
+                    help="seconds between ANY two requests, globally (default "
+                         f"{MIN_INTERVAL}); raise it after a 429 episode")
+    ap.add_argument("--concurrency", type=int, default=MAX_CONCURRENT,
+                    help=f"parallel prefixes (default {MAX_CONCURRENT})")
     args = ap.parse_args()
+
+    MIN_INTERVAL = args.min_interval
+    MAX_CONCURRENT = args.concurrency
 
     FROM_TS = args.ts_from.ljust(14, "0")
     RAW_DIR = BASE_DIR / "data" / "cdx-index" / args.out

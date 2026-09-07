@@ -11,15 +11,19 @@ one item open: "re-query CDX for 2026Q2-Q3, which the March pull never covered".
 done on 2026-09-07 and the answer is that there is nothing there. See
 `runs/cdx-refresh-2025/2026-edge.md`:
 
-- **Wayback stops after 2026Q1.** A fresh pull of prefix `z` over `20250101 -> 20260907`
-  gives 459 / 212 / 393 / 207 / 173 captures for 2025Q1..2026Q1, then **11 and 10** for
-  2026Q2 and 2026Q3, of which **one** is a 200. Not the PerimeterX wall — 403s do not
-  rise, the captures simply stop.
+- **Wayback kept crawling and the wall took it** (corrected after the operator reported
+  a 429; the first reading came off half of prefix `z`). On 79,853 records from 12
+  prefixes the 403 share runs 1.0% (2025Q4) -> 18.1% (2026Q1) -> **89.3%** (2026Q2) ->
+  59.1% (2026Q3), and volume falls ~8x. 2026Q3 holds **50 distinct gig pages** at status
+  200 in a 14.5% partial pull — order 350-500 archive-wide — but 2026Q2 holds **one**, so
+  adjacent-quarter matched pairs are ~0 on either side. Worth collecting for a count;
+  not a route to a 2026 index.
 - **Common Crawl was never tried and is also empty.** `fiverr.com/*` returns **one index
   block** in Aug 2026, and the same in Aug 2025 and Aug 2024; its only status-200 records
   are `robots.txt`. CC never crawled Fiverr gigs at all.
-- Wayback additionally began **refusing connections** from this host mid-run
-  (`Connection refused`, 207.241.237.3) after yesterday's ~11 GB pull.
+- Wayback is **rate-limiting us**, not down: the operator saw a **429**, this host sees
+  timeouts then `Connection refused` (207.241.237.3), after yesterday's ~11 GB pull. The
+  refresh is paused on its checkpoints and resumes when the throttle clears.
 
 So the only surface that still carries 2026 prices is a live gig page.
 
