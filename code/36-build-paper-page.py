@@ -119,7 +119,14 @@ def display_math(src: str) -> str:
     for key, rendered in DISPLAY.items():
         if key in src:
             return f'<div class="eq">{rendered}</div>'
-    return f'<div class="eq">{tex_inline(src)}</div>'
+    # Fallback for an equation not in the hand-mapped set: strip the $$ fences
+    # first, or they render literally. The caller passes the whole line.
+    body = src.strip()
+    if body.startswith("$$"):
+        body = body[2:]
+    if body.endswith("$$"):
+        body = body[:-2]
+    return f'<div class="eq">{tex_inline(body.strip())}</div>'
 
 
 MATHY = re.compile(r"[\\^_]")
@@ -143,7 +150,12 @@ def inline_math(text: str) -> str:
         if not looks_math:
             return m.group(0)
         return f'<span class="m">{tex_inline(inner)}</span>'
-    return re.sub(r"\$([^$\n]{1,70})\$", repl, text)
+    # 200, not 70: the hedonic model in 3.8 is ~110 chars and silently fell
+    # through as raw LaTeX at the old cap. The guards in repl() -- reject a
+    # span containing markup or an escaped price, and require a backslash,
+    # caret, underscore or stat pattern -- are what keep "$50 ... $30" prose
+    # from being captured, not the length limit.
+    return re.sub(r"\$([^$\n]{1,200})\$", repl, text)
 
 
 # --------------------------------------------------------------------------
@@ -500,7 +512,11 @@ def main() -> None:
         parts.append(f'<section id="sec-{name}">' + convert(md) + "</section>")
     body = "\n".join(parts)
 
-    page = (f"<style>{CSS}</style>\n"
+    # The <title> names the page in a browser tab and in the Artifact gallery,
+    # where it sits beside unrelated pages -- so it is the paper's name, kept
+    # stable across rebuilds rather than dated or subtitled.
+    page = ("<title>Intelligence Price Index</title>\n"
+            f"<style>{CSS}</style>\n"
             '<div class="wrap">\n' + MASTHEAD + build_nav(body)
             + "<article>" + body + "</article>"
             '<footer>Rendered from drafts/sections/*.md &middot; figures from '
