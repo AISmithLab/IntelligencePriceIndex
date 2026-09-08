@@ -32,12 +32,27 @@ Four choices there carry weight rather than mechanics. **The URL-shape rule is t
 
 **The collection was revised five times, each time by something the data had just shown** — the sampling rule, the second crawl, the request rate (after a **45%** per-attempt failure rate), gzip storage, and the exclusion above. `drafts/data-collection.md` narrates the sequence in full.
 
-**Three limits no revision reaches**, being properties of the archive rather than of our budget, are carried into §6: gig *exit* is unmeasurable, streaming all 60M records across **509,339 captures returning `n_404 = 0`** because the archive ceases to re-request a delisted URL rather than recording its death; the trailing edge is closed, status-200 captures falling from 280,779 in September 2024 to **66** in March 2026; and the chain is severed before 2018Q3. Two **enlarged collections** (**25,051** and **39,933** gigs) are complete as of August 2026 and **contribute no number to this paper**. Note throughout that panel gigs do not govern precision: a matched-model index is identified by gigs shared between *pairs* of quarters, which §3.6 reports wherever this paper claims a sample size.
+**Three limits no revision reaches**, being properties of the archive rather than of our budget, are carried into §6: gig *exit* is unmeasurable, streaming all 60M records across **509,339 captures returning `n_404 = 0`** because the archive ceases to re-request a delisted URL rather than recording its death; the trailing edge is closed, status-200 captures falling from 280,779 in September 2024 to **66** in March 2026; and the chain is severed before 2018Q3. Two **enlarged collections** (**25,051** and **39,933** gigs) are complete as of August 2026. The larger one is the **balanced panel** — 292,447 price observations across 39,933 gigs — and it carries every panel-scale estimate in this paper: the reputation elasticity of §3.8, and the pre-registered exposure model of §4.8, both fitted on the 169,337 gig-quarters it yields once windowed to 2019Q4–2024Q4 and balanced on gigs seen either side of 2022Q4. **It does not enter the index.** The IPI is estimated on the pilot corpus alone, so that the published series is not re-based mid-paper onto a different sampling frame; §3.7's frame-dependence result is the reason that separation is worth keeping. Note throughout that panel gigs do not govern precision: a matched-model index is identified by gigs shared between *pairs* of quarters, which §3.6 reports wherever this paper claims a sample size.
 
 
 **A second price object recovered from the same pages.** The captures collected for the index also embed, in each gig page's `reviews` object, a record of individual completed orders — each dated by **order** date rather than by capture date, and each carrying the price band the buyer paid. No stage of the index pipeline reads these fields. Rescanning all **397,698 stored captures** across the three HTML corpora and deduplicating on `encrypted_order_id`, keeping the earliest capture that showed each order, recovers **681,668 distinct realised orders**, of which 617,456 fall in 2022Q1–2026Q1. This is a byproduct of collection already performed: it required no new requests and is therefore unaffected by the access failures of §4.9.
 
 Two properties make this a different object from the index and prevent any splice between them. The unit is a **completed transaction** rather than a listing, so the sample is whatever set of gigs the archive happened to capture in each quarter rather than a matched panel. And the price is a **band**, not an amount — Fiverr publishes "\$50–\$100", not \$75. §4.6 reports the series, and reports at length the two changes in Fiverr's own reporting of those bands that make the naive construction of it badly wrong.
+
+
+**What this paper draws on, in one place.** Three corpora, three purposes, and they are not
+interchangeable — a reader checking a sample size should start here.
+
+| Corpus | Size | Feeds |
+|---|---|---|
+| Pilot (500-seller historical + trailing crawl) | **37,782** price snapshots → **33,936** after the reserved-segment exclusion | the **index**: §4.2, §4.3, and every figure quoted as the IPI |
+| Balanced collection | **292,447** price observations / **39,933** gigs → **169,337** gig-quarters / 15,676 gigs once windowed and balanced | the **panel-scale models**: reputation (§3.8, §4.4) and pre-registered exposure (§4.8) |
+| Stored HTML captures, three corpora | **397,698** captures → **681,668** realised orders | **realised transaction values**: §4.6 |
+
+The counts are not additive and the corpora overlap in the pages they contain. They are kept
+separate on purpose: §3.7 shows that per-category levels are frame-dependent, so re-basing the
+published index onto the larger frame mid-paper would change the numbers a reader is asked to
+compare across sections.
 
 ### 3.3 Category Classification and Weights
 
