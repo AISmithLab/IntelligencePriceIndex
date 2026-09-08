@@ -1,5 +1,43 @@
 # Progress Log
 
+## 2026-09-08 (later) — notebook §12, and the artefact gets a number
+
+**`notebooks/00-explore.ipynb` gains §12, "What buyers actually paid."** The notebook had
+nothing on the realised-order work; it now imports step 87 (not restating it, as with every
+other section) and runs from the tracked **1 KB** `realised-value-series.csv`, which carries
+coverage as well as the bands — so §12 executes on a clean clone. The 123 MB step-86 order
+panel is probed with `first_present` and reported when present, never required.
+
+Two panels. **Left is the trap**: the apparent share of orders under $50 plotted against the
+share carrying *any* price band. **They correlate at r = 0.995** — a number this project did
+not previously have, and the sharpest form of the point. The "collapse in realised value" is,
+to three decimal places, Fiverr beginning to label a segment it had left blank. **Right is
+what survives**: the $50+ composition, flat, median bin $100-200 in all 17 quarters.
+
+`r = 0.995` is now also in the paper's §4.6, which previously made the coverage argument
+only by listing three coverage/share pairs.
+
+**Also in this entry.** The abstract conflated the collection window with the index window —
+it read "37,782 snapshots ... covering seven categories over 2020Q1-2026Q1", which reads as
+though nothing was collected before 2020. Captures reach back to 2018 and the estimation
+panel opens 2019Q4; the index is *published* from 2020Q1 because four quarters of 2017-2018
+hold no captures and §3.7 shows the 2018Q3-2020Q1 leg is not identified (its level moves by a
+third under a change of base quarter alone). The abstract now separates all three spans.
+Checked across every section: this was the only occurrence — every other use of
+"2020Q1-2026Q1" already attaches it to the index. Recorded as `abstract.test.md` U-window.
+
+**Committed and pushed** as 49a6682 (HTML builds + three math fixes in
+`36-build-paper-page.py`: a 70-char inline-math cap that had been rendering §3.8's hedonic
+model as raw LaTeX since August, unstripped `$$` fences, and a missing `<title>`) and d07c4f8
+(the paper itself, 26 files). The reading build is also published as an artifact.
+
+**Not committed:** `data/pilot/_backup-2026-09-08/`, 5.8 MB of gzipped backups — that belongs
+to the open "where do the price panels live for replication" decision (Git LFS or Zenodo),
+not to another blob commit.
+
+**Still blocking submission, still untouched:** related-work R16 (seven unverified citations)
+and the §2.2 Wayback-literature claim citing three papers that never used a web archive.
+
 ## 2026-09-08 — the draft catches up with the research: four weeks of results folded into paper 1
 
 **Context: submission in two days.** `drafts/sections/` had not been touched since **2026-08-13**, while
