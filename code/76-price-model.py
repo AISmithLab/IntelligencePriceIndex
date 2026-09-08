@@ -127,7 +127,12 @@ def build_panel(prices=None, category=None):
     two reputation columns it does not carry. Reviews are cumulative, so the
     quarter's MAX is the level at quarter end; price and rating take the median.
     """
-    px = pd.read_csv(prices or PRICES)
+    paths = prices or PRICES
+    if isinstance(paths, (str, Path)):
+        paths = [paths]
+    # Concatenated BEFORE the gig-quarter median, so a gig appearing in two
+    # panels in the same quarter collapses to one observation rather than two.
+    px = pd.concat([pd.read_csv(q) for q in paths], ignore_index=True)
     n0 = len(px)
     px = px[px.seller.map(is_gig)].copy()
     px["gig_id"] = px.seller + "/" + px.slug
@@ -280,12 +285,25 @@ def main():
     ap.add_argument("--end", default="2024Q4", help="panel window end (archive ceiling)")
     ap.add_argument("--balanced", action="store_true", default=True,
                     help="keep only gigs observed both before and after the cut")
+    ap.add_argument("--prices", nargs="+", default=None,
+                    help="price panels to pool (default: balanced-prices only, "
+                         "which is what the published model.md was estimated on)")
+    ap.add_argument("--tag", default="",
+                    help="suffix for the output report; empty writes model.md, so "
+                         "an exploratory run MUST pass one rather than overwrite "
+                         "the published estimates")
     args = ap.parse_args()
 
     OUTDIR.mkdir(parents=True, exist_ok=True)
     L = ["# Real price, task value, reputation, and AI exposure", ""]
+    if args.tag:
+        L += [f"**Exploratory run `{args.tag}`.** Panels: "
+              + ", ".join(f"`{Path(q).name}`" for q in (args.prices or [PRICES]))
+              + f". Window {args.start}-{args.end}. The pre-registered estimates "
+                "live in `model.md`; this is a declared robustness, not a "
+                "replacement.", ""]
 
-    gq = build_panel()
+    gq = build_panel(prices=args.prices)
     lo, hi = q_to_int(args.start), q_to_int(args.end)
     d = gq[(gq.qi >= lo) & (gq.qi <= hi)].copy()
     d = d[d.reviews.notna() & d.rating.notna() & (d.real > 0)]
@@ -337,7 +355,8 @@ def main():
     tv = (pd.DataFrame({"gig_id": d.gig_id.to_numpy()[np.unique(gid, return_index=True)[1]],
                         "x": x0["alpha"]})
           .merge(d[["gig_id", "category"]].drop_duplicates(), on="gig_id"))
-    tv.to_csv(OUTDIR / "task-value.csv", index=False)
+    tv.to_csv(OUTDIR / (f"task-value-{args.tag}.csv" if args.tag
+                        else "task-value.csv"), index=False)
     L += ["**Task value.** Time-invariant by construction, so it is the gig fixed effect, "
           "recovered after fitting as the per-gig intercept — the log real price this "
           "particular piece of work commands net of inflation, the common quarter path and "
@@ -545,7 +564,8 @@ def main():
                       + ("survives differencing." if abs(t8v) > 1.96 else
                          "**does not survive** differencing."), ""]
 
-    (OUTDIR / "model.md").write_text("\n".join(L) + "\n")
+    suffix = f"-{args.tag}" if args.tag else ""
+    (OUTDIR / f"model{suffix}.md").write_text("\n".join(L) + "\n")
     print("\n".join(L))
 
 

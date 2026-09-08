@@ -1,7 +1,7 @@
 # Tests: Conclusion
 
 **Draft file:** drafts/sections/conclusion.md
-**Last reviewed:** 2026-08-06
+**Last reviewed:** 2026-09-08
 
 Rewritten from scratch 2026-08-06. The previous version's three headline findings were the 312 peak, the 21% 2025 reversal, and the −0.49-to-+1.10 elasticity range — all three retracted.
 
@@ -16,6 +16,7 @@ Rewritten from scratch 2026-08-06. The previous version's three headline finding
 | R5 | "The 'three findings that will outlast the series' — are they really findings, or lessons?" | minor | **PASS** | All three are measured: the parsing defect with its 26-point real effect, the non-identification with its +129% swing against a ±61% band and the decomposition proving the single mechanism, and the hedonic reversal with both coefficients. They are results about method, not reflections. |
 | R6 | "The final line still gestures at the price of intelligence." | minor | **PASS** | It does so by explicit disclaimer — "This paper does not report it" — and then states what is reported instead. The rhetorical callback survives without a claim attached. |
 | R7 | "Does the conclusion state what would resolve the question?" | major | **PASS** | Its penultimate paragraph gives all three: the 850–2,500 matched-gig target from the measured $1/\sqrt{n}$ curve, the two collection-design changes, and the observation that the DiD design passing its identifying test here would approach ±5% MDE at the density the recent crawl already achieves. |
+| R10 | "§7 revises a claim the earlier version made. Is that flagged or quietly changed?" | major | **PASS** | Flagged in the text — "We had attributed these failures to one cause... The panel-scale results oblige us to revise that" — and recorded as entry 7 in the correction ledger at A.7, which is where every other revision in this paper is logged. |
 
 ## User Requirements
 

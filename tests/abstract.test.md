@@ -1,7 +1,7 @@
 # Tests: Abstract
 
 **Draft file:** drafts/sections/abstract.md
-**Last reviewed:** 2026-08-06
+**Last reviewed:** 2026-09-08
 
 The abstract was **rewritten from scratch** on 2026-08-06. Every substantive claim in the previous version was retracted or superseded (see R1), so it was rewritten rather than edited.
 
@@ -15,6 +15,7 @@ The abstract was **rewritten from scratch** on 2026-08-06. Every substantive cla
 | R4 | "You say you retract a previously reported result. Is an abstract the place for that?" | minor | **PASS** | Yes, given the finding is methodological and transferable: the specification is intuitive and easy to run, and the abstract states the three diagnostics that kill it (time-trend placebo, CPI-U placebo, first differences). Burying a retraction in §3.9 while the abstract stayed silent would be the worse choice. |
 | R5 | "37,782 snapshots — is that the number the index is built on?" | minor | **PASS** | It is the total observation count across both crawls before the Stage 5b exclusion, and the abstract says "gig-price snapshots" rather than implying it is the panel. §3.2 gives the full attrition chain and §4.1 gives the panel counts (1,066 historical and 2,908 recent gigs). Reviewer could reasonably ask for the panel figure instead; the larger number is defensible but is the more flattering of the two. |
 | R6 | "Does the abstract state the window and the base?" | minor | **PASS** | 2020Q1–2026Q1, seven categories, with the base implied by the index convention and stated in §3.4. |
+| R9 | "The abstract now carries five results and two artifacts. Is it still an abstract?" | minor | **PASS** | It runs 541 words in five paragraphs, each doing one job: the instrument, the measured confounds, the two nulls, the negative results, and the closing window. Every number in it is frozen and checked by `code/32-check-draft-numbers.py`. A reviewer may reasonably ask for it to be cut to 250 for a venue with a hard limit; the material to cut first is the 35-category sentence in paragraph four. |
 
 ## User Requirements
 

@@ -230,6 +230,13 @@ def main():
     ap.add_argument("--skip", type=int, default=0,
                     help="drop the first N ranks (to continue past an earlier tier)")
     ap.add_argument("--chunk", type=int, default=25)
+    ap.add_argument("--limit", type=int, default=0,
+                    help="take only the first N targets. The list is round-robin "
+                         "across strata, so a prefix is still balanced -- this is a "
+                         "smaller sample, not a biased one.")
+    ap.add_argument("--compact", action="store_true",
+                    help="strip the banner and long comments, for pasting into a "
+                         "chat window rather than transferring a file")
     ap.add_argument("--targets", default=None, help="path to a step-83 targets TSV")
     args = ap.parse_args()
 
@@ -246,6 +253,8 @@ def main():
                 if int(r["tier"]) <= args.tier]
     rows.sort(key=lambda r: int(r["rank"]))
     rows = rows[args.skip:]
+    if args.limit:
+        rows = rows[:args.limit]
     paths = [r["gig_id"] for r in rows]
 
     stamp = date.today().isoformat()
@@ -258,8 +267,17 @@ def main():
           .replace("__CHUNK__", str(args.chunk))
           .replace("__MINUTES__", str(minutes)))
 
+    if args.compact:
+        import re as _re
+        # Drop the banner block and any whole-line // comment; keep the code.
+        js = js[js.index("(() => {"):]
+        js = "\n".join(l for l in js.split("\n")
+                       if not l.strip().startswith("//"))
+        js = _re.sub(r"\n{3,}", "\n\n", js)
+
     LIVE_DIR.mkdir(parents=True, exist_ok=True)
-    out = LIVE_DIR / f"collector-tier{args.tier}-{stamp}.js"
+    name = f"collector-tier{args.tier}{'-compact' if args.compact else ''}-{stamp}.js"
+    out = LIVE_DIR / name
     out.write_text(js)
     print(f"Targets file : {tpath.name}")
     print(f"Gigs         : {len(paths):,} (tier <= {args.tier}, skipping {args.skip})")

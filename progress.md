@@ -1,5 +1,64 @@
 # Progress Log
 
+## 2026-09-08 — the draft catches up with the research: four weeks of results folded into paper 1
+
+**Context: submission in two days.** `drafts/sections/` had not been touched since **2026-08-13**, while
+every result from 08-19 onward lived only in `runs/` and `progress.md`. The operator chose paper 1
+(the IPI measurement paper) as the submission target and chose folding in new results over a
+defensibility-only pass. This entry is that fold.
+
+**Paper 1 goes 20,014 -> 24,555 words.** Rendered to `drafts/draft-2026-09-08.html`.
+`code/32-check-draft-numbers.py` passes: every frozen figure appears and every retracted figure
+still carries its retraction cue.
+
+**New material.**
+
+- **New §4.6, "What Buyers Actually Paid"** — the 681,668 recovered orders (617,456 in
+  2022Q1-2026Q1). The subsection leads with the **artefact rather than the series**: the naive read
+  shows sub-$50 orders going ~0% -> 54% between 2023 and 2025, and the draft shows this tracks field
+  *coverage* almost exactly. Conditioned on $50+, median bin **$100-200 in all 17 quarters**. Four
+  limits travel with it, including that it is silent on ~half of all orders.
+- **New §4.9, "The Observation Window Is Closing"** — 403 share 1.0% -> 89.3% across 2025Q4-2026Q2,
+  revisit rate 74-82% -> 34.5%, the 1.01x re-collection result, Common Crawl never having crawled the
+  site. Framed as a finding about measurement infrastructure, with §6.6 carrying the limitation half.
+- **§4.8 gains the pre-registered exposure model at panel scale** — `Exposure x Post` -0.0333
+  (t -1.35) on 169,337 gig-quarters, with the full six-gate table (three failures) and the ext2025
+  extension (-0.0324). Appendix **A.8** carries the gate-by-gate detail.
+- **§4.3 closes findings R11** — median-of-logs (+74%) reported beside mean-of-logs (+145%), frame
+  dependence stated, and the 35 narrow categories added: **translation and subtitling are the only
+  two of 35 whose real change covers zero**, with `translation-other` at +51.2% as the
+  counter-evidence in the same family. Full table at **A.10**.
+- **§3.8 and §4.4 re-base the reputation estimate** on the balanced panel: **+7.33% per doubling**
+  (beta +0.1021, t 25.95, 169,337 obs / 15,676 gigs, real terms), replicating the pilot's +7.7% on
+  fifty times the data. The form and tenure qualifications from the 09-03 corrections travel with it.
+  The index adjustment still uses the pilot beta, so no published figure changes basis.
+- **§3.2 documents the order-panel extraction**; **§3.8 documents the pre-registered specification**
+  and the standing rule that any category-by-quarter regressor must be raced against
+  category-specific trends. Appendix **A.9** carries the full 17-quarter realised series.
+
+**The claim that changed, and it changed against us.** Earlier drafts said the binding constraint was
+**sample size and collection design, not estimator choice**. Fifty times the pilot's data leaves the
+estimate below its MDE, four further quarters move it by 0.0009, and the design *loses* two gates it
+passed at pilot scale. §4.8, §6.1, §7 and correction-ledger entry **7** now all state that the failure
+is one of **identification**, that more data of the same kind does not repair it, and that a genuine
+control group is the binding requirement. §1's "why publish" argument was rewritten around this
+rather than left standing.
+
+**Deliberately excluded.** The reputation sign reversal (steps 77/78) is **not** in the paper: its
+taxonomy is unvalidated against a hand-labelled sample and `translation/voiceover_leak` shows the
+step-04 classifier leak sitting inside the nodes. Recorded in findings test U7 so the omission is
+auditable rather than accidental.
+
+**Tests updated.** findings R11 FAIL -> PASS; new R13-R17 (realised-value conditioning, quality
+adjustment, the three failed gates, the ext2025 non-move, archive-closure-as-finding); new rows in
+limitations, method, abstract, introduction, conclusion and discussion; U7 records the session's
+instruction. `tests/limitations.test.md` R8 re-pointed at the renumbered §6.7.
+
+**Still open and blocking for submission** — none of it addressed this session, by choice:
+**related-work R16** (seven unverified citations, all in §2) and the §2.2 blocker where three cited
+papers never used a web archive. Also open: no figure exists for §4.6 (placeholder only), and
+`tests/model-paper.test.md` remains 10/10 BLOCKED.
+
 ## 2026-09-07 (night) — 682k realised orders recovered from HTML already on disk; the obvious series would have been an artefact
 
 The wall blocks new page fetches. It does not touch the 86 GB of HTML already

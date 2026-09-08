@@ -1,7 +1,7 @@
 # Tests: Discussion
 
 **Draft file:** drafts/sections/discussion.md
-**Last reviewed:** 2026-08-06
+**Last reviewed:** 2026-09-08
 
 Rewritten from scratch 2026-08-06. The previous version built a three-tier taxonomy (substitution / shadow deflation / complementarity) on the elasticity estimates that §3.9 retracts, so nothing in it survived.
 
@@ -17,6 +17,7 @@ Rewritten from scratch 2026-08-06. The previous version built a three-tier taxon
 | R6 | "Implications sections in papers like this always overreach." | minor | **PASS** | §5.5 is explicitly titled "stated at the confidence they warrant" and its policy paragraph declines to offer the early-warning signal the earlier draft promised, cautioning against reading orderings from data of this precision. |
 | R7 | "Comparing yourself to the Billion Prices Project invites a comparison you lose." | minor | **PASS** | §5.4 makes the comparison on the right axis — honest reporting of coverage and matched-item counts — and states our contribution to that line as a demonstration of what happens when matched-item counts fall to single digits. §3.6 separately declines to benchmark precision against BLS, with the reason. |
 | R8 | "Reading 1 (survivor-set composition) is asserted, not measured." | major | **PARTIAL** | Correct. Readings 2 and 3 are measured (reputation β, CPI-U share); readings 1 and 4 are not. §5.2 does not claim otherwise, and §6.2 explains that the entry-price series that would bear on reading 1 is blocked on a crawl-frame reconciliation. A reviewer may still ask for a bound on reading 1, and we do not have one. |
+| R10 | "You claim the disagreement with the Upwork literature is about timing. Is that a real claim or a hedge?" | major | **PASS** | §5.4 makes it checkable rather than rhetorical: every dated turning point in this market falls in 2020Q3–2021Q4, before the launch, and the pre-registered design's parallel-trends failure is the same fact seen from the estimator — the exposure gap opens across 2021 and is flat through the post-period. The draft explicitly declines to claim this overturns findings measured on another platform and mostly on quantities, and states the narrow version instead. |
 
 ## User Requirements
 

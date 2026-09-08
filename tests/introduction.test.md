@@ -1,7 +1,7 @@
 # Tests: Introduction
 
 **Draft file:** drafts/sections/introduction.md
-**Last reviewed:** 2026-08-06
+**Last reviewed:** 2026-09-08
 
 Rewritten from scratch 2026-08-06. The previous version opened by asserting AI as "the most powerful deflationary force… since the word processor" and organised its contribution around the price elasticity of intelligence, which §3.9 now retracts.
 
@@ -16,6 +16,7 @@ Rewritten from scratch 2026-08-06. The previous version opened by asserting AI a
 | R5 | "Four numbered findings, three of which are about your own method rather than the market." | minor | **PASS (deliberate)** | This is a measurement paper, and the introduction says so before the list. The methodological findings (the hedonic reversal, the link-path identification failure, the parsing defect) are the transferable content; §5.3 argues that case at length. |
 | R6 | "Does the introduction overstate the precision of its one positive result?" | major | **PASS** | The +40.7% real figure appears with its band (±3.7%) and with CPI-U alongside, and the next paragraph immediately subtracts inflation and reputation and states the residual "is not separately identified." |
 | R7 | "You claim the DiD 'passes its parallel-trends test' — that is a headline claim for a null result." | major | **PASS** | The claim is stated with its numbers (pre-period β = −0.0082, se 0.0093, insignificant event-study pre-years) and immediately paired with the interval that makes it useless in practice (−14.8% to +87.6%). The introduction presents it as a *design* result, not an effect estimate, and §4.7 repeats the framing. |
+| R11 | "§1 now says the design is not identified, but §1 also says the paper is worth publishing. Reconcile these." | major | **PASS** | The "why publish" passage is rewritten into three parts that separate the claims: scale (solved, with a stated $1/\sqrt{n}$ requirement), identification (not solved by scale; needs a control group), and timing (the archive closed, so only a prospective panel remains). The contribution claimed is the instrument, the artifacts, and the design — not the causal estimate. |
 
 ## User Requirements
 

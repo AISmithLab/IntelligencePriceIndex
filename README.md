@@ -4,6 +4,22 @@
 
 Research project investigating intelligence pricing trends and dynamics.
 
+**Current status is in `progress.md` (latest entry at the top). Open work is in `plans/todo.md`.**
+This file describes how to work in the repo, not where the project stands.
+
+## The two papers
+
+The repo carries two paper trees. They are separate documents with separate section
+files and separate test files.
+
+| Tree | Paper | Assembled by |
+|---|---|---|
+| `drafts/sections/` | **Intelligence Price Index** — the measurement paper | `drafts/main.md` |
+| `drafts/structure/sections/` | **What Generative AI Did Not Do** — market structure | `drafts/structure/main.md` |
+
+Test files follow the same split: `tests/<section>.test.md` covers the IPI paper,
+`tests/structure-<section>.test.md` covers the second one.
+
 ## For Human Contributors
 
 You primarily work in three places:
@@ -12,8 +28,10 @@ You primarily work in three places:
 - **`plans/todo.md`** — the master to-do list. Add items, reprioritize, check things off. This is where you steer the project.
 - **`plans/active/`** — execution plans for complex tasks that need their own scope and tracking. Most to-do items don't need one.
 
-### 2. Drafts (`drafts/sections/`)
-Write and revise paper sections. Each section is a standalone markdown file. The master document `drafts/main.md` assembles them in order.
+### 2. Drafts (`drafts/sections/`, `drafts/structure/sections/`)
+Write and revise paper sections. Each section is a standalone markdown file. The master
+document assembles them in order — `drafts/main.md` for the IPI paper, `drafts/structure/main.md`
+for the market-structure paper. See **The two papers** above for which is which.
 
 To preview the current draft as HTML:
 ```
@@ -47,8 +65,9 @@ plans/
   tech-debt-tracker.md known shortcuts and deferred work
 
 drafts/
-  main.md              assembles sections via :(sections/file.md)
-  sections/            individual section markdown files
+  main.md              assembles the IPI paper via :(sections/file.md)
+  sections/            IPI paper section files
+  structure/           the second paper — its own main.md and sections/
   render.py            markdown → HTML renderer
   draft-YYYY-MM-DD.html  dated HTML snapshots
 
