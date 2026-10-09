@@ -31,6 +31,12 @@ Gemini 1.5 Mar 2024, GPT-4o May 2024 (general, every category).
   the category panels. Figure exports re-rendered at 3x (CSS zoom) - ~2440 px wide - and the
   price-chart figure (fig 1) dropped. Exports then trimmed to the card content and given an
   even 160 px white margin on every side so nothing sits on the edge.
+- **Revision 3 (same day):** the Volume, Transactions and Transactions-by-category cards had
+  no inner padding (`.card` has none; only `.hero` did), so their content ran to the card
+  edge. They now share the hero's 20/22 px padding via a `.pad` class. The GEKS chart's last
+  x label (2026Q1) was centred on the plot edge and clipped; it is now right-aligned.
+  Figures re-exported from the padded cards: card title + subtitle, chart, launch legend,
+  at 3x with the card's own padding as the margin (~2400 px wide).
 - Static PNG exports for team review: `outputs/figures/fig-ai-launches-{2-volume,
   3-transactions,4-category-panels}.png` (screenshots of the rendered site).
 

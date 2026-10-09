@@ -49,8 +49,8 @@
     .card { background: var(--card); border: 1px solid var(--line);
             border-radius: 16px;
             box-shadow: 0 1px 2px rgba(17,24,39,.04), 0 8px 24px -14px rgba(17,24,39,.18); }
-    .hero { padding: 20px 22px 18px; }
-    .hero .headline { margin-bottom: 12px; }
+    .hero, .pad { padding: 20px 22px 18px; }
+    .hero .headline, .pad .headline { margin-bottom: 12px; }
     .headline .charttitle { font-size: 17px; font-weight: 800; color: var(--ink);
       letter-spacing: -0.01em; margin: 0; }
     .chartnote { font-size: 11.5px; color: var(--mut); margin-top: 10px;
@@ -282,7 +282,7 @@
 
     @media (max-width: 560px) {
       .headline .num { font-size: 32px; }
-      .hero { padding: 16px 14px 12px; }
+      .hero, .pad { padding: 16px 14px 12px; }
       header { padding-top: 22px; }
     }
   </style>
@@ -381,7 +381,7 @@
         <ul class="movenotes" id="movenotes"></ul>
       </section>
 
-      <section class="card">
+      <section class="card pad">
         <div class="headline">
           <h2 class="charttitle">Volume, without a price index</h2>
           <div class="sub">Two measures that involve no price at all &middot;
@@ -420,7 +420,7 @@
         <div class="chartnote" id="volnote"></div>
       </section>
 
-      <section class="card">
+      <section class="card pad">
         <div class="headline">
           <h2 class="charttitle">Transactions &mdash; the implied order count</h2>
           <div class="sub">Index, 2020 = 100 &middot; annual &middot;
@@ -472,7 +472,7 @@
         <div class="chartnote" id="txnote"></div>
       </section>
 
-      <section class="card">
+      <section class="card pad">
         <div class="headline">
           <h2 class="charttitle">Transactions by category</h2>
           <div class="sub">Within-gig review accrual, age-adjusted &middot; index,

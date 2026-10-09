@@ -411,7 +411,8 @@ function drawChart(cats, comp) {
   // x labels (~6)
   const step = Math.max(1, Math.round(n / 6));
   months.forEach((mo, i) => { if (i % step && i !== n - 1) return;
-    svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": "middle",
+    // the last label is right-aligned so it ends at the plot edge instead of past it
+    svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8, "text-anchor": i === n - 1 ? "end" : "middle",
       "font-size": 11, fill: "#999" }, [mo])); });
 
   // shaded 95% confidence bands (drawn first, lines on top). One polygon per
