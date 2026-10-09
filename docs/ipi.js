@@ -337,14 +337,7 @@ function drawChart(cats, comp) {
   const tip = document.getElementById("tip");
   const W = box.clientWidth || 900, m = { t: 16, r: 18, b: 30, l: 74 };
   const months = DATA.months, n = months.length;
-  // AI launch rail: badges live in the top margin, so the plot keeps its height
-  const lr = (W - m.l - m.r) / (n - 1) < 20 ? 5 : 7;
-  const lx = L => { const i = months.indexOf(L.q);
-    return i < 0 ? null : m.l + (i / (n - 1)) * (W - m.l - m.r); };
-  const launchSet = showLaunches ? AI_LAUNCHES : [];
-  const { marks: lmarks, lanes } = launchLanes(launchSet, lx, lr);
-  if (lanes) m.t += lanes * (2 * lr + 3) + 4;
-  const H = 404 + m.t;
+  const H = 420;
 
   // The composite is only meaningful for a basket of 2+ categories; with a single
   // category selected we show that individual series on its own (its composite would
@@ -440,9 +433,6 @@ function drawChart(cats, comp) {
     }
   }
 
-  // AI launch markers behind the series
-  drawLaunchMarks(svg, lmarks, lane => m.t - 4 - lr - lane * (2 * lr + 3), H - m.b, lr);
-  renderLaunchList("launchlist");
 
   // series paths
   for (const s of series) {
@@ -479,7 +469,7 @@ function drawChart(cats, comp) {
     const pv = cats.length ? comp[pinned] : null;
     if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinned), cy: Y(pv), r: 4.5,
       fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
-    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t + 12, "text-anchor": "middle",
+    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t - 4, "text-anchor": "middle",
       "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinned]]));
   }
 
@@ -550,7 +540,7 @@ AI_LAUNCHES.forEach((L, k) => {
   Object.assign(L, { n: k + 1, year: y, frac: (mo - 0.5) / 12,
                      q: `${y}Q${Math.ceil(mo / 3)}`, when: `${MON[mo - 1]} ${y}` });
 });
-let showLaunches = true;
+const showLaunches = true;     // the GEKS price chart carries no launch markers; the volume and transaction charts do
 const launchGeneral = L => !L.cats || L.cats.length > 1;
 const launchColor   = L => launchGeneral(L) ? LAUNCH_GENERAL : colorOf(L.cats[0]);
 const launchesFor   = cats => AI_LAUNCHES.filter(L => !L.cats || L.cats.some(c => cats.includes(c)));
@@ -1395,9 +1385,6 @@ function wireControls() {
       nb.onclick = () => setBasis("nominal");
     }
   }
-  const lt = document.getElementById("launchToggle");
-  if (lt) lt.onclick = () => { showLaunches = !showLaunches;
-    lt.classList.toggle("on", showLaunches); lt.setAttribute("aria-pressed", showLaunches); render(); };
   document.getElementById("selAll").onclick  = () => { checked = new Set(DATA.categories); render(); };
   document.getElementById("selNone").onclick = () => { checked = new Set(); render(); };
   document.querySelectorAll("thead th[data-k]").forEach(th => {

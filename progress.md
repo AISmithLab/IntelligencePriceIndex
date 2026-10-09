@@ -26,8 +26,12 @@ Gemini 1.5 Mar 2024, GPT-4o May 2024 (general, every category).
   above each plot, and each chart carries the full numbered legend 1-11 (name, month/year,
   categories) directly beneath it, so each exported figure is self-keyed. Category panels
   still mark only their own category's launches; Claude Code (11) is past their 2024Q4 end.
-- Static PNG exports for team review: `outputs/figures/fig-ai-launches-{1-price-index-design,
-  2-volume,3-transactions,4-category-panels}.png` (screenshots of the rendered site).
+- **Revision 2 (same day):** launch markers, their legend and the on/off toggle removed from
+  the GEKS-Jevons price chart at the user's request; they remain on volume, transactions and
+  the category panels. Figure exports re-rendered at 3x (CSS zoom) - ~2440 px wide - and the
+  price-chart figure (fig 1) dropped.
+- Static PNG exports for team review: `outputs/figures/fig-ai-launches-{2-volume,
+  3-transactions,4-category-panels}.png` (screenshots of the rendered site).
 
 ## 2026-09-08 (later) — notebook §12, and the artefact gets a number
 
