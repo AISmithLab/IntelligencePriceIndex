@@ -105,10 +105,13 @@
     .seg button.on { background: #2a78d6; color: #fff; }
     .seg button.on:hover { background: #2a78d6; }
     /* AI launch legend ------------------------------------------------------ */
-    .launchlist { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px;
+    .launchlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 5px 14px; margin: 8px 0 10px;
       font-size: 11.5px; color: var(--mut); line-height: 1.4; }
+    .launchlist .llead, .launchlist .lkey { grid-column: 1 / -1; }
     .launchlist .llead { font-weight: 700; color: var(--ink); }
-    .lchip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .lchip b { color: var(--ink); font-weight: 600; }
+    .lchip { display: inline-flex; align-items: baseline; gap: 5px; }
+    .lchip .lbadge { transform: translateY(3px); }
     .lbadge { display: inline-flex; align-items: center; justify-content: center; flex: none;
       min-width: 15px; height: 15px; border-radius: 50%; color: #fff;
       font-size: 9px; font-weight: 700; }
@@ -410,6 +413,7 @@
           <div class="txlegend" id="vollegend"></div>
         </div>
         <div id="volchart"><div class="tip" id="voltip"></div></div>
+        <div class="launchlist" id="launchlist-vol"></div>
         <table class="txtable" id="voltable">
           <caption class="sr-only">Pooled review-accrual index and Fiverr active buyers, both on a 2020 equals 100 base</caption>
           <thead><tr><th scope="col">Quarter</th><th scope="col">Review accrual</th>
@@ -453,6 +457,7 @@
           <div class="txlegend" id="txlegend"></div>
         </div>
         <div id="txchart"><div class="tip" id="txtip"></div></div>
+        <div class="launchlist" id="launchlist-tx"></div>
         <table class="txtable" id="txtable">
           <caption class="sr-only">Fiverr transaction quantities, 2020 to the twelve months ending 2026Q2</caption>
           <thead>
@@ -507,6 +512,7 @@
           </ul>
         </div>
         <div id="ctxchart"><div class="tip" id="ctxtip"></div></div>
+        <div class="launchlist" id="launchlist-ctx"></div>
         <table class="txtable" id="ctxtable">
           <caption class="sr-only">Age-adjusted review-accrual index by category, 2018Q4 to 2024Q4</caption>
           <thead><tr id="ctxhead"></tr></thead>

@@ -341,7 +341,7 @@ function drawChart(cats, comp) {
   const lr = (W - m.l - m.r) / (n - 1) < 20 ? 5 : 7;
   const lx = L => { const i = months.indexOf(L.q);
     return i < 0 ? null : m.l + (i / (n - 1)) * (W - m.l - m.r); };
-  const launchSet = showLaunches ? launchesFor(cats.map(parentOf)) : [];
+  const launchSet = showLaunches ? AI_LAUNCHES : [];
   const { marks: lmarks, lanes } = launchLanes(launchSet, lx, lr);
   if (lanes) m.t += lanes * (2 * lr + 3) + 4;
   const H = 404 + m.t;
@@ -442,16 +442,7 @@ function drawChart(cats, comp) {
 
   // AI launch markers behind the series
   drawLaunchMarks(svg, lmarks, lane => m.t - 4 - lr - lane * (2 * lr + 3), H - m.b, lr);
-  const ll = document.getElementById("launchlist");
-  if (ll) {
-    ll.innerHTML = launchSet.length
-      ? `<span class="llead">AI launches${cats.length === 1 ? " for " + labelOf(cats[0]) : ""}:</span>`
-        + launchLegendHTML(launchSet)
-        + `<span class="lkey"><span class="lbadge" style="background:${LAUNCH_GENERAL}"></span>general-purpose LLM`
-        + ` &middot; other colours = category-specific tool</span>`
-      : "";
-    ll.style.display = launchSet.length ? "" : "none";
-  }
+  renderLaunchList("launchlist");
 
   // series paths
   for (const s of series) {
@@ -595,10 +586,23 @@ function drawLaunchMarks(svg, marks, laneY, yBot, r) {
     svg.appendChild(g);
   }
 }
-// Inline legend: one item per launch, badge + name + date.
+// Inline legend: one item per launch, badge + name + date + categories.
 function launchLegendHTML(list) {
   return list.map(L => `<span class="lchip"><span class="lbadge" style="background:${launchColor(L)}">${L.n}</span>`
-    + `${L.label} <span class="lwhen">${L.when}</span></span>`).join("");
+    + `<b>${L.label}</b> <span class="lwhen">${L.when} &middot; ${launchCats(L)}</span></span>`).join("");
+}
+// The full numbered list, placed directly under a chart so a screenshot of the
+// chart alone carries its key. Hidden when the markers are toggled off.
+function renderLaunchList(id, extra) {
+  const ll = document.getElementById(id);
+  if (!ll) return;
+  ll.innerHTML = showLaunches
+    ? `<span class="llead">AI launches</span>` + launchLegendHTML(AI_LAUNCHES)
+      + `<span class="lkey"><span class="lbadge" style="background:${LAUNCH_GENERAL}"></span>magenta = general-purpose LLM`
+      + ` &middot; other colours = the category's own colour</span>`
+      + (extra ? `<span class="lkey">${extra}</span>` : "")
+    : "";
+  ll.style.display = showLaunches ? "" : "none";
 }
 
 // ---- volume, with no price index in it -------------------------------------
@@ -629,11 +633,16 @@ function drawVolume() {
   const x0 = Math.min(qn(qs[0]), bx[0]), x1 = Math.max(qn(qs[qs.length - 1]), bx[bx.length - 1]);
 
   const W = box.clientWidth || 900, narrow = W < 620;
-  const H = narrow ? 300 : 360, m = { t: 16, r: narrow ? 16 : 132, b: 34, l: 48 };
+  const m = { t: 16, r: narrow ? 16 : 132, b: 34, l: 48 };
   const vals = acc.filter(v => v != null).concat(bidx);
   let lo = Math.min(...vals), hi = Math.max(...vals);
   const pad = Math.max((hi - lo) * .14, 2); lo -= pad; hi += pad;
   const X = v => m.l + ((v - x0) / (x1 - x0)) * (W - m.l - m.r);
+  // launch rail in the top margin, so badges never sit on the series
+  const vlr = narrow ? 5 : 7;
+  const vl = launchLanes(showLaunches ? AI_LAUNCHES : [], L => X(qn(L.q)), vlr);
+  if (vl.lanes) m.t += vl.lanes * (2 * vlr + 3) + 4;
+  const H = (narrow ? 284 : 344) + m.t;
   const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
 
   const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
@@ -663,11 +672,7 @@ function drawVolume() {
       stroke: "#6b7280", "stroke-width": 1.1, "stroke-dasharray": "3 3" }));
     svg.appendChild(el("text", { _svg: 1, x: x + 5, y: m.t + 12, "font-size": 10, fill: "#6b7280" }, ["step down"]));
   }
-  // pooled across categories, so only the general-purpose launches apply
-  const vlr = narrow ? 5 : 7;
-  const vl = launchLanes(showLaunches ? AI_LAUNCHES.filter(launchGeneral) : [],
-                         L => X(qn(L.q)), vlr);
-  drawLaunchMarks(svg, vl.marks, lane => m.t + vlr + 2 + lane * (2 * vlr + 3), H - m.b, vlr);
+  drawLaunchMarks(svg, vl.marks, lane => m.t - 4 - vlr - lane * (2 * vlr + 3), H - m.b, vlr);
 
   const keep = acc.map((v, i) => [i, v]).filter(p => p[1] != null);
   svg.appendChild(el("path", { _svg: 1, fill: "none", stroke: VOL_ACCRUAL, "stroke-width": 2.6,
@@ -754,6 +759,7 @@ function drawVolume() {
   hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
   svg.appendChild(hit);
   box.appendChild(svg);
+  renderLaunchList("launchlist-vol");
 
   const lg = document.getElementById("vollegend");
   if (lg) lg.innerHTML =
@@ -777,8 +783,7 @@ function drawVolume() {
   if (nt) nt.innerHTML =
     `<span>No price index is used anywhere on this card. Review accrual is the equal-weighted `
     + `mean of the seven category indices (age-adjusted, within-gig); active buyers is as reported. `
-    + `Accrual ends 2024Q4; buyers runs to the twelve months ending 2026Q2.</span>`
-    + (showLaunches ? `<span class="lkeys">Markers: general-purpose LLM launches &mdash; ${launchLegendHTML(AI_LAUNCHES.filter(launchGeneral))}</span>` : "");
+    + `Accrual ends 2024Q4; buyers runs to the twelve months ending 2026Q2.</span>`;
 }
 
 // ---- transactions: the implied order count ---------------------------------
@@ -809,7 +814,7 @@ function drawTransactions() {
   }
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
   const tip = document.getElementById("txtip");
-  const W = box.clientWidth || 900, H = 340, m = { t: 16, r: 118, b: 30, l: 62 };
+  const W = box.clientWidth || 900, m = { t: 16, r: 118, b: 30, l: 62 };
   const yrs = TX.years, n = yrs.length;
   const series = TX_SERIES.map(s => ({ ...s, vals: TX[s.key], color: TX_COLORS[s.key] }));
 
@@ -817,6 +822,15 @@ function drawTransactions() {
   let lo = Math.min(...all), hi = Math.max(...all);
   const pad = Math.max((hi - lo) * 0.16, 1); lo -= pad; hi += pad;
   const X = i => m.l + (i / (n - 1)) * (W - m.l - m.r);
+  // launch markers: dates, not results. Each placed where it falls inside its year,
+  // on a rail in the top margin.
+  const tlr = W < 620 ? 5 : 7;
+  const tl = launchLanes(showLaunches ? AI_LAUNCHES : [], L => {
+    const ei = yrs.findIndex(y => parseInt(y, 10) === L.year);
+    return (ei >= 0 && ei < n - 1) ? X(ei) + L.frac * (X(ei + 1) - X(ei)) : null;
+  }, tlr);
+  if (tl.lanes) m.t += tl.lanes * (2 * tlr + 3) + 4;
+  const H = 324 + m.t;
   const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
 
   const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
@@ -836,16 +850,7 @@ function drawTransactions() {
   yrs.forEach((y, i) => svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8,
     "text-anchor": "middle", "font-size": 11, fill: "#999" }, [y])));
 
-  // launch markers: dates, not results. Each placed where it falls inside its year;
-  // the series is platform-wide, so only general-purpose launches apply.
-  {
-    const tlr = W < 620 ? 5 : 7;
-    const tl = launchLanes(showLaunches ? AI_LAUNCHES.filter(launchGeneral) : [], L => {
-      const ei = yrs.findIndex(y => parseInt(y, 10) === L.year);
-      return (ei >= 0 && ei < n - 1) ? X(ei) + L.frac * (X(ei + 1) - X(ei)) : null;
-    }, tlr);
-    drawLaunchMarks(svg, tl.marks, lane => m.t + tlr + 2 + lane * (2 * tlr + 3), H - m.b, tlr);
-  }
+  drawLaunchMarks(svg, tl.marks, lane => m.t - 4 - tlr - lane * (2 * tlr + 3), H - m.b, tlr);
 
   for (const s of series) {
     const d = s.vals.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(" ");
@@ -905,6 +910,7 @@ function drawTransactions() {
   });
   hit.addEventListener("mouseleave", () => { guide.setAttribute("opacity", 0); tip.style.display = "none"; });
   box.appendChild(svg);
+  renderLaunchList("launchlist-tx");
 
   // legend (always present for 2+ series) and the table view of the same numbers
   const lg = document.getElementById("txlegend");
@@ -929,7 +935,7 @@ function drawTransactions() {
     });
   }
   const nt = document.getElementById("txnote");
-  if (nt) nt.innerHTML = `<span>${TX.note}</span>` + (showLaunches ? `<span class="lkeys">Markers: general-purpose LLM launches &mdash; ${launchLegendHTML(AI_LAUNCHES.filter(launchGeneral))}</span>` : "");
+  if (nt) nt.textContent = TX.note;
 }
 
 // ---- transactions by category: small multiples -----------------------------
@@ -1055,6 +1061,8 @@ function drawCategoryTx() {
     svg.appendChild(hit);
   });
   box.appendChild(svg);
+  renderLaunchList("launchlist-ctx",
+    "Each panel marks only the launches relevant to that category. Claude Code (11) falls after this series ends in 2024Q4.");
 
   // table view: the relief the contrast WARN obligates, and the only place the
   // full series is legible number by number
@@ -1077,10 +1085,7 @@ function drawCategoryTx() {
   const nt = document.getElementById("ctxnote");
   if (nt) nt.innerHTML = `<span>${CT.note}</span>`
     + `<span><span class="dash" style="border-top-color:#9aa1ad"></span>all-category mean</span>`
-    + `<span><span class="dot" style="background:#6b7280"></span>common step down 2021Q3</span>`
-    + (showLaunches ? `<span class="lkeys">Each panel marks the AI launches relevant to that category `
-      + `(Claude Code, May 2025, falls after this series ends) &mdash; `
-      + `${launchLegendHTML(AI_LAUNCHES.filter(L => L.q <= CT.quarters[CT.quarters.length - 1]))}</span>` : "");
+    + `<span><span class="dot" style="background:#6b7280"></span>common step down 2021Q3</span>`;
 }
 
 // ---- highlighted-move descriptions (list under the chart) ------------------

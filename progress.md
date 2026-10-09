@@ -21,6 +21,11 @@ Gemini 1.5 Mar 2024, GPT-4o May 2024 (general, every category).
   writing/translation/marketing, because the existing card text reads it across all panels.
   Cursor, given only as "2023", is placed at its Mar 2023 public launch.
 - Markers are dates, not results; no card text was changed to claim any launch moved a series.
+- **Revision (same day, team-review feedback):** every chart now draws all eleven launches
+  (previously filtered by selection / general-only on pooled charts), badges sit on a rail
+  above each plot, and each chart carries the full numbered legend 1-11 (name, month/year,
+  categories) directly beneath it, so each exported figure is self-keyed. Category panels
+  still mark only their own category's launches; Claude Code (11) is past their 2024Q4 end.
 - Static PNG exports for team review: `outputs/figures/fig-ai-launches-{1-price-index-design,
   2-volume,3-transactions,4-category-panels}.png` (screenshots of the rendered site).
 
