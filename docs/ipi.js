@@ -335,8 +335,16 @@ function drawChart(cats, comp) {
   const box = document.getElementById("chart");
   [...box.querySelectorAll("svg")].forEach(s => s.remove());
   const tip = document.getElementById("tip");
-  const W = box.clientWidth || 900, H = 420, m = { t: 16, r: 18, b: 30, l: 74 };
+  const W = box.clientWidth || 900, m = { t: 16, r: 18, b: 30, l: 74 };
   const months = DATA.months, n = months.length;
+  // AI launch rail: badges live in the top margin, so the plot keeps its height
+  const lr = (W - m.l - m.r) / (n - 1) < 20 ? 5 : 7;
+  const lx = L => { const i = months.indexOf(L.q);
+    return i < 0 ? null : m.l + (i / (n - 1)) * (W - m.l - m.r); };
+  const launchSet = showLaunches ? launchesFor(cats.map(parentOf)) : [];
+  const { marks: lmarks, lanes } = launchLanes(launchSet, lx, lr);
+  if (lanes) m.t += lanes * (2 * lr + 3) + 4;
+  const H = 404 + m.t;
 
   // The composite is only meaningful for a basket of 2+ categories; with a single
   // category selected we show that individual series on its own (its composite would
@@ -432,6 +440,19 @@ function drawChart(cats, comp) {
     }
   }
 
+  // AI launch markers behind the series
+  drawLaunchMarks(svg, lmarks, lane => m.t - 4 - lr - lane * (2 * lr + 3), H - m.b, lr);
+  const ll = document.getElementById("launchlist");
+  if (ll) {
+    ll.innerHTML = launchSet.length
+      ? `<span class="llead">AI launches${cats.length === 1 ? " for " + labelOf(cats[0]) : ""}:</span>`
+        + launchLegendHTML(launchSet)
+        + `<span class="lkey"><span class="lbadge" style="background:${LAUNCH_GENERAL}"></span>general-purpose LLM`
+        + ` &middot; other colours = category-specific tool</span>`
+      : "";
+    ll.style.display = launchSet.length ? "" : "none";
+  }
+
   // series paths
   for (const s of series) {
     let d = "", pen = false;
@@ -467,7 +488,7 @@ function drawChart(cats, comp) {
     const pv = cats.length ? comp[pinned] : null;
     if (pv != null) svg.appendChild(el("circle", { _svg: 1, cx: X(pinned), cy: Y(pv), r: 4.5,
       fill: "#fff", stroke: "#2563eb", "stroke-width": 2 }));
-    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t - 4, "text-anchor": "middle",
+    svg.appendChild(el("text", { _svg: 1, x: X(pinned), y: m.t + 12, "text-anchor": "middle",
       "font-size": 11, "font-weight": 700, fill: "#2563eb" }, [months[pinned]]));
   }
 
@@ -510,6 +531,74 @@ function drawChart(cats, comp) {
     dl.textContent = d == null ? "—" : (d > 0 ? "+" : "") + d.toFixed(1) + "%";
     dl.className = d == null ? "" : (d < 0 ? "down" : "up");
   }
+}
+
+// ---- AI launch markers ------------------------------------------------------
+// Dates, not results: a marker says when a capability became available, never that
+// it moved a series. cats lists the categories a launch is relevant to; null means
+// every category (general-purpose LLMs). ChatGPT is treated as general because the
+// page has always drawn it across every panel. Cursor's public launch is Mar 2023.
+// One numbering is shared by every chart so a badge reads the same everywhere.
+const LAUNCH_GENERAL = "#c026d3";
+const AI_LAUNCHES = [
+  { ym: "2022-06", label: "GitHub Copilot GA",        cats: ["coding"] },
+  { ym: "2022-08", label: "Stable Diffusion",         cats: ["design"] },
+  { ym: "2022-11", label: "ChatGPT",                  cats: null },
+  { ym: "2023-01", label: "ElevenLabs beta",          cats: ["audio"] },
+  { ym: "2023-03", label: "GPT-4",                    cats: ["writing", "translation", "marketing"] },
+  { ym: "2023-03", label: "Adobe Firefly",            cats: ["design"] },
+  { ym: "2023-03", label: "Cursor",                   cats: ["coding"] },
+  { ym: "2024-03", label: "Claude 3 / Gemini 1.5",    cats: null },
+  { ym: "2024-05", label: "GPT-4o",                   cats: null },
+  { ym: "2024-06", label: "Figma AI",                 cats: ["design"] },
+  { ym: "2025-05", label: "Claude Code",              cats: ["coding"] },
+];
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+AI_LAUNCHES.forEach((L, k) => {
+  const [y, mo] = L.ym.split("-").map(Number);
+  Object.assign(L, { n: k + 1, year: y, frac: (mo - 0.5) / 12,
+                     q: `${y}Q${Math.ceil(mo / 3)}`, when: `${MON[mo - 1]} ${y}` });
+});
+let showLaunches = true;
+const launchGeneral = L => !L.cats || L.cats.length > 1;
+const launchColor   = L => launchGeneral(L) ? LAUNCH_GENERAL : colorOf(L.cats[0]);
+const launchesFor   = cats => AI_LAUNCHES.filter(L => !L.cats || L.cats.some(c => cats.includes(c)));
+const launchCats    = L => L.cats ? L.cats.map(labelOf).join(", ") : "all categories";
+
+// Greedy lane assignment so badges in the same or neighbouring quarters stack
+// instead of overprinting. Returns [{L, x, lane}] and the number of lanes used.
+function launchLanes(list, xOf, r) {
+  const ends = [], out = [];
+  list.map(L => ({ L, x: xOf(L) })).filter(p => p.x != null).sort((a, b) => a.x - b.x)
+    .forEach(p => {
+      let lane = ends.findIndex(e => e <= p.x - 2 * r - 1);
+      if (lane < 0) { lane = ends.length; ends.push(0); }
+      ends[lane] = p.x; out.push({ ...p, lane });
+    });
+  return { marks: out, lanes: ends.length };
+}
+// Draws a dashed rule from each badge down to yBot, and the numbered badge itself.
+// laneY(lane) gives the badge centre. Badges carry a <title> for hover.
+function drawLaunchMarks(svg, marks, laneY, yBot, r) {
+  for (const { L, x, lane } of marks) {
+    const c = launchColor(L), cy = laneY(lane);
+    svg.appendChild(el("line", { _svg: 1, x1: x, x2: x, y1: cy + r, y2: yBot,
+      stroke: c, "stroke-width": 1, "stroke-dasharray": "3 3", opacity: .6 }));
+  }
+  for (const { L, x, lane } of marks) {
+    const c = launchColor(L), cy = laneY(lane);
+    const g = el("g", { _svg: 1, style: "cursor:help" });
+    g.appendChild(el("title", { _svg: 1 }, [`${L.n} · ${L.label} — ${L.when} (${launchCats(L)})`]));
+    g.appendChild(el("circle", { _svg: 1, cx: x, cy, r, fill: c, stroke: "#fff", "stroke-width": 1.2 }));
+    if (r >= 6) g.appendChild(el("text", { _svg: 1, x, y: cy + 3.2, "text-anchor": "middle",
+      "font-size": r >= 7 ? 9 : 8, "font-weight": 700, fill: "#fff" }, [String(L.n)]));
+    svg.appendChild(g);
+  }
+}
+// Inline legend: one item per launch, badge + name + date.
+function launchLegendHTML(list) {
+  return list.map(L => `<span class="lchip"><span class="lbadge" style="background:${launchColor(L)}">${L.n}</span>`
+    + `${L.label} <span class="lwhen">${L.when}</span></span>`).join("");
 }
 
 // ---- volume, with no price index in it -------------------------------------
@@ -568,12 +657,17 @@ function drawVolume() {
   if (thinTo > 0) svg.appendChild(el("rect", { _svg: 1, x: X(qn(qs[0])), y: m.t,
     width: Math.max(0, X(qn(qs[thinTo])) - X(qn(qs[0]))), height: H - m.t - m.b,
     fill: "#1c2230", opacity: .05 }));
-  [["2021Q3", "#6b7280", "step down"], ["2022Q4", "#c026d3", "ChatGPT"]].forEach(([q, c, lab]) => {
-    const x = X(qn(q));
+  {
+    const x = X(qn("2021Q3"));
     svg.appendChild(el("line", { _svg: 1, x1: x, x2: x, y1: m.t, y2: H - m.b,
-      stroke: c, "stroke-width": 1.1, "stroke-dasharray": "3 3" }));
-    svg.appendChild(el("text", { _svg: 1, x: x + 5, y: m.t + 12, "font-size": 10, fill: c }, [lab]));
-  });
+      stroke: "#6b7280", "stroke-width": 1.1, "stroke-dasharray": "3 3" }));
+    svg.appendChild(el("text", { _svg: 1, x: x + 5, y: m.t + 12, "font-size": 10, fill: "#6b7280" }, ["step down"]));
+  }
+  // pooled across categories, so only the general-purpose launches apply
+  const vlr = narrow ? 5 : 7;
+  const vl = launchLanes(showLaunches ? AI_LAUNCHES.filter(launchGeneral) : [],
+                         L => X(qn(L.q)), vlr);
+  drawLaunchMarks(svg, vl.marks, lane => m.t + vlr + 2 + lane * (2 * vlr + 3), H - m.b, vlr);
 
   const keep = acc.map((v, i) => [i, v]).filter(p => p[1] != null);
   svg.appendChild(el("path", { _svg: 1, fill: "none", stroke: VOL_ACCRUAL, "stroke-width": 2.6,
@@ -683,7 +777,8 @@ function drawVolume() {
   if (nt) nt.innerHTML =
     `<span>No price index is used anywhere on this card. Review accrual is the equal-weighted `
     + `mean of the seven category indices (age-adjusted, within-gig); active buyers is as reported. `
-    + `Accrual ends 2024Q4; buyers runs to the twelve months ending 2026Q2.</span>`;
+    + `Accrual ends 2024Q4; buyers runs to the twelve months ending 2026Q2.</span>`
+    + (showLaunches ? `<span class="lkeys">Markers: general-purpose LLM launches &mdash; ${launchLegendHTML(AI_LAUNCHES.filter(launchGeneral))}</span>` : "");
 }
 
 // ---- transactions: the implied order count ---------------------------------
@@ -741,16 +836,15 @@ function drawTransactions() {
   yrs.forEach((y, i) => svg.appendChild(el("text", { _svg: 1, x: X(i), y: H - 8,
     "text-anchor": "middle", "font-size": 11, fill: "#999" }, [y])));
 
-  // the event marker: a date, not a result. Placed where it falls inside its year.
-  if (TX.event) {
-    const ei = yrs.findIndex(y => parseInt(y, 10) === TX.event.year);
-    if (ei >= 0 && ei < n - 1) {
-      const ex = X(ei) + TX.event.frac * (X(ei + 1) - X(ei));
-      svg.appendChild(el("line", { _svg: 1, x1: ex, x2: ex, y1: m.t, y2: H - m.b,
-        stroke: "#c026d3", "stroke-width": 1.2, "stroke-dasharray": "3 3" }));
-      svg.appendChild(el("text", { _svg: 1, x: ex + 5, y: m.t + 12, "font-size": 10,
-        fill: "#c026d3" }, [TX.event.label]));
-    }
+  // launch markers: dates, not results. Each placed where it falls inside its year;
+  // the series is platform-wide, so only general-purpose launches apply.
+  {
+    const tlr = W < 620 ? 5 : 7;
+    const tl = launchLanes(showLaunches ? AI_LAUNCHES.filter(launchGeneral) : [], L => {
+      const ei = yrs.findIndex(y => parseInt(y, 10) === L.year);
+      return (ei >= 0 && ei < n - 1) ? X(ei) + L.frac * (X(ei + 1) - X(ei)) : null;
+    }, tlr);
+    drawLaunchMarks(svg, tl.marks, lane => m.t + tlr + 2 + lane * (2 * tlr + 3), H - m.b, tlr);
   }
 
   for (const s of series) {
@@ -835,7 +929,7 @@ function drawTransactions() {
     });
   }
   const nt = document.getElementById("txnote");
-  if (nt) nt.textContent = TX.note;
+  if (nt) nt.innerHTML = `<span>${TX.note}</span>` + (showLaunches ? `<span class="lkeys">Markers: general-purpose LLM launches &mdash; ${launchLegendHTML(AI_LAUNCHES.filter(launchGeneral))}</span>` : "");
 }
 
 // ---- transactions by category: small multiples -----------------------------
@@ -877,7 +971,6 @@ function drawCategoryTx() {
   });
   const qIdx = q => qs.indexOf(q);
   const thinTo = qIdx(CT.thin_until);
-  const evI = CT.event ? qIdx(CT.event.quarter) : -1;
   const stI = CT.step ? qIdx(CT.step.quarter) : -1;
 
   const svg = el("svg", { _svg: 1, viewBox: `0 0 ${W} ${H}`, width: W, height: H });
@@ -904,8 +997,10 @@ function drawCategoryTx() {
       stroke: "#cfcfcf", "stroke-width": 1, "stroke-dasharray": "4 3" }));
     if (stI >= 0) svg.appendChild(el("line", { _svg: 1, x1: X(stI), x2: X(stI),
       y1: oy, y2: oy + ph, stroke: "#6b7280", "stroke-width": 1, "stroke-dasharray": "2 3", opacity: .55 }));
-    if (evI >= 0) svg.appendChild(el("line", { _svg: 1, x1: X(evI), x2: X(evI),
-      y1: oy, y2: oy + ph, stroke: "#c026d3", "stroke-width": 1.1, "stroke-dasharray": "3 3" }));
+    if (showLaunches) {
+      const pl = launchLanes(launchesFor([c]), L => { const i = qIdx(L.q); return i < 0 ? null : X(i); }, 6);
+      drawLaunchMarks(svg, pl.marks, lane => oy + 7 + lane * 14, oy + ph, 6);
+    }
 
     const idx = CT.index[c];
     const keep = idx.map((v, i) => [i, v]).filter(([, v]) => v != null);
@@ -982,8 +1077,10 @@ function drawCategoryTx() {
   const nt = document.getElementById("ctxnote");
   if (nt) nt.innerHTML = `<span>${CT.note}</span>`
     + `<span><span class="dash" style="border-top-color:#9aa1ad"></span>all-category mean</span>`
-    + `<span><span class="dot" style="background:#c026d3"></span>ChatGPT 2022Q4</span>`
-    + `<span><span class="dot" style="background:#6b7280"></span>common step down 2021Q3</span>`;
+    + `<span><span class="dot" style="background:#6b7280"></span>common step down 2021Q3</span>`
+    + (showLaunches ? `<span class="lkeys">Each panel marks the AI launches relevant to that category `
+      + `(Claude Code, May 2025, falls after this series ends) &mdash; `
+      + `${launchLegendHTML(AI_LAUNCHES.filter(L => L.q <= CT.quarters[CT.quarters.length - 1]))}</span>` : "");
 }
 
 // ---- highlighted-move descriptions (list under the chart) ------------------
@@ -1293,6 +1390,9 @@ function wireControls() {
       nb.onclick = () => setBasis("nominal");
     }
   }
+  const lt = document.getElementById("launchToggle");
+  if (lt) lt.onclick = () => { showLaunches = !showLaunches;
+    lt.classList.toggle("on", showLaunches); lt.setAttribute("aria-pressed", showLaunches); render(); };
   document.getElementById("selAll").onclick  = () => { checked = new Set(DATA.categories); render(); };
   document.getElementById("selNone").onclick = () => { checked = new Set(); render(); };
   document.querySelectorAll("thead th[data-k]").forEach(th => {

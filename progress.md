@@ -1,5 +1,29 @@
 # Progress Log
 
+## 2026-10-09 — site: AI launch markers on every chart, not just ChatGPT
+
+**The charts now mark eleven AI launches, keyed to the categories they bear on**, replacing
+the single ChatGPT line. List (`AI_LAUNCHES` in `docs/ipi.js`, one numbering shared by every
+chart): Copilot GA Jun 2022, Cursor Mar 2023, Claude Code May 2025 (coding); Stable Diffusion
+Aug 2022, Adobe Firefly Mar 2023, Figma AI Jun 2024 (design); GPT-4 Mar 2023 (writing,
+translation, marketing); ElevenLabs beta Jan 2023 (audio); ChatGPT Nov 2022, Claude 3 /
+Gemini 1.5 Mar 2024, GPT-4o May 2024 (general, every category).
+
+- **Price chart** (previously had no event markers): numbered badges on a rail above the
+  plot, filtered to the selected categories, plus a legend below the chart. New "AI launches"
+  toggle next to Real/Nominal turns the markers off on every chart.
+- **Category small multiples**: each panel shows only its own category's launches (Claude
+  Code falls after the 2024Q4 series end, so it is not drawn there).
+- **Volume and transactions** (platform-wide, pooled): general-purpose LLM launches only.
+- Badges stack in lanes when launches fall in the same or adjacent quarters (2022Q2-2023Q1);
+  below ~20 px per quarter they shrink to unnumbered dots, and the legend carries the names.
+- Decisions: ChatGPT is drawn as general (every category) rather than only
+  writing/translation/marketing, because the existing card text reads it across all panels.
+  Cursor, given only as "2023", is placed at its Mar 2023 public launch.
+- Markers are dates, not results; no card text was changed to claim any launch moved a series.
+- Static PNG exports for team review: `outputs/figures/fig-ai-launches-{1-price-index-design,
+  2-volume,3-transactions,4-category-panels}.png` (screenshots of the rendered site).
+
 ## 2026-09-08 (later) — notebook §12, and the artefact gets a number
 
 **`notebooks/00-explore.ipynb` gains §12, "What buyers actually paid."** The notebook had

@@ -104,6 +104,18 @@
     .seg button:hover { background: #f2f4f7; color: var(--ink); }
     .seg button.on { background: #2a78d6; color: #fff; }
     .seg button.on:hover { background: #2a78d6; }
+    /* AI launch legend ------------------------------------------------------ */
+    .launchlist { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px;
+      font-size: 11.5px; color: var(--mut); line-height: 1.4; }
+    .launchlist .llead { font-weight: 700; color: var(--ink); }
+    .lchip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .lbadge { display: inline-flex; align-items: center; justify-content: center; flex: none;
+      min-width: 15px; height: 15px; border-radius: 50%; color: #fff;
+      font-size: 9px; font-weight: 700; }
+    .lwhen { color: var(--faint); }
+    .lkey { display: inline-flex; align-items: center; gap: 5px; color: var(--faint); }
+    .lkey .lbadge { min-width: 10px; height: 10px; }
+    .lkeys { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; flex-basis: 100%; }
     .basisnote { font-size: 11.5px; color: var(--mut); line-height: 1.45; }
     .basisnote b { color: var(--ink); font-weight: 700; }
 
@@ -317,6 +329,9 @@
               <button type="button" id="basisNominal">Nominal</button>
             </div>
             <span class="basisnote" id="basisNote"></span>
+            <span class="seg" role="group" aria-label="AI launch markers">
+              <button type="button" id="launchToggle" class="on" aria-pressed="true">AI launches</button>
+            </span>
           </div>
           <ul class="fxbullets">
             <li>Every quarter is compared with every other quarter <b>directly</b>, rather than through a
@@ -353,6 +368,7 @@
           </ul>
         </div>
         <div id="chart"><div class="tip" id="tip"></div></div>
+        <div class="launchlist" id="launchlist"></div>
         <div class="inspect">
           <select id="qpick" aria-label="Inspect a specific quarter"></select>
           <div id="qreadout" class="readout"></div>
