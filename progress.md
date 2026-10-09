@@ -29,7 +29,8 @@ Gemini 1.5 Mar 2024, GPT-4o May 2024 (general, every category).
 - **Revision 2 (same day):** launch markers, their legend and the on/off toggle removed from
   the GEKS-Jevons price chart at the user's request; they remain on volume, transactions and
   the category panels. Figure exports re-rendered at 3x (CSS zoom) - ~2440 px wide - and the
-  price-chart figure (fig 1) dropped.
+  price-chart figure (fig 1) dropped. Exports then trimmed to the card content and given an
+  even 160 px white margin on every side so nothing sits on the edge.
 - Static PNG exports for team review: `outputs/figures/fig-ai-launches-{2-volume,
   3-transactions,4-category-panels}.png` (screenshots of the rendered site).
 
