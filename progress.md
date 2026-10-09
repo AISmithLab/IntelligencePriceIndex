@@ -37,6 +37,8 @@ Gemini 1.5 Mar 2024, GPT-4o May 2024 (general, every category).
   x label (2026Q1) was centred on the plot edge and clipped; it is now right-aligned.
   Figures re-exported from the padded cards: card title + subtitle, chart, launch legend,
   at 3x with the card's own padding as the margin (~2400 px wide).
+- **Revision 4 (same day):** US spelling on the site - "colour(s)" -> "color(s)" in
+  `docs/ipi.js` (launch legend + comments) and `docs/faq.html`; figures re-exported.
 - Static PNG exports for team review: `outputs/figures/fig-ai-launches-{2-volume,
   3-transactions,4-category-panels}.png` (screenshots of the rendered site).
 

@@ -590,7 +590,7 @@ function renderLaunchList(id, extra) {
   ll.innerHTML = showLaunches
     ? `<span class="llead">AI launches</span>` + launchLegendHTML(AI_LAUNCHES)
       + `<span class="lkey"><span class="lbadge" style="background:${LAUNCH_GENERAL}"></span>magenta = general-purpose LLM`
-      + ` &middot; other colours = the category's own colour</span>`
+      + ` &middot; other colors = the category's own color</span>`
       + (extra ? `<span class="lkey">${extra}</span>` : "")
     : "";
   ll.style.display = showLaunches ? "" : "none";
@@ -784,7 +784,7 @@ function drawVolume() {
 // so they share ONE axis -- and they have to be drawn together, because the
 // finding is that the quotient falls while the numerator does not.
 //
-// Series colours are the three-hue set validated for colour-vision deficiency
+// Series colors are the three-hue set validated for color-vision deficiency
 // (worst adjacent pair dE 20.0, all six checks pass on this surface); identity is
 // carried by a legend and end-of-line labels as well as by hue, never hue alone.
 const TX_COLORS = { orders: "#4f46e5", gmv_real: "#0891b2", price_real: "#b45309" };
@@ -849,7 +849,7 @@ function drawTransactions() {
       "stroke-width": s.w, "stroke-linejoin": "round", "stroke-linecap": "round" }));
     s.vals.forEach((v, i) => svg.appendChild(el("circle", { _svg: 1, cx: X(i), cy: Y(v),
       r: s.lead ? 4.2 : 3.4, fill: s.color, stroke: "#fff", "stroke-width": 2 })));
-    // end-of-line label, so no series depends on colour alone to be identified
+    // end-of-line label, so no series depends on color alone to be identified
     svg.appendChild(el("text", { _svg: 1, x: W - m.r + 9, y: Y(s.vals[n - 1]) - 2,
       "font-size": 12, "font-weight": 700, fill: s.color }, [s.vals[n - 1].toFixed(0)]));
     svg.appendChild(el("text", { _svg: 1, x: W - m.r + 9, y: Y(s.vals[n - 1]) + 12,
@@ -931,7 +931,7 @@ function drawTransactions() {
 
 // ---- transactions by category: small multiples -----------------------------
 // SEVEN OVERLAID LINES WOULD BE THE WRONG CHART HERE, and not for taste. The
-// site's seven category colours cannot be told apart pairwise under colour-vision
+// site's seven category colors cannot be told apart pairwise under color-vision
 // deficiency (worst pair dE 6.1 deutan) and one pair is below the normal-vision
 // floor too (dE 13.2), so identity carried by hue alone would fail for some
 // readers on some pairs. Faceting removes the problem at its source: one series
