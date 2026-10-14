@@ -1,5 +1,68 @@
 # Progress Log
 
+## 2026-10-14 (latest) — step 92: the deflated price data in one folder
+
+`code/92-export-real-prices.py` -> `data/real-prices/` with a README. Nothing re-estimated: the
+composite and 7 category real indices (2020Q1-2026Q1, nominal + real + SE + CPI) copied from
+`docs/data.json`, where the composite real series previously lived *only*; the 35 narrow cells;
+the CPI deflator; and a gig-quarter real-price panel (287,618 rows, 39,593 gigs, 2018Q3-2026Q1)
+built by step 76's own `build_panel`, so it is the same panel as the reputation result. Checked:
+composite real 2026Q1 = 140.7 and all seven category levels match §4.3. Committed and pushed to
+`origin/mockup` at the user's request.
+
+## 2026-10-14 (later) — steps 89-91: seven new AI tests on unextracted page fields, and the repricing slowdown by category
+
+**Exploratory, not pre-registered.** `code/89-page-fields.py` scans all 397,698 stored captures for
+fields no step had read (package word counts, delivery hours, revisions, seller country, description
+AI / anti-AI flags, per-order `repeat_buyer` and review-text AI mentions) ->
+`data/pilot/page-fields-all.csv.gz`, `order-fields-all.csv.gz`. `code/90-ai-margin-tests.py` ->
+`runs/ai-margin-tests.md`. Every DiD carries a wild-cluster bootstrap p on 7 category clusters.
+
+- A bare "AI" regex matched Adobe Illustrator source files ("AI, EPS, PSD") in ~5% of 2020 pages;
+  restricted to generative-AI terms, pre-2022 mentions are ~0.
+- **T1 price per word (the one lead):** word-priced translation gigs fall -0.092 log (t -4.9) in level at
+  Post against their own trend, writing -0.059 (t -2.2) with slope -0.027/q; DiD vs audio+video basic
+  price **-0.091 (gig t -5.0), wild category p 0.133.** Not significant at the honest level; the
+  ITS leans on extrapolating a pre-trend that step 91 shows decelerated market-wide.
+- T2 repeat buyers: null (wild p 0.24 / 0.82). T4 seller country: null (0.97 / 0.89). T6 tier ladder:
+  null (0.83 / 0.41). T7 listed delivery hours: null (0.92 / 0.60), clean pre-period (0 of 11 |t|>1.96).
+  Revisions: field null on every page, not extracted; open.
+- T3 reviews naming AI: tiny (2024: coding 0.58%, writing 0.39%), but 31.3% of them are below 5 stars
+  vs 8.5% of other reviews. Descriptive; texts not yet read.
+- T5 descriptions: generative-AI mentions go from ~0 (2021) to coding 10.2%, writing 4.3% (2024);
+  "human / no-AI" claims in writing 0.4% (2022) -> 2.7% (2024). Exposure DiD gig t 3.2 / 2.6, wild p
+  0.15 / 0.14. Sellers visibly respond to AI; prices do not.
+- **Step 91, the repricing slowdown by category** (`code/91-...`, `runs/repricing-slowdown-by-category.out`):
+  the pooled fall in mean quarterly dlog p (-0.032, t -13) is **present in every category** before/after
+  (6 of 7 |t| > 3, marketing t -1.87), of the same size (heterogeneity Q 7.0 on 6 df), and **entirely
+  within-category** (between-category share shift -0.0001). With a linear trend the pooled break at
+  2022Q4 is +0.004 (t 0.78): it is a gradual deceleration from 2021, not a ChatGPT break, and category
+  break terms scatter in sign (coding -0.040, video +0.036, marketing +0.056).
+
+## 2026-10-14 — step 88: order-level exposure DiD, and why order counts are not a demand series
+
+**Exploratory, not pre-registered.** `code/88-order-exposure-did.py` -> `runs/order-exposure-did.md`.
+From a user question about which tests besides listed prices could detect an AI effect.
+
+- **Two planned tests were dropped by the pilot before estimation.** (1) *Order counts*: a page
+  displays at most 5 reviews, ranked by relevancy (65% of 167,356 captures show exactly 5), so
+  orders per gig-quarter = captures x 5, an archive-density series, not demand. (2) *Delivery
+  time*: `duration_days` is 0% populated through 2023Q1 and 100% only from 2024Q3, so it has
+  the same reporting artefact as the price bands and no pre-ChatGPT period.
+- **What was estimated**: order-level LPM, gig + quarter FE, `Exposure x Post`
+  (Post >= 2022Q4), 2021Q4-2024Q4, gig-clustered SE, on three order compositions:
+  - share $200+ among $50+ banded orders: **+0.0044 (t 0.31)** human / +0.0189 (t 1.37) GPT-4; 288k orders
+  - share of ratings below 5 stars: **+0.0093 (t 1.82)** human / -0.0012 (t -0.23) GPT-4; 543k orders.
+    The human estimate is not robust: three of four pre-period event coefficients are negative
+    (2022Q1 t -2.61), and the GPT-4 exposure measure gives zero
+  - US-buyer share: +0.0101 (t 0.87) / -0.0153 (t -1.33)
+- **Verdict: no AI effect on any order-level outcome.** Three more nulls, all with a pre-period
+  of only four quarters. Gig clustering is optimistic because exposure varies across only 7
+  categories.
+- **One descriptive fact, market-wide rather than exposure-linked**: the share of ratings below
+  5 stars rose in every category pre->post (e.g. design 8.2% -> 12.6%, audio 4.0% -> 6.8%), and
+  low- and high-exposure categories rose alike.
+
 ## 2026-10-09 — site: AI launch markers on every chart, not just ChatGPT
 
 **The charts now mark eleven AI launches, keyed to the categories they bear on**, replacing
