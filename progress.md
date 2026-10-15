@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-10-15 — gig counts per quarter published in data/real-prices
+
+User asked to publish how many gigs were collected per quarter from 2020. Step 92 now also writes
+`data/real-prices/gig-counts-by-quarter.csv` (2020Q1–2026Q1, total + 7 categories, distinct gigs in the
+gig-quarter panel). 9,340–13,522 gigs a quarter through 2024Q4; 2,694 in 2025Q1, then 650–1,041.
+README documents the file, the TD6 caveat on its translation column, and that collected gigs exceed
+the matched subset the indices use.
+
 ## 2026-10-15 — data/real-prices re-exported after the TD5 rebuild
 
 `data/real-prices/real-indices.csv` had been exported from the 2026-07-31 `docs/data.json` and was never

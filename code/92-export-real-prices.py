@@ -18,6 +18,8 @@ re-estimating anything:
                             (is_gig, known category, 0 < price <= $10,000,
                             gig-quarter median), real = nominal * CPI_2020Q1 / CPI_t
   cpi-quarterly.csv         the deflator (copied from data/pilot/)
+  gig-counts-by-quarter.csv gigs observed per quarter, total and by category,
+                            2020Q1 on (counted from the gig-quarter panel)
 
     python3 code/92-export-real-prices.py
 """
@@ -63,6 +65,13 @@ def indices():
     return pd.DataFrame(rows)
 
 
+def gig_counts(gq, start="2020Q1"):
+    g = gq[gq.quarter >= start]
+    wide = g.groupby(["quarter", "category"]).gig_id.nunique().unstack(fill_value=0)
+    wide.insert(0, "total", g.groupby("quarter").gig_id.nunique())
+    return wide.reset_index()
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     ix = indices()
@@ -77,6 +86,8 @@ def main():
             "cpi", "reviews", "rating"]
     gq[cols].round({"price_real_2020q1": 4, "cpi": 4}).to_csv(
         OUT / "gig-quarter-real-prices.csv.gz", index=False, compression="gzip")
+    counts = gig_counts(gq)
+    counts.to_csv(OUT / "gig-counts-by-quarter.csv", index=False)
 
     last = ix[ix.quarter == ix.quarter.max()].set_index("series")
     print(f"real-indices.csv: {len(ix)} rows; {ix.quarter.min()}-{ix.quarter.max()}")
