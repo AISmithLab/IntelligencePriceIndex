@@ -1,0 +1,130 @@
+============================================================
+PANEL-BASED INTELLIGENCE PRICE INDEX
+============================================================
+
+1. Loading and building panel...
+  Total gigs: 1,893
+  Panel gigs (≥2 quarters): 1,245
+  Quarters: 2011Q3 to 2026Q1 (53)
+
+2. Computing within-gig price relatives...
+  Categories: ['audio', 'coding', 'data_analysis', 'data_entry', 'design', 'marketing', 'translation', 'video', 'writing']
+    audio                   66 panel gigs
+    coding                 184 panel gigs
+    data_analysis           38 panel gigs
+    data_entry              46 panel gigs
+    design                 313 panel gigs
+    marketing               72 panel gigs
+    translation             17 panel gigs
+    video                  157 panel gigs
+    writing                226 panel gigs
+
+3. Computing composite panel IPI...
+  Weights:
+    design               0.464
+    video                0.138
+    writing              0.120
+    coding               0.083
+    audio                0.082
+    marketing            0.051
+    data_entry           0.028
+    translation          0.018
+    data_analysis        0.016
+
+  IPI Time Series (base 2019Q1 = 100):
+    2017Q3    53.7  ██████████
+    2018Q3    74.1  ██████████████
+    2018Q4    75.6  ███████████████
+    2019Q1   100.0  ████████████████████
+    2019Q2    80.3  ████████████████
+    2019Q3    73.1  ██████████████
+    2019Q4    73.5  ██████████████
+    2020Q1    77.3  ███████████████
+    2020Q2    85.5  █████████████████
+    2020Q3    90.1  ██████████████████
+    2020Q4    98.9  ███████████████████
+    2021Q1   109.0  █████████████████████
+    2021Q2   117.4  ███████████████████████
+    2021Q3   129.1  █████████████████████████
+    2021Q4   138.9  ███████████████████████████
+    2022Q1   149.2  █████████████████████████████
+    2022Q2   166.0  █████████████████████████████████
+    2022Q3   179.4  ███████████████████████████████████
+    2022Q4   192.2  ██████████████████████████████████████
+    2023Q1   212.6  ██████████████████████████████████████████
+    2023Q2   221.3  ████████████████████████████████████████████
+    2023Q3   242.8  ████████████████████████████████████████████████
+    2023Q4   258.7  ███████████████████████████████████████████████████
+    2024Q1   278.8  ███████████████████████████████████████████████████████
+    2024Q2   296.9  ███████████████████████████████████████████████████████████
+    2024Q3   301.9  ████████████████████████████████████████████████████████████
+    2024Q4   325.2  █████████████████████████████████████████████████████████████████
+    2025Q1   275.2  ███████████████████████████████████████████████████████
+    2025Q2   246.4  █████████████████████████████████████████████████
+    2025Q4   317.2  ███████████████████████████████████████████████████████████████
+
+4. Loading AI benchmarks...
+
+5. Estimating price elasticity of intelligence (panel)...
+
+  Category                 β      SE        p     R²      ΔP%  ChatGPT%
+  ------------------ ------- ------- -------- ------ -------- ---------
+  audio              -0.464***  0.035  0.0000 0.878   588.7%    227.2%
+  translation         0.137   0.098  0.1864 0.130    -8.8%     10.7%
+  writing             0.206***  0.058  0.0016 0.334    95.4%    106.5%
+  coding              0.295***  0.039  0.0000 0.693   328.0%    129.7%
+  data_entry          0.629***  0.078  0.0000 0.757   544.5%    249.4%
+  data_analysis       0.684***  0.103  0.0000 0.679  1261.7%    407.4%
+  marketing           0.712***  0.039  0.0000 0.926  4522.6%    348.1%
+  design              1.139***  0.227  0.0000 0.474   407.5%    145.5%
+
+6. Structural break analysis (panel)...
+
+  Event                     Category            Pre    Post       Δ%
+  ------------------------- --------------- ------- ------- --------
+  Stable Diffusion (Aug 2022) translation       94.9   89.7    -5.5%
+  ChatGPT (Nov 2022)        translation       87.5   90.4     3.4%
+  GPT-4 (Mar 2023)          translation       87.5   91.2     4.2%
+  GPT-4o / Claude 3.5       audio            469.2  534.5    13.9%
+  GPT-4o / Claude 3.5       writing          171.8  196.8    14.6%
+  GPT-4 (Mar 2023)          coding           158.5  189.6    19.6%
+  GPT-4o / Claude 3.5       design           201.1  241.2    20.0%
+  ChatGPT (Nov 2022)        coding           150.7  181.2    20.2%
+  Stable Diffusion (Aug 2022) coding           137.9  176.9    28.2%
+  ChatGPT (Nov 2022)        writing          120.0  159.5    32.9%
+  Stable Diffusion (Aug 2022) writing          110.8  149.6    35.0%
+  GPT-4 (Mar 2023)          writing          126.8  171.8    35.5%
+  GPT-4o / Claude 3.5       data_entry       381.5  537.0    40.8%
+  GPT-4o / Claude 3.5       video            285.0  403.2    41.5%
+  ChatGPT (Nov 2022)        video            186.1  264.5    42.1%
+  GPT-4 (Mar 2023)          video            199.8  285.0    42.6%
+  Stable Diffusion (Aug 2022) video            167.2  249.5    49.2%
+  GPT-4 (Mar 2023)          design           133.6  201.1    50.5%
+  Stable Diffusion (Aug 2022) design           114.9  174.0    51.4%
+  ChatGPT (Nov 2022)        design           123.3  188.1    52.5%
+  GPT-4 (Mar 2023)          audio            304.2  469.2    54.3%
+  GPT-4o / Claude 3.5       coding           189.6  298.4    57.4%
+  GPT-4o / Claude 3.5       marketing        860.3 1374.2    59.7%
+  ChatGPT (Nov 2022)        audio            265.9  457.3    72.0%
+  Stable Diffusion (Aug 2022) data_analysis    191.8  330.0    72.1%
+  Stable Diffusion (Aug 2022) marketing        370.5  648.3    75.0%
+  ChatGPT (Nov 2022)        marketing        412.1  736.8    78.8%
+  GPT-4 (Mar 2023)          data_entry       209.4  381.5    82.2%
+  Stable Diffusion (Aug 2022) audio            232.4  427.4    83.9%
+  GPT-4 (Mar 2023)          marketing        458.9  860.3    87.5%
+  ChatGPT (Nov 2022)        data_entry       182.6  344.5    88.6%
+  Stable Diffusion (Aug 2022) data_entry       159.1  305.5    92.0%
+  ChatGPT (Nov 2022)        data_analysis    205.1  407.6    98.7%
+  GPT-4 (Mar 2023)          data_analysis    242.7  511.0   110.6%
+  GPT-4o / Claude 3.5       data_analysis    511.0 1281.9   150.9%
+
+7. Writing outputs...
+  /home/exouser/IntelligencePriceIndex/data/pilot/panel-summary.md
+
+============================================================
+PANEL IPI COMPLETE
+============================================================
+  IPI: 53.7 → 317.2 (+490.9%)
+  Post-ChatGPT: +65.1%
+  Negative elasticities: 1/8
+  Significant (p<0.05): 7/8

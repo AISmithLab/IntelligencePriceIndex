@@ -57,8 +57,9 @@ CATEGORY_KEYWORDS = {
                "illustration", "draw", "cartoon", "caricature", "infographic",
                "photoshop", "ui", "ux", "brand", "tshirt", "packaging",
                "mockup", "thumbnail", "book cover", "album cover"],
-    "translation": ["translat", "spanish", "french", "german", "arabic",
-                     "chinese", "japanese", "korean", "hindi", "portuguese"],
+    # Bare language names ("german", "french", ...) were dropped 2026-10-14 (TD5):
+    # they classified German/French voice-overs and an EU legal adviser as translation.
+    "translation": ["translat", "locali", "subtit", "interpreter", "interpreting"],
     "video": ["video", "animation", "motion", "whiteboard", "explainer",
               "intro", "outro", "edit video", "youtube", "after effects",
               "3d", "render", "model"],
@@ -75,8 +76,12 @@ CATEGORY_KEYWORDS = {
 }
 
 
-def classify_gig(description, item_label):
+def classify_gig(description, item_label, slug=""):
     """Classify a gig into a broad category based on description + cluster label."""
+    # A slug that names translation is translation, whatever else the copy mentions
+    # (TD5: "translate-articles-..." otherwise scores as writing).
+    if slug and any(p in slug.lower() for p in ("translat", "locali")):
+        return "translation"
     text = (description + " " + item_label).lower()
     scores = {}
     for cat, keywords in CATEGORY_KEYWORDS.items():
@@ -140,7 +145,7 @@ def main():
             if not quarter:
                 continue
 
-            cat = classify_gig(description, item_label)
+            cat = classify_gig(description, item_label, row["slug"])
             reviews = int(row.get("review_count", 0) or 0)
 
             observations.append({

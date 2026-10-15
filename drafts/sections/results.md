@@ -100,7 +100,7 @@ its headline, and that step is not applied here.
 
 | Rejected | Why |
 |---|---|
-| **Chained Jevons** — multiply consecutive quarter-to-quarter links | Archived captures are irregular, so 24–35% of a gig's links skip quarters. A chain books a multi-quarter change as if it happened in one quarter, and the errors compound. It gives +283.0% where the drift-free estimate gives +78.4%. |
+| **Chained Jevons** — multiply consecutive quarter-to-quarter links | Archived captures are irregular, so 24–35% of a gig's links skip quarters. A chain books a multi-quarter change as if it happened in one quarter, and the errors compound. It gives +284.6% where the drift-free estimate gives +78.1%. |
 | **Time-product-dummy** (two-way fixed effects) | Also drift-free and it broadly agrees ($r = 0.996$), but it works by *imputing* the missing cells. Our panel is 14.9% filled, so it would be inventing roughly 85% of the data. GEKS declines to impute. |
 | **Direct base-to-terminal comparison** | Uses only gigs alive at both ends of the window. On the recent data it agrees with GEKS closely, so we keep it as an independent **check**; but historically only 1–4 gigs survive both endpoints, which is too few to be an index. |
 

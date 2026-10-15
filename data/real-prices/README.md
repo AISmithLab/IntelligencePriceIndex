@@ -7,13 +7,21 @@ here is re-estimated, so every number matches the paper.
 
 | File | Rows | Contents |
 |---|---:|---|
-| `real-indices.csv` | 200 | GEKS-Jevons indices, **composite + 7 categories**, 2020Q1–2026Q1, 2020Q1 = 100. Columns: `quarter, series, index_nominal, index_real, se_log` (bootstrap SE of the log index), `cpi_index` (2020Q1 = 100), `cpi_imputed` (1 = a month of CPI was imputed). Source: `docs/data.json`, the paper's and website's source of truth (§4.2–4.3). |
+| `real-indices.csv` | 200 | GEKS-Jevons indices, **composite + 7 categories**, 2020Q1–2026Q1, 2020Q1 = 100 (except translation: 2024Q3–2026Q1 only, 2024Q3 = 100; see Notes). Columns: `quarter, series, index_nominal, index_real, se_log` (bootstrap SE of the log index), `cpi_index` (2020Q1 = 100), `cpi_imputed` (1 = a month of CPI was imputed). Source: `docs/data.json`, the paper's and website's source of truth (§4.2–4.3). |
 | `narrow-real-indices.csv` | 700 | The **35 narrow categories**, balanced panel, 2020Q1–2024Q4: `category, quarter, index_nominal, index_real, se_log` (§4.3, Appendix A.10). |
 | `gig-quarter-real-prices.csv.gz` | 287,618 | **Gig-level** panel, 39,593 gigs, 2018Q3–2026Q1: `gig_id` (seller/slug), `category`, `quarter`, `price_nominal` (median listed basic-package price in the quarter, USD), `price_real_2020q1`, `cpi` (index level), `reviews` (cumulative at quarter end), `rating`. Built by step 76's `build_panel`: non-gig pages dropped, 0 < price ≤ $10,000. |
 | `cpi-quarterly.csv` | — | The deflator: quarterly CPI-U, SA and NSA. |
 
 ## Notes
 
+- **Translation (rebuilt 2026-10-14, TD5).** The translation classifier used to match bare language
+  names, so 12 of 26 historical "translation" gigs were voice-overs, legal advice and the like. With
+  those removed, the 17 genuine gigs do not link 2021Q4–2022Q2, so translation has no 2020Q1-based
+  series: it is blank before 2024Q3 and indexed 2024Q3 = 100. Audio (which received the
+  voice-overs) and the composite moved too. Do not compare translation levels with the other series.
+- **`translation-other` in `narrow-real-indices.csv` is mostly not translation** (TD6, not yet fixed):
+  the balanced panel has the same language-name leak. Treat the three translation narrow cells, and
+  `translation-other` especially, with caution.
 - **Publication window.** The index is published from 2020Q1; the gig panel reaches back to
   2018Q3, but §3.7 shows the index is not identified before 2020Q1.
 - **The gig panel is broader than any single regression.** The reputation model (§4.4) uses

@@ -103,8 +103,8 @@ const basisWord = () => isReal() ? "real" : "nominal";
 // ---- precision --------------------------------------------------------------
 // Sample-adequacy standard (plans/todo.md, adopted 2026-08-05): a category index
 // should be within ±5% at 95% confidence at the terminal quarter. At 2026Q1 SIX of
-// the seven categories miss it — translation ±29.2%, coding ±17.1%, audio ±13.9%,
-// video ±11.9%, writing ±8.3%, marketing ±7.7% — and only design (±4.8%) clears it.
+// the seven categories miss it — translation ±26.4%, coding ±17.4%, audio ±11.9%,
+// video ±11.6%, writing ±7.9%, marketing ±7.2% — and only design (±4.8%) clears it.
 // Suppressing the failures would leave one category, so the site instead publishes
 // the half-width beside every level and marks the ones that miss the standard.
 // Half-width is reported as 1.96·se on the log scale (the convention the project

@@ -26,7 +26,7 @@ One descriptive fact is worth stating before any index appears, because it sets 
 
 **Figure 3.** The composite index in real terms (headline) and nominal, with the CPI-U reference line and a 95% band on the real series. Base 2020Q1 = 100. ChatGPT's release is marked for reference only; Section 4.8 reports that we cannot attribute any part of the path to it.
 
-Over 2020Q1–2026Q1 the composite index rises from 100 to **140.7 in real terms (+40.7%)** and to **178.4 in nominal terms (+78.4%)**, against CPI-U of **+26.8%**. The 95% band on the composite is **±3.7%** (nominal level 171.8–185.2), the one series in this paper that meets the ±5% adequacy standard of Section 3.6.
+Over 2020Q1–2026Q1 the composite index rises from 100 to **140.6 in real terms (+40.6%)** and to **178.1 in nominal terms (+78.1%)**, against CPI-U of **+26.8%**. The 95% band on the composite is **±3.7%** (nominal level 171.8–185.2), the one series in this paper that meets the ±5% adequacy standard of Section 3.6.
 
 The headline result is therefore that **the price of the cognitive services in this basket rose substantially in real terms over six years, and general consumer inflation accounts for roughly 48% of the nominal rise but not the remainder**. We state this as a description of a market, not as an AI result. Section 4.4 measures the rival explanations we can measure; Section 4.8 reports that we cannot identify AI's contribution, and that this is not solely a matter of sample size.
 
@@ -44,18 +44,20 @@ Two features of the path are worth naming.
 
 | Category | Nominal Δ | Real Δ | Real level 2026Q1 | ±95% | Meets ±5% |
 |---|---:|---:|---:|---:|:--:|
-| Composite | +78.4% | +40.7% | 140.7 | ±3.7% | yes |
+| Composite | +78.1% | +40.6% | 140.6 | ±3.7% | yes |
 | Design | +56.1% | +23.2% | 123.2 | ±4.8% | yes |
-| Writing | +101.8% | +59.2% | 159.2 | ±8.3% | no |
-| Coding | +150.1% | +97.3% | 197.3 | ±17.1% | no |
-| Video | +165.6% | +109.5% | 209.5 | ±11.9% | no |
-| Marketing | +194.3% | +132.1% | 232.2 | ±7.7% | no |
-| Translation | +199.5% | +136.3% | 236.3 | ±29.2% | no |
-| Audio | +222.3% | +154.2% | 254.2 | ±13.9% | no |
+| Writing | +101.8% | +59.2% | 159.2 | ±7.9% | no |
+| Coding | +150.1% | +97.3% | 197.3 | ±17.4% | no |
+| Video | +165.6% | +109.5% | 209.5 | ±11.6% | no |
+| Marketing | +194.3% | +132.1% | 232.2 | ±7.2% | no |
+| Audio | +243.1% | +170.7% | 270.7 | ±11.9% | no |
+| Translation* | +31.5% | +25.9% | 125.9 | ±26.4% | no |
 
-**We do not rank these categories, and the table above should not be read as a ranking.** Ordering by the point estimate puts audio first, translation second and marketing third—but their intervals overlap one another *completely*. Audio's real level is 221–292, translation's 190–307, marketing's 214–252. Which of the three is highest is not determined by these data. We verified the overlap pairwise, and we state it here rather than in a footnote because the ordering is exactly the kind of result that gets quoted onward.
+\* Translation, 2024Q3–2026Q1 only (2024Q3 = 100). Its historical segment cannot be linked to 2020Q1: after removing gigs the keyword classifier had mislabelled — German and French voice-overs, an EU legal adviser and others, 12 of 26 — the 17 genuine translation gigs never share three matched gigs across 2021Q4–2022Q2, so no 2020Q1-based level exists. Its change is not comparable with the rows above.
 
-**One separation is genuine.** Design (real 117–129) does not overlap audio (221–292), and the gap is far wider than any estimation choice in Section 3.7 moves either series. Design's prices rose much less than audio's. That is the strongest category-level statement this pilot supports.
+**We do not rank these categories, and the table above should not be read as a ranking.** Ordering by the point estimate puts audio first and marketing second—but their intervals overlap: audio's real level is 240–305, marketing's 216–249. Which of the two is highest is not determined by these data. We verified the overlap pairwise, and we state it here rather than in a footnote because the ordering is exactly the kind of result that gets quoted onward.
+
+**One separation is genuine.** Design (real 117–129) does not overlap audio (240–305), and the gap is far wider than any estimation choice in Section 3.7 moves either series. Design's prices rose much less than audio's. That is the strongest category-level statement this pilot supports.
 
 **Design's precision is not a virtue of the design category.** It has 1,466 recent panel gigs and a median of 208 matched gigs per quarter pair; audio has 55 and a median of 5. The precision ordering tracks matched-gig density almost exactly, and coding—which has eight times audio's panel gigs but fails worse (±17.1% vs ±13.9%)—is the exception that proves the rule, since panel gigs are not what binds.
 
@@ -69,7 +71,7 @@ We flag this as suggestive and decline to read it as an AI effect, for two reaso
 
 ### 4.4 What the Rise Is Not
 
-The composite rises +40.7% in real terms. This section removes what can be removed.
+The composite rises +40.6% in real terms. This section removes what can be removed.
 
 **Reputation accumulation is first-order.** Within a gig, price rises **+7.33% per doubling of cumulative reviews**. The estimate comes from a two-way fixed-effects model on the **balanced panel — 169,337 gig-quarter observations across 15,676 gigs, 2019Q4–2024Q4**, in CPI-deflated real terms, regressing log real price on gig and quarter fixed effects, $\ln(1+R)$ and rating, with gig-clustered errors: $\beta = +0.1021$ (se 0.0039, $t = 25.95$; within-gig $R^2 = 0.135$, residual SD 0.348 log points).
 
@@ -89,7 +91,7 @@ We publish this as a **range, not a correction**, for the reason given in Sectio
 
 **Composition does not explain it, but survivorship may.** The matched design holds the gig fixed, so entry mix cannot drive the result. But the panel follows ageing incumbents, and **new gigs entering with ≤10 reviews show flat prices from 2019 to 2025** in design, writing, video and marketing while the incumbent index rises 47% to 167%. We cannot currently reconcile the two series—the historical and recent crawls return different entry medians for the same year (2024: \$50 on n=102 versus \$30 on n=2,389), so the comparison must be made within a crawl or the frames reconciled—and we therefore report the gap as an open problem rather than a decomposition. It is the paper's most serious unresolved threat, and Section 6 says why.
 
-Taken together: of a **+78.4% nominal** rise, CPI-U accounts for about half, reputation accumulation for a substantial and imprecisely bounded further share, and the residual—which is what an AI account would have to explain—is smaller than the headline and is not separately identified.
+Taken together: of a **+78.1% nominal** rise, CPI-U accounts for about half, reputation accumulation for a substantial and imprecisely bounded further share, and the residual—which is what an AI account would have to explain—is smaller than the headline and is not separately identified.
 
 ### 4.5 The Quantity Margins, and Why We Report Nulls
 
@@ -163,7 +165,7 @@ Two things corroborate the fix rather than merely following from it. **Bootstrap
 
 The question this project set out to answer is which categories AI has most affected. **At pilot scale we cannot answer it on any margin**, and we regard stating that clearly as part of the contribution.
 
-- **Price** is imprecise in six of seven categories (±7.7% to ±29.2%) and confounded by reputation and inflation, both of which are first-order.
+- **Price** is imprecise in six of seven categories (±7.2% to ±26.4%) and confounded by reputation and inflation, both of which are first-order.
 - **Demand and dormancy** are null with minimum detectable effects of ±23% to ±66%.
 - **Entry and exit** are unmeasurable by crawl construction.
 - **The one design that would identify an effect is underpowered rather than invalid.** A gig-level continuous-exposure difference-in-differences—scoring gigs on whether a general-purpose model could produce the deliverable end to end, with category × quarter fixed effects absorbing every platform- and category-wide shock—**passes its parallel-trends test**: the pre-period placebo returns $\beta = -0.0082$ (se 0.0093), and every pre-year in an event study is insignificant (2019 +0.017, 2020 −0.042, 2022 +0.003). This is a genuine contrast with a category-level design, where pre-trends run from −38%/yr to +13%/yr and parallel trends fails outright. But the estimate is $\beta_1 = +0.0147$ (se 0.0126, $t = 1.17$), and over the eight quarters 2023Q1–2024Q4 the 95% interval on the high-versus-low contrast spans **−14.8% to +87.6%**. It is robust to a binary contrast (+0.031), a leaner exposure lexicon (+0.012) and leave-one-category-out (+0.006 to +0.020)—robustly uninformative. The interval is wider than every effect this paper reports.

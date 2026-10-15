@@ -2,7 +2,7 @@
 
 We set out to measure the price elasticity of intelligence and we did not obtain it. What we obtained instead is a working instrument, a defensible price series, and a reasonably precise account of why the original question is out of reach at this scale.
 
-The Intelligence Price Index is a quarterly matched-model index for cognitive-labor services, built from 37,782 archived Fiverr gig-price snapshots and estimated with GEKS-Jevons. Over 2020Q1–2026Q1 it rises **+40.7% in real terms** (+78.4% nominal) against CPI-U of +26.8%, with a 95% band of ±3.7%. Prices for these services rose faster than consumer prices generally.
+The Intelligence Price Index is a quarterly matched-model index for cognitive-labor services, built from 37,782 archived Fiverr gig-price snapshots and estimated with GEKS-Jevons. Over 2020Q1–2026Q1 it rises **+40.6% in real terms** (+78.1% nominal) against CPI-U of +26.8%, with a 95% band of ±3.7%. Prices for these services rose faster than consumer prices generally.
 
 That headline survives only with its confounds attached. General inflation accounts for roughly half the nominal rise. Reputation accumulation—+7.33% per doubling of a gig's cumulative reviews, estimated on 169,337 gig-quarters and replicating the pilot figure on fifty times the data—accounts for a large and imprecisely bounded further share, giving a composite band of +39.7% to +79.0%. And because the index follows continuing gigs while new gigs enter at flat prices, some unresolved portion of the remainder is the life-cycle of survivors rather than the price of the service.
 

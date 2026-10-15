@@ -1,7 +1,7 @@
 # Tests: Findings
 
 **Draft file:** drafts/sections/findings.md
-**Last reviewed:** 2026-09-08
+**Last reviewed:** 2026-10-14
 
 ## Reviewer Simulation
 
@@ -24,6 +24,7 @@
 | R15 | "You re-ran the pre-registered model on 169k observations and it fails three of six gates. Why is this reported as a null rather than as a broken design?" | **blocking** | **PASS** | It is reported as both. §4.8 tabulates all six gates with three failures marked, states that gate F (estimate below MDE) governs the reading and gate B (sign flip against a linear trend) is the more damaging, and §4.8's closing paragraph, §6.1, §7 and correction ledger entry 7 all now say the failure is one of **identification** and that more data of the same kind does not repair it. The paper's earlier claim that sample size was the binding constraint is explicitly revised rather than quietly dropped. |
 | R16 | "Adding four quarters moved your estimate by 0.0009. That suggests the window was never the problem — did you previously claim it was?" | major | **PASS** | §4.8 states the ext2025 result plainly (−0.0333 → −0.0324 across 172,934 obs) and draws the conclusion against interest: "the null here is not a window artifact of ending in 2024Q4, and adding data at this rate will not resolve it." |
 | R17 | "Your data source became unavailable mid-study. That is a limitation, not a finding — why is it in Section 4?" | minor | **PASS** | §4.9 carries the measurements (403 share 1.0% → 89.3%; revisit rate 74–82% → 34.5%; a full re-collection raising seven-domain matched pairs by 1.01×; Common Crawl never covering the site) and §6.6 carries the limitation reading, including that the nulls are confounded with the closure. The claim to finding status rests on the measured quantities and on non-recoverability, both of which are novel and both of which bear on whether anyone can answer this question retrospectively. |
+| R18 | "Your historical translation category includes German voice-overs and a legal adviser. How many of your category assignments are wrong?" | **blocking** | **PASS** (translation) / **open** (others) | Fixed 2026-10-14 (TD5): 12 of 26 historical "translation" gigs were keyword false positives on language names; removed, translation is now published only from 2024Q3 = 100 (§4.3 footnote), audio absorbs the voice-overs (+154.2% → +170.7% real), composite +40.7% → +40.6%. The other six historical categories were not audited gig-by-gig, and step 04's balanced-panel classifier still carries language-name keywords (the `translation/voiceover_leak`). |
 
 ## User Requirements
 

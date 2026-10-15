@@ -1,6 +1,6 @@
 {
   "source": "docs/data.json",
-  "data_generated": "2026-07-31",
+  "data_generated": "2026-10-14",
   "base_period": "2020Q1",
   "window": "2020Q1-2026Q1",
   "n_quarters": 25,
@@ -10,16 +10,17 @@
       "label": "Audio",
       "panel_gigs": 55,
       "weight": 0.018786,
+      "base_quarter": "2020Q1",
       "terminal_quarter": "2026Q1",
-      "index_nominal": 322.26,
-      "index_real": 254.2,
-      "delta_nominal_pct": 222.3,
-      "delta_real_pct": 154.2,
-      "se_ln": 0.07108,
-      "band_pct": 13.93168,
+      "index_nominal": 343.13,
+      "index_real": 270.66,
+      "delta_nominal_pct": 243.1,
+      "delta_real_pct": 170.7,
+      "se_ln": 0.06085,
+      "band_pct": 11.9266,
       "ci_level": [
-        280.3508552302136,
-        370.43406739287826
+        304.5524689432964,
+        386.5941304252611
       ],
       "meets_5pct": false
     },
@@ -28,16 +29,17 @@
       "label": "Coding",
       "panel_gigs": 462,
       "weight": 0.053159,
+      "base_quarter": "2020Q1",
       "terminal_quarter": "2026Q1",
       "index_nominal": 250.14,
       "index_real": 197.32,
       "delta_nominal_pct": 150.1,
       "delta_real_pct": 97.3,
-      "se_ln": 0.08716,
-      "band_pct": 17.08336,
+      "se_ln": 0.08888,
+      "band_pct": 17.42048,
       "ci_level": [
-        210.85847231892086,
-        296.7394144133018
+        210.14882309386928,
+        297.7414704437874
       ],
       "meets_5pct": false
     },
@@ -46,16 +48,17 @@
       "label": "Design",
       "panel_gigs": 1466,
       "weight": 0.705811,
+      "base_quarter": "2020Q1",
       "terminal_quarter": "2026Q1",
       "index_nominal": 156.13,
       "index_real": 123.15,
       "delta_nominal_pct": 56.1,
       "delta_real_pct": 23.2,
-      "se_ln": 0.02472,
-      "band_pct": 4.84512,
+      "se_ln": 0.0247,
+      "band_pct": 4.8412,
       "ci_level": [
-        148.7456489963795,
-        163.88094081725598
+        148.7514799401059,
+        163.8745168102873
       ],
       "meets_5pct": true
     },
@@ -64,16 +67,17 @@
       "label": "Marketing",
       "panel_gigs": 294,
       "weight": 0.062545,
+      "base_quarter": "2020Q1",
       "terminal_quarter": "2026Q1",
       "index_nominal": 294.31,
       "index_real": 232.15,
       "delta_nominal_pct": 194.3,
       "delta_real_pct": 132.1,
-      "se_ln": 0.03919,
-      "band_pct": 7.681240000000001,
+      "se_ln": 0.03648,
+      "band_pct": 7.15008,
       "ci_level": [
-        272.5497683557455,
-        317.807557212602
+        274.0012952578199,
+        316.12396583197517
       ],
       "meets_5pct": false
     },
@@ -82,16 +86,17 @@
       "label": "Translation",
       "panel_gigs": 28,
       "weight": 0.003225,
+      "base_quarter": "2024Q3",
       "terminal_quarter": "2026Q1",
-      "index_nominal": 299.53,
-      "index_real": 236.26,
-      "delta_nominal_pct": 199.5,
-      "delta_real_pct": 136.3,
-      "se_ln": 0.14889,
-      "band_pct": 29.18244,
+      "index_nominal": 131.51,
+      "index_real": 125.9,
+      "delta_nominal_pct": 31.5,
+      "delta_real_pct": 25.9,
+      "se_ln": 0.13446,
+      "band_pct": 26.35416,
       "ci_level": [
-        223.71886116309597,
-        401.03109962907166
+        101.04250747124085,
+        171.1643993486854
       ],
       "meets_5pct": false
     },
@@ -100,16 +105,17 @@
       "label": "Video",
       "panel_gigs": 235,
       "weight": 0.045872,
+      "base_quarter": "2020Q1",
       "terminal_quarter": "2026Q1",
       "index_nominal": 265.61,
       "index_real": 209.52,
       "delta_nominal_pct": 165.6,
       "delta_real_pct": 109.5,
-      "se_ln": 0.06058,
-      "band_pct": 11.87368,
+      "se_ln": 0.05896,
+      "band_pct": 11.55616,
       "ci_level": [
-        235.87270348670486,
-        299.0963814682208
+        236.62283677619592,
+        298.1481967724307
       ],
       "meets_5pct": false
     },
@@ -118,31 +124,32 @@
       "label": "Writing",
       "panel_gigs": 368,
       "weight": 0.110601,
+      "base_quarter": "2020Q1",
       "terminal_quarter": "2026Q1",
       "index_nominal": 201.79,
       "index_real": 159.17,
       "delta_nominal_pct": 101.8,
       "delta_real_pct": 59.2,
-      "se_ln": 0.04232,
-      "band_pct": 8.29472,
+      "se_ln": 0.04017,
+      "band_pct": 7.87332,
       "ci_level": [
-        185.72746414877133,
-        219.24169527982744
+        186.51177105671948,
+        218.31975466908742
       ],
       "meets_5pct": false
     }
   ],
   "composite": {
     "terminal_quarter": "2026Q1",
-    "index_nominal": 178.37,
-    "index_real": 140.7,
-    "delta_nominal_pct": 78.4,
-    "delta_real_pct": 40.7,
-    "se_ln": 0.01907,
-    "band_pct": 3.73772,
+    "index_nominal": 178.11,
+    "index_real": 140.58,
+    "delta_nominal_pct": 78.1,
+    "delta_real_pct": 40.6,
+    "se_ln": 0.01897,
+    "band_pct": 3.7181200000000003,
     "ci_level": [
-      171.82608723687375,
-      185.16313449039734
+      171.6092580520296,
+      184.85699699477735
     ],
     "meets_5pct": true
   },

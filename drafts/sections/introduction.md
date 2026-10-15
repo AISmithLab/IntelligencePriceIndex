@@ -8,7 +8,7 @@ This paper builds one. The **Intelligence Price Index (IPI)** is a quarterly mat
 
 ### What we find
 
-The composite index rises **+40.7% in real terms** over 2020Q1–2026Q1 (+78.4% nominal), against CPI-U of +26.8%, with a 95% band of ±3.7%. Prices for these services rose substantially faster than consumer prices generally.
+The composite index rises **+40.6% in real terms** over 2020Q1–2026Q1 (+78.1% nominal), against CPI-U of +26.8%, with a 95% band of ±3.7%. Prices for these services rose substantially faster than consumer prices generally.
 
 We then subtract what we can. **General consumer inflation accounts for roughly half of the nominal rise.** **Reputation accumulation accounts for a large further share**: on a panel of 169,337 gig-quarters across 15,676 gigs, price within a gig rises +7.33% per doubling of cumulative reviews in real terms, and an index rebuilt on reputation-adjusted prices gives a composite band of +39.7% to +79.0%. Because reviews are cumulative *sales*, that adjustment absorbs demand as well as reputation, so we publish the pair as a range rather than swapping the headline—and the range's floor is itself imprecise. The residual that an AI account would have to explain is smaller than the headline and is not separately identified.
 

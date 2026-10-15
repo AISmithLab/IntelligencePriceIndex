@@ -1,0 +1,53 @@
+Wrote /home/exouser/IntelligencePriceIndex/docs/data.json  (61.6 KB)
+Axis: 2020Q1 -> 2026Q1 (25 quarters), base 2020Q1=100, splice 2024Q3
+Categories (7): audio, coding, design, marketing, translation, video, writing
+
+Composite (all categories):
+  2020Q1    100.0  ############
+  2020Q2    109.8  #############
+  2020Q3    116.6  ##############
+  2020Q4    127.1  ###############
+  2021Q1    137.6  #################
+  2021Q2    142.9  #################
+  2021Q3    155.6  ###################
+  2021Q4    164.6  ####################
+  2022Q1    176.8  ######################
+  2022Q2    196.5  ########################
+  2022Q3    210.3  ##########################
+  2022Q4    228.4  ############################
+  2023Q1    254.1  ###############################
+  2023Q2    264.8  #################################
+  2023Q3    294.3  ####################################
+  2023Q4    308.5  ######################################
+  2024Q1    328.2  #########################################
+  2024Q2    343.8  ##########################################
+  2024Q3    352.0  ###########################################
+  2024Q4    353.9  ############################################
+  2025Q1    351.7  ###########################################
+  2025Q2    369.0  ##############################################
+  2025Q3    380.9  ###############################################
+  2025Q4    385.9  ################################################
+  2026Q1    384.6  ################################################
+
+Full-period change 2020Q1->2026Q1:  composite +284.6%
+GEKS composite 2020Q1->2026Q1:  nominal +78.1%   real +40.6%   CPI-U +26.8%
+  deflator contains an interpolated month in: 2025Q4
+Per-category full-period change:
+  translation    +75.8%
+  writing       +242.6%
+  design        +261.6%
+  coding        +280.9%
+  video         +402.8%
+  audio         +503.6%
+  marketing     +682.6%
+
+Top freelancer per category (by distinct priced gigs):
+  audio        shadowvo (11 gigs)  [93 priced sellers]
+  coding       matarrese8 (14 gigs)  [519 priced sellers]
+  design       ace_art (15 gigs)  [1528 priced sellers]
+  marketing    ranafai (11 gigs)  [322 priced sellers]
+  translation  athiraz (2 gigs)  [41 priced sellers]
+  video        holdaz (11 gigs)  [294 priced sellers]
+  writing      mehrabmeraj (9 gigs)  [494 priced sellers]
+
+Wrote /home/exouser/IntelligencePriceIndex/docs/freelancers.json  (589 KB)  590 sellers, 1434 gigs with price series

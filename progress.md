@@ -1,5 +1,125 @@
 # Progress Log
 
+## 2026-10-15 — data/real-prices re-exported after the TD5 rebuild
+
+`data/real-prices/real-indices.csv` had been exported from the 2026-07-31 `docs/data.json` and was never
+refreshed after yesterday's TD5 translation rebuild. Re-ran `code/92-export-real-prices.py`.
+
+- `real-indices.csv` now matches the current `docs/data.json`. Translation: blank before 2024Q3,
+  2024Q3 = 100 (2026Q1 real 125.9; was 236.3 on the old 2020Q1 base). Audio up as much as 18.2 points
+  (2026Q1 254.2 -> 270.7). Composite moves at most 0.2, marketing 1.0, video 0.4; coding/design/writing
+  unchanged.
+- `gig-quarter-real-prices.csv.gz`, `narrow-real-indices.csv`, `cpi-quarterly.csv`: unchanged (the gig
+  file's re-export differed only in the gzip timestamp, so the committed file was kept).
+- README: added the translation base change and the TD6 warning on `translation-other`.
+
+## 2026-10-14 (night) — translation gig counts, and the balanced panel has the same leak (TD6)
+
+User asked how many translation gigs there are. By dataset: historical published panel **17** (26 before
+TD5), recent published panel **28**, balanced panel **6,368** collected / 6,250 priced (narrow cells:
+translation 2,159, subtitle 1,387, other 2,461). Checking the balanced slugs: ~2,332 name translation,
+~1,492 subtitles/transcription, ~775 voice-overs, ~1,769 no translation word (tutoring, travel planning,
+Dutch ads, German backlinks, singing). Step 04 has the language-name leak too. **`translation-other`
+(+51.2%), the counter-example §4.3 uses against the flat translation cells, is largely not translation.**
+Logged as TD6; not fixed.
+
+## 2026-10-14 (night) — step 95: AI exposure x freelancer experience — no differential effect on survivors
+
+User asked how generative AI affected less vs more experienced freelancers. `code/95-experience-exposure.py`
+-> `runs/experience-exposure.md`. Exploratory. Experience = gig's reviews at its last pre-ChatGPT quarter
+(terciles: novice <= 60, veteran > 269); exposure = step 93 cells; 169,489 gig-quarters, 15,684 gigs seen
+both before and after 2022Q4, 33 cells.
+
+- Descriptive: high- minus low-exposure real price change is +2.9 log pts for novices, +0.8 mid, +6.9
+  veterans -- novices in exposed cells did not fall behind.
+- `Exposure x Post x Novice` +0.121 (wild p 0.34) human / +0.060 (0.80) GPT-4; with a reputation control
+  0.30 / 0.76; with tercile x cell trends +0.024 (0.75) / -0.028 (0.78). Veteran terms likewise null.
+  **No experience-specific AI effect in any specification.**
+- Not AI: veterans' prices grew less after 2022 in every exposure group (Post x Veteran -0.127, t -4.1),
+  which disappears with group trends -- the concave reputation treadmill, not a break.
+- Limit stated with the result: the panel is gigs that survive across ChatGPT. Novices who quit, and
+  post-ChatGPT entrants, are invisible -- the channel where a novice effect is most plausible.
+- Speed: the wild-cluster bootstrap now works on per-cluster sums (all 999 draws as one matrix
+  product); validated against step 90's version on simulated data (p 0.089 vs 0.086, 0.424 vs 0.438),
+  ~150x faster. Whole script 31 s, from an estimated 10-15 min.
+
+## 2026-10-14 (night, final) — TD5 fixed: translation classifier rebuilt, published numbers updated
+
+User approved the fix. Step 19's language-name keywords (and the identical copies in 11, 12, 18)
+replaced by `translat / locali / subtit / interpreter / interpreting`, plus a slug rule (a slug naming
+`translat`/`locali` is translation). Tested before editing: the rule moves 17 historical gigs out
+(voice-overs -> audio, legal advice and similar -> unclassified) and 4 in (e.g.
+`malay-to-english-translation`); a description-level precedence rule was tried and rejected because it
+pulled in 5 writing gigs that only mention translation.
+
+Re-ran 12 -> 19 -> 21 -> 23 -> 18 -> 30 -> 27 -> 34, plus 26 and 29 for the sensitivity figures
+(logs in `runs/td5-rebuild/`). Results:
+- **Translation has no 2020Q1-based series any more**: the 17 genuine gigs never link across
+  2021Q4-2022Q2 with >= 3 matched gigs. It is published 2024Q3-2026Q1 only: +31.5% nominal / +25.9%
+  real, ±26.4%. `30-freeze-numbers.py` now reports each series' span and flags late bases.
+- **Audio** +154.2% -> **+170.7%** real (gains the voice-overs); band ±13.9% -> ±11.9%.
+- **Composite** +40.7% -> **+40.6%** real, +78.4% -> **+78.1%** nominal, ±3.7% unchanged. Chained
+  Jevons +283.0% -> +284.6%; MIN_MATCH range +76.4% to +78.5%. Reputation band unchanged (+79.0/+39.7).
+- Bands of untouched categories moved by RNG stream shift only (writing ±8.3 -> ±7.9, marketing
+  ±7.7 -> ±7.2, coding ±17.1 -> ±17.4, video ±11.9 -> ±11.6); levels identical.
+- Updated: abstract, introduction, findings (§4.2-4.4 table, translation footnote, ranking paragraph
+  now audio vs marketing), limitations, method (bands, chain, MIN_MATCH), results, appendix A, faq.md,
+  `docs/faq.html`, `docs/index.html`, `docs/ipi.js` comment, figures. `32-check-draft-numbers.py`
+  PASS. Rendered `drafts/draft-2026-10-14.html` and `drafts/paper-page.html`. `tests/findings.test.md` R18.
+- **Not updated, flagged:** Appendix A's chain-drift decomposition ("7% (audio) to 802% (translation)",
+  "-43% to +93%", "translation 130.4 vs 227.8") does not match step 29's current output even for
+  categories this fix did not touch, so it was left for a separate audit. Step 04's balanced-panel
+  classifier still has language-name keywords (affects the 35-cell translation cells). The site and
+  fig 2 now draw translation starting at 100 in 2024Q3 on the 2020Q1-based axis.
+
+## 2026-10-14 (night, latest) — the translation gap (2021Q4-2022Q2) exposes a classifier leak in the historical panel
+
+User asked why the published translation index is blank 2021Q4-2022Q2. **Mechanism:** the historical
+panel (`pilot-prices.csv`, classified by step 19's `CATEGORY_KEYWORDS`) holds only **26 translation
+gigs**; in those quarters 3-4 are priced, and none of them links to any quarter outside the gap with
+the >= 3 matched gigs GEKS requires (best links: 0, 1, 2), so the three quarters are disconnected from
+the base and are correctly left null.
+
+**The sharper finding: 12 of the 26 "translation" gigs are not translation** (53 of 136 gig-quarters,
+39%). Step 19 assigns translation on language names ("german", "french", "spanish" ...) in the
+description, so it catches German/French female voice-overs (mariepf 18 quarters, virgini9 8,
+romygraske 5), an EU offshore legal adviser (frederiklund x3), relationship advice, fantasy football,
+a ChatGPT assistant, userbars, an animation and Arab-community marketing. The gap quarters are carried
+almost entirely by these. Same family as step 04's `translation/voiceover_leak` (721 gigs), now
+confirmed in the historical panel that feeds the published translation series.
+
+**Not fixed** -- fixing changes published numbers (translation +136.3% real, ±29.2%) and needs the
+user's call. The paper already declines to report historical translation levels (§4.3) but the §4.3
+table still prints the spliced +136.3%. Logged in `plans/tech-debt-tracker.md`.
+
+## 2026-10-14 (night, later) — step 94: 35 exposure clusters, and prices still do not move with exposure
+
+`code/94-narrow-exposure-tests.py` -> `runs/narrow-exposure-tests.md`. Exploratory; exposure from step 93,
+frozen before this ran. Wild-cluster bootstrap on 35 narrow cells.
+
+- **A, cross-section (n = 35):** real change 2020Q1-2024Q4 vs exposure, Spearman +0.17 (p 0.32) human /
+  +0.20 (p 0.25) GPT-4; change in growth rate post-pre +0.08 (p 0.66) / +0.23 (p 0.19). No relationship,
+  and the sign is positive (more-exposed cells rose slightly more), not commoditization.
+- **B, gig-level listed real price, Exposure x Post:** gig + quarter FE +0.043 (wild p 0.73) / +0.158
+  (0.32); within-family (family x quarter FE) +0.19 (0.33) / +0.26 (0.24); with cell trends +0.065
+  (0.15) / +0.051 (0.39). **None significant; every point estimate positive.** The gig-clustered t
+  reaches 6.7 on GPT-4 exposure, which is the step-90 lesson again: the honest test is at cell level.
+- **C, descriptions:** generative-AI mentions rise with exposure, **wild p 0.024 on 35 cells** (first
+  exposure result in the project to clear cell-level inference), human/no-AI claims p 0.058. **Both
+  vanish within family** (p 0.75, 0.72): the gradient is coding and writing vs the rest, not
+  exposure differences among sibling cells.
+- Reading: more clusters did not rescue a price effect; they sharpened the null and moved its sign.
+  AI is visible in what sellers *say* (across families), not in what they charge.
+
+## 2026-10-14 (night) — step 93: exposure scores for the 35 narrow categories, frozen before outcomes
+
+`code/93-narrow-exposure.py` -> `data/narrow-exposure.csv`. Exploratory. Each narrow cell is mapped to
+the O*NET occupations whose core task the gig sells, scored with Eloundou beta (human primary, GPT-4
+robustness) as in step 45; every `<family>-other` inherits step 45's family mapping, so the narrow
+scores nest the broad ones. Range 0.23 (music production) to 0.84 (translation). **Written and logged
+before any outcome is estimated on it.** Declared blind spot: beta scores *language*-model exposure,
+so image/voice cells (illustration 0.36, logo 0.42, voiceover 0.35) are likely under-scored.
+
 ## 2026-10-14 (latest) — step 92: the deflated price data in one folder
 
 `code/92-export-real-prices.py` -> `data/real-prices/` with a README. Nothing re-estimated: the

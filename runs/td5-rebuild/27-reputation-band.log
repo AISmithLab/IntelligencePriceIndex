@@ -1,0 +1,72 @@
+============================================================================================
+STEP 27 — REPUTATION-ADJUSTED BAND (decision D2)
+============================================================================================
+
+--------------------------------------------------------------------------------------------
+BETA — within-gig first differences + quarter FE, GIG-CLUSTERED SEs
+--------------------------------------------------------------------------------------------
+  pooled beta = +0.1075  (se 0.0201, t 5.35)   n = 9755 transitions, 3414 gigs
+  => a doubling of a gig's reviews moves its price +7.7%
+
+  step 22 reported beta +0.1026 with se 0.0101 (t 10.19) on its own
+  combined panel and WITHOUT clustering; clustering alone is a 1.93x
+  widening. Beta survives; the published t does not.
+
+  cat               beta       se       t       n    gigs
+  audio          -0.0824   0.1202   -0.69     473     104  <-- WRONG SIGN
+  coding         +0.1608   0.0464    3.47    1496     508
+  design         +0.0751   0.0179    4.20    4231    1648
+  marketing      +0.2064   0.0622    3.32     744     290
+  translation    -0.0134   0.0481   -0.28     114      38  <-- WRONG SIGN
+  video          +0.1067   0.0362    2.95    1129     345
+  writing        +0.1916   0.0393    4.87    1568     486
+
+  2 categories carry a NEGATIVE beta (audio, translation).
+  Adjusting those with their own beta would RAISE their index -- i.e.
+  'strip out reputation' would add price. That is not interpretable,
+  and it is the decisive argument for a POOLED beta.
+
+--------------------------------------------------------------------------------------------
+RAW vs ADJUSTED on the PRODUCTION panels (pooled beta = 0.1075)
+--------------------------------------------------------------------------------------------
+  cells carrying reviews: historical 5806/6438 (90.2%), recent 7451/8320 (89.6%)
+  raw and adjusted are computed on this SAME restricted cell set, so the
+  only difference between the two series is the adjustment.
+
+  CHECK — does restricting to review-carrying cells move the index?
+  cat           unrestricted 2024Q3   restricted raw      gap
+  audio                       327.3            329.8    +0.8%
+  coding                      206.0            205.0    -0.5%
+  design                      146.7            146.8    +0.0%
+  marketing                   267.7            267.7    +0.0%
+  video                       274.2            276.8    +1.0%
+  writing                     186.0            189.2    +1.7%
+
+  cat                     hist 2024Q3          recent 2026Q1
+                      raw       adj    d%         raw       adj    d%
+  audio             329.8     266.8   -19       105.1     101.0    -4
+  coding            205.0     171.5   -16       120.2     115.5    -4
+  design            146.8     119.9   -18       106.8     103.3    -3
+  marketing         267.7     209.9   -22       107.8     103.9    -4
+  translation           -         -     -       132.7     127.1    -4
+  video             276.8     229.1   -17       100.3      96.3    -4
+  writing           189.2     138.6   -27       107.4     103.6    -4
+
+  COMPOSITE 2020Q1->2026Q1:  raw 178.7 (+78.7%)   adjusted 139.3 (+39.3%)
+  => THE BAND: +39.3% to +78.7% (width 39.4 pts)
+
+--------------------------------------------------------------------------------------------
+SENSITIVITY — composite as beta varies (0 = no adjustment)
+--------------------------------------------------------------------------------------------
+    beta   composite   full-window
+    0.00       178.7        +78.7%
+    0.05       159.2        +59.2%
+    0.10       141.8        +41.8%  <-- estimated
+    0.15       126.3        +26.3%
+    0.20       112.5        +12.5%
+
+============================================================================================
+HOW TO READ THIS: the adjusted series is a LOWER bound, not a correction.
+Reviews are cumulative sales, so beta absorbs demand as well as reputation.
+Publish the pair as a band; do not swap the headline.
+============================================================================================

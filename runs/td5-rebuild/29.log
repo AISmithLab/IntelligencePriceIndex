@@ -1,0 +1,121 @@
+========================================================================================================
+CHAINED SERIES + ELASTICITY TABLE — do they survive in the paper? (D4)
+========================================================================================================
+
+all three series rebuilt on the SAME production panel, base 2020Q1=100
+panel gigs: audio=66, coding=190, design=330, marketing=72, translation=17, video=157, writing=229
+
+========================================================================================================
+0. HOW OFTEN DOES THE DEFECT FIRE? — within-gig link span
+========================================================================================================
+a link spanning >1 quarter is one the as-built chain mis-books as a
+single-quarter change. TD1 measured 22-31%; re-measured here.
+
+cat            links   span=1   span>1  share >1  max span
+audio            430      321      109     25.3%        29
+coding           931      688      243     26.1%        35
+design          1725     1298      427     24.8%        29
+marketing        344      248       96     27.9%        16
+translation       76       47       29     38.2%        24
+video            775      590      185     23.9%        18
+writing         1096      832      264     24.1%        34
+
+========================================================================================================
+1. DECOMPOSING THE CHAINED-vs-GEKS GAP — how much is drift, how much is TD1?
+========================================================================================================
+levels at each category's terminal quarter, 2020Q1=100. 'defect' is the
+as-built/adjacent ratio; 'drift' is the adjacent/GEKS ratio.
+
+cat          terminal  as-built  adjacent     GEKS  defect x  drift x  defect share
+audio          2024Q4     637.3     555.4    396.7      1.15     1.40           29%
+coding         2025Q1     492.4     273.7    312.8      1.80     0.88          129%
+design         2024Q4     338.4     230.0    127.1      1.47     1.81           39%
+marketing      2024Q4     798.2     398.2    282.2      2.00     1.41           67%
+translation    2023Q1     144.7     168.2    200.0      0.86     0.84           46%
+video          2024Q4     540.3     405.6    298.3      1.33     1.36           48%
+writing        2024Q4     359.2     281.6    205.8      1.28     1.37           44%
+
+  'defect x' > 1 means the as-built chain overstates relative to the same
+  estimator with long links removed. 'drift x' > 1 is genuine chain drift.
+  'defect share' is the fraction of the total log gap the defect explains.
+
+  For the record — what step 12 actually ships (its own panel, base 2019Q1).
+  `panel-ipi.csv` is composite-only, so the per-category shipped chain is
+  read from `panel-category-indices.csv` and re-based here for comparison:
+    audio        2018Q3>2024Q4  shipped level    546.6   re-based 2020Q1=100:    637.3   reconstruction here:    637.3 @2024Q4
+    coding       2017Q3>2025Q1  shipped level    344.8   re-based 2020Q1=100:    464.9   reconstruction here:    492.4 @2025Q1
+    design       2017Q3>2025Q4  shipped level    268.3   re-based 2020Q1=100:    359.7   reconstruction here:    381.0 @2025Q4
+    marketing    2017Q3>2025Q4  shipped level   1466.3   re-based 2020Q1=100:    829.3   reconstruction here:    829.3 @2025Q4
+    translation  2019Q1>2024Q3  shipped level     91.2   re-based 2020Q1=100:    144.7   reconstruction here:    144.7 @2024Q3
+    video        2018Q3>2025Q3  shipped level    466.3   re-based 2020Q1=100:    609.2   reconstruction here:    609.1 @2025Q3
+    writing      2018Q3>2025Q1  shipped level    197.3   re-based 2020Q1=100:    348.8   reconstruction here:    359.2 @2025Q1
+  the two differ because step 12 builds its own panel and bases at 2019Q1;
+  the reconstruction isolates the ESTIMATOR on the production panel.
+
+========================================================================================================
+2. IS THE ELASTICITY REGRESSION SPURIOUS?
+========================================================================================================
+
+fitted on the AS-BUILT chained series, which is what the shipped table uses.
+DW near 2 = no serial correlation; DW below ~1 = the OLS SE is not usable.
+
+cat            n  beta(AI)   t OLS    t NW     DW   R2 AI  R2 time  R2 CPI  beta(CPI)  d-diff t
+audio         20    -0.379   -8.93   -5.44   0.24   0.816    0.928   0.960       8.38      0.00
+coding        21     0.380   13.75    7.67   0.50   0.909    0.974   0.939       5.95     -0.02
+design        23     0.295    3.84    3.46   0.26   0.412    0.979   0.976       5.47      0.48
+marketing     21     0.546   16.12   10.03   0.32   0.932    0.979   0.919       8.17      2.26
+translation   14     0.095    3.74    4.97   0.92   0.539    0.463   0.344       1.30      0.06
+writing       21     0.382   11.00    6.98   0.60   0.864    0.941   0.970       5.71      0.20
+
+  READING:
+   * 'R2 time' is a placebo — a linear trend has no AI content whatever.
+     Where it matches or beats 'R2 AI', the AI score is proxying for time.
+   * 'R2 CPI' / 'beta(CPI)' is a second placebo. CPI-U does not measure AI.
+   * 't NW' is the OLS t corrected for serial correlation. The published
+     table's p-values use the uncorrected one.
+   * 'd-diff t' differences both sides. A common trend drops out; whatever
+     survives is a relationship between the CHANGES.
+
+========================================================================================================
+3. DOES THE RANKING SURVIVE A CHANGE OF PRICE SERIES?
+========================================================================================================
+the table is used to rank categories by AI exposure. Re-estimate the same
+regression on each of the three series and compare the orderings.
+
+cat             as-built    adjacent        GEKS
+audio             -0.379      -0.319      -0.229
+coding             0.380       0.242       0.206
+design             0.295       0.194       0.091
+marketing          0.546       0.354       0.261
+translation        0.095       0.150       0.189
+video                  -           -           -
+writing            0.382       0.288       0.208
+
+  Spearman rank correlation  as-built  vs adjacent  rho = +1.000  (p = 0.000, n = 6)
+  Spearman rank correlation  as-built  vs geks      rho = +0.943  (p = 0.005, n = 6)
+  Spearman rank correlation  adjacent  vs geks      rho = +0.943  (p = 0.005, n = 6)
+
+  ordering, most to least 'AI-elastic', under each series:
+    as-built  marketing > writing > coding > design > translation > audio
+    adjacent  marketing > writing > coding > design > translation > audio
+    geks      marketing > writing > coding > translation > design > audio
+
+  vs the SHIPPED table (`panel-elasticity.csv`, step 12's own panel, base
+  2019Q1, 8 categories) — the coefficients the paper currently quotes:
+    cat              shipped   here (as-built)    change
+    design             1.139             0.295   -0.844
+    marketing          0.712             0.546   -0.166
+    data_analysis      0.684                 -       n/a
+    data_entry         0.629                 -       n/a
+    coding             0.295             0.380   +0.085
+    writing            0.206             0.382   +0.176
+    translation        0.137             0.095   -0.043
+    audio             -0.464            -0.379   +0.085
+    shipped ordering: design > marketing > data_analysis > data_entry > coding > writing > translation > audio
+    Spearman shipped vs reconstruction: rho = +0.600 (p = 0.208, n = 6)
+    -- the SAME estimator on the SAME platform, differing only in panel
+       construction and base quarter.
+
+========================================================================================================
+done
+========================================================================================================

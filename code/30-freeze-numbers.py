@@ -57,9 +57,19 @@ def last_valid(series):
     return None, None
 
 
+def first_valid(series):
+    """First quarter with a value: a category that cannot be linked back to the
+    base quarter starts later (translation, TD5), and its delta is from there."""
+    for i, v in enumerate(series):
+        if v is not None:
+            return Q[i]
+    return None
+
+
 rows = []
 for c in CATS:
     nq, nom = last_valid(d["index_geks"][c])
+    bq = first_valid(d["index_geks"][c])
     rq, real = last_valid(d["index_geks_real"][c])
     se_series = d["index_geks_se"][c]
     se = se_series[Q.index(nq)] if nq else None
@@ -68,6 +78,7 @@ for c in CATS:
         "label": LABEL[c],
         "panel_gigs": d["panel_gigs"][c],
         "weight": d["weights"][c],
+        "base_quarter": bq,
         "terminal_quarter": nq,
         "index_nominal": nom,
         "index_real": real,
@@ -133,11 +144,11 @@ L.append("Bands are 1.96 x the bootstrap SE of the **log** level at each categor
 L.append("")
 L.append("## Composite and categories")
 L.append("")
-L.append("| Series | Panel gigs | Weight | Terminal | Nominal | Real | "
+L.append("| Series | Panel gigs | Weight | Span | Nominal | Real | "
          "Nominal Δ | Real Δ | ±95% | Meets ±5% | 95% CI on nominal level |")
 L.append("|---|---:|---:|---|---:|---:|---:|---:|---:|:--:|---|")
 lo, hi = composite["ci_level"]
-L.append(f"| **Composite** | — | 1.000 | {composite['terminal_quarter']} | "
+L.append(f"| **Composite** | — | 1.000 | {d['base_period']}–{composite['terminal_quarter']} | "
          f"{composite['index_nominal']:.1f} | {composite['index_real']:.1f} | "
          f"{composite['delta_nominal_pct']:+.1f}% | {composite['delta_real_pct']:+.1f}% | "
          f"±{composite['band_pct']:.1f}% | {'yes' if composite['meets_5pct'] else 'NO'} | "
@@ -145,11 +156,19 @@ L.append(f"| **Composite** | — | 1.000 | {composite['terminal_quarter']} | "
 for r in sorted(rows, key=lambda x: -x["weight"]):
     lo, hi = r["ci_level"]
     L.append(f"| {r['label']} | {r['panel_gigs']} | {r['weight']:.3f} | "
-             f"{r['terminal_quarter']} | {r['index_nominal']:.1f} | {r['index_real']:.1f} | "
+             f"{r['base_quarter']}–{r['terminal_quarter']}"
+             f"{'*' if r['base_quarter'] != d['base_period'] else ''} | "
+             f"{r['index_nominal']:.1f} | {r['index_real']:.1f} | "
              f"{r['delta_nominal_pct']:+.1f}% | {r['delta_real_pct']:+.1f}% | "
              f"±{r['band_pct']:.1f}% | {'yes' if r['meets_5pct'] else 'NO'} | "
              f"{lo:.1f}–{hi:.1f} |")
 L.append("")
+late = [r["label"] for r in rows if r["base_quarter"] != d["base_period"]]
+if late:
+    L.append(f"\\* {', '.join(late)}: not linked to {d['base_period']} (historical segment not "
+             f"identified); index = 100 at its first quarter, and Δ runs from there, not from "
+             f"{d['base_period']}.")
+    L.append("")
 L.append(f"CPI-U over the same window: **{cpi_change:+.1f}%**. "
          f"Categories missing the ±5% adequacy rule: **{n_fail} of {len(rows)}**.")
 L.append("")

@@ -74,7 +74,7 @@ Design's weight of **0.706** is the single most consequential feature of the com
 
 We construct the IPI as a **matched-model index**, following BLS practice for CPI items where direct quality adjustment is difficult [CITE-bls-handbook-2018]: the same gig is compared to itself across periods, so its own price *level* — and with it unobserved quality, seller identity and task specificity — cancels.
 
-**Why not a chained index.** The natural elementary aggregate is a chained Jevons, and we do not report one. Because captures are irregular, **24–35% of within-gig links span more than one quarter**, with a longest span of **35 quarters**; a chained index books that entire multi-quarter change as a single-quarter change on top of growth already contributed by gigs observed in between, and the errors compound multiplicatively — **chain drift** [CITE-ivancic-diewert-fox-2011]. In our data the chained composite rises **+283.0%** against **+78.4%** drift-free. We do not present that gap as a measurement of drift, because decomposing it shows it is not one: the gap-spanning defect's share of the log gap ranges from **7% (audio) to 802% (translation)**, and the chained index diverges by **−43% to +93% with no consistent sign** (Appendix A). That argues for a multilateral estimator rather than being a quantity we can report.
+**Why not a chained index.** The natural elementary aggregate is a chained Jevons, and we do not report one. Because captures are irregular, **24–35% of within-gig links span more than one quarter**, with a longest span of **35 quarters**; a chained index books that entire multi-quarter change as a single-quarter change on top of growth already contributed by gigs observed in between, and the errors compound multiplicatively — **chain drift** [CITE-ivancic-diewert-fox-2011]. In our data the chained composite rises **+284.6%** against **+78.1%** drift-free. We do not present that gap as a measurement of drift, because decomposing it shows it is not one: the gap-spanning defect's share of the log gap ranges from **7% (audio) to 802% (translation)**, and the chained index diverges by **−43% to +93% with no consistent sign** (Appendix A). That argues for a multilateral estimator rather than being a quantity we can report.
 
 **The estimator.** For each ordered pair of quarters $(s,t)$ we form the direct bilateral Jevons comparison over the gigs matched in both,
 
@@ -86,7 +86,7 @@ $$\ln I^c_t = \frac{1}{|L_{c,t}|} \sum_{\ell \in L_{c,t}} \left( \ln P_{0,\ell} 
 
 with $0$ the base quarter and $L_{c,t}$ the link quarters for which both legs are populated. This is **GEKS-Jevons** [CITE-ivancic-diewert-fox-2011], introduced to eliminate chain drift in high-frequency scanner data. Because each gig's level cancels inside the ratio, gigs at very different price points pool with no level term to estimate, and with no chain there is nothing along which error can accumulate. It is the appropriate multilateral choice here: we observe no quantities or expenditure shares, which rules out GEKS-Törnqvist and Geary–Khamis and leaves the unweighted Jevons bilateral the ILO CPI Manual recommends [CITE-ilo-cpi-manual-2004]. We use full-window rather than rolling-window estimation [CITE-krsinich-2016], this being a retrospective index with no published history to revise.
 
-**Estimation choices.** A quarter must contain at least 3 distinct gigs, a gig must appear in at least 2 quarters, and a bilateral must rest on at least **3 matched gigs** (`MIN_MATCH = 3`). That threshold is usually defended as buying precision at the cost of coverage; tested across eight values, **the trade-off does not exist in that form**. Precision is flat to within 0.2 percentage points across `MIN_MATCH` = 1…10 in the five dense categories, and raising it makes precision strictly *worse* in the thin ones, because the threshold does not add matched gigs to a comparison — it **deletes comparisons**. We keep 3 because lowering it to 1 would let a bilateral rest on a single gig; the composite is robust across the range (**+76.4% to +78.4%**). The thin-category problem is one of sample adequacy (§3.6), not of thresholds.
+**Estimation choices.** A quarter must contain at least 3 distinct gigs, a gig must appear in at least 2 quarters, and a bilateral must rest on at least **3 matched gigs** (`MIN_MATCH = 3`). That threshold is usually defended as buying precision at the cost of coverage; tested across eight values, **the trade-off does not exist in that form**. Precision is flat to within 0.2 percentage points across `MIN_MATCH` = 1…10 in the five dense categories, and raising it makes precision strictly *worse* in the thin ones, because the threshold does not add matched gigs to a comparison — it **deletes comparisons**. We keep 3 because lowering it to 1 would let a bilateral rest on a single gig; the composite is robust across the range (**+76.4% to +78.5%**). The thin-category problem is one of sample adequacy (§3.6), not of thresholds.
 
 **Splicing.** The panels are spliced at their earliest shared quarter, **2024Q3**, the composite re-based to 2020Q1 = 100 and aggregated as a weighted geometric mean, $\text{IPI}_t = \exp\left(\sum_c w_c \ln I^c_t \big/ \sum_c w_c\right)$.
 
@@ -106,12 +106,12 @@ A sample size is not interpretable on its own; what matters is precision relativ
 |---|---:|:--:|
 | Composite | ±3.7% | yes |
 | Design | ±4.8% | yes |
-| Marketing | ±7.7% | no |
-| Writing | ±8.3% | no |
-| Video | ±11.9% | no |
-| Audio | ±13.9% | no |
-| Coding | ±17.1% | no |
-| Translation | ±29.2% | no |
+| Marketing | ±7.2% | no |
+| Writing | ±7.9% | no |
+| Video | ±11.6% | no |
+| Audio | ±11.9% | no |
+| Coding | ±17.4% | no |
+| Translation | ±26.4% | no |
 
 Two features are easy to misread. **The composite passes while six of its seven components fail** — not a contradiction, but design's 0.706 weight propagating design's precision into the basket. And **coding fails worse than audio** (±17.1% vs ±13.9%) despite eight times the panel gigs, demonstrating that panel gigs are the wrong unit.
 

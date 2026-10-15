@@ -4,7 +4,7 @@ This appendix holds the detail Section 3 compresses. It is referenced from §3.4
 
 ### A.1 The chained-index decomposition (§3.4)
 
-The chained composite rises +283.0% over 2020Q1–2026Q1 against +78.4% for the drift-free estimate. We do not report that gap as a measurement of chain drift, because decomposing it on the production panel — separating the gap-spanning defect from genuine drift by re-estimating with links restricted to adjacent quarters — gives a defect share ranging from **7% (audio) to 802% (translation)**, exceeding 100% wherever the residual runs the other way. In two categories the residual does run the other way: with gap-spanning links removed the chained level lands *below* GEKS (coding 273.7 vs 312.8; translation 130.4 vs 227.8). Across the seven categories the chained index diverges from GEKS by **−43% to +93% with no consistent sign**. The honest statement is that a chained index on irregularly-archived data is unstable in both directions relative to a multilateral one.
+The chained composite rises +284.6% over 2020Q1–2026Q1 against +78.1% for the drift-free estimate. We do not report that gap as a measurement of chain drift, because decomposing it on the production panel — separating the gap-spanning defect from genuine drift by re-estimating with links restricted to adjacent quarters — gives a defect share ranging from **7% (audio) to 802% (translation)**, exceeding 100% wherever the residual runs the other way. In two categories the residual does run the other way: with gap-spanning links removed the chained level lands *below* GEKS (coding 273.7 vs 312.8; translation 130.4 vs 227.8). Across the seven categories the chained index diverges from GEKS by **−43% to +93% with no consistent sign**. The honest statement is that a chained index on irregularly-archived data is unstable in both directions relative to a multilateral one.
 
 ### A.1b The extraction cascade, by method share (§3.2)
 
@@ -21,7 +21,7 @@ Fiverr's markup changed twice over the window, so the extractor is a cascade of 
 
 ### A.2 The `MIN_MATCH` sweep (§3.4)
 
-Eight values tested. In the five dense categories precision is flat to within 0.2 percentage points across `MIN_MATCH` = 1…10. In the thin ones raising the threshold makes precision strictly **worse**: audio's terminal band runs ±11.3% at 1, ±16.0% at 3, ±30.3% at 5 and ±34.1% at 6. The mechanism is that `MIN_MATCH` does not add matched gigs to a comparison — it **deletes comparisons**, shrinking the support of the average over link paths. The headline composite is robust across the range, **+76.4% to +78.4%** for `MIN_MATCH` = 1…6.
+Eight values tested. In the five dense categories precision is flat to within 0.2 percentage points across `MIN_MATCH` = 1…10. In the thin ones raising the threshold makes precision strictly **worse**: audio's terminal band runs ±11.3% at 1, ±16.0% at 3, ±30.3% at 5 and ±34.1% at 6. The mechanism is that `MIN_MATCH` does not add matched gigs to a comparison — it **deletes comparisons**, shrinking the support of the average over link paths. The headline composite is robust across the range, **+76.4% to +78.5%** for `MIN_MATCH` = 1…6.
 
 ### A.3 Precision versus sample size (§3.6)
 

@@ -66,24 +66,26 @@ All prices come from a single marketplace (Fiverr, described below), though the 
 
 Every series is set to `100` index points in the base quarter, **2020 Q1**, so a level records the cumulative percentage change in a category's posted prices since then rather than a dollar amount. A reading of 130 index points places current list prices 30% above their 2020 level, and the **Δ'20–'26** column reports that figure for the latest quarter, largest movers first. The chart opens on a single category, since a composite of one line is uninformative; selecting further categories rebuilds the weighted composite and draws it alongside them.
 
-What the levels track is the price of work that generative AI performs with increasing competence. In this pilot every category has risen even after adjusting for inflation, but the spread is wide — from **design at +23.2%** over six years to **audio at +154%**, with the composite at **+40.7%**. An AI effect would show up in the *ordering* of those categories rather than in the height of any one line — a category rising more slowly than its neighbours is where substitution is most plausible.
+What the levels track is the price of work that generative AI performs with increasing competence. In this pilot every category has risen even after adjusting for inflation, but the spread is wide — from **design at +23.2%** over six years to **audio at +171%**, with the composite at **+40.6%**. An AI effect would show up in the *ordering* of those categories rather than in the height of any one line — a category rising more slowly than its neighbours is where substitution is most plausible.
 
 **But this pilot cannot support that ordering, and we do not claim it.** We hold each category to a stated precision standard — within **±5%** at 95% confidence in the latest quarter — and **six of the seven miss it**:
 
 | Category | Real level, 2026Q1 | ±95% | Meets ±5%? |
 |---|---|---|---|
-| Translation | 236.3 | ±29.2% | no |
-| Coding | 197.3 | ±17.1% | no |
-| Audio | 254.2 | ±13.9% | no |
-| Video | 209.5 | ±11.9% | no |
-| Writing | 159.2 | ±8.3% | no |
-| Marketing | 232.2 | ±7.7% | no |
+| Translation* | 125.9 | ±26.4% | no |
+| Coding | 197.3 | ±17.4% | no |
+| Audio | 270.7 | ±11.9% | no |
+| Video | 209.5 | ±11.6% | no |
+| Writing | 159.2 | ±7.9% | no |
+| Marketing | 232.2 | ±7.2% | no |
 | Design | 123.2 | ±4.8% | yes |
-| **Composite** | 140.7 | ±3.7% | yes |
+| **Composite** | 140.6 | ±3.7% | yes |
 
-The composite passes while six of its seven components fail, which is not a contradiction: it is a review-weighted average and **design carries about 71% of the weight**, so the basket inherits design’s precision. The headline **+40.7%** is therefore on firmer ground than any individual category line except design’s.
+\* Translation is indexed from 2024Q3 = 100, not 2020Q1: once gigs the classifier had mislabelled (voice-overs, legal advice) were removed, its earlier history could not be linked.
 
-The consequence is concrete: the three categories at the top of the change column — audio (254.2 ±13.9%), translation (236.3 ±29.2%) and marketing (232.2 ±7.7%) — have intervals that overlap one another completely, so **which of them is “highest” is not something these data determine**. Only design is far enough from the rest, and precise enough, to be called apart from the pack. Sorting the table by Δ produces a ranking; that ranking is mostly sampling noise, and the **±95%** column is there so you can see how much.
+The composite passes while six of its seven components fail, which is not a contradiction: it is a review-weighted average and **design carries about 71% of the weight**, so the basket inherits design’s precision. The headline **+40.6%** is therefore on firmer ground than any individual category line except design’s.
+
+The consequence is concrete: the two categories at the top of the change column — audio (270.7 ±11.9%) and marketing (232.2 ±7.2%) — have intervals that overlap, so **which of them is “highest” is not something these data determine**. Only design is far enough from the rest, and precise enough, to be called apart from the pack. Sorting the table by Δ produces a ranking; that ranking is mostly sampling noise, and the **±95%** column is there so you can see how much.
 
 Two further reasons not to read the ordering as an AI signal. First, it is not what an exposure story predicts anyway: translation and audio are among the tasks language models handle most directly, yet they sit at the *top* of the change column. Second, price is only one margin. We separately measured whether sales rates or gig dormancy broke after ChatGPT’s release, and found **no detectable change in any category** — but with bounds so wide (±23% to ±66%) that the test settles nothing either way. Suppressing the six imprecise categories would leave a one-category site, so we publish them all with their bands showing and the standard stated. Reaching ±5% needs roughly 900 matched gigs for writing, 1,100 for design and 1,600 for video — and about 7,400 for coding, whose prices carry less information per gig — against the low hundreds collected here; that is a target for the full-scale collection, not something this pilot achieves, and one that has to be sized on the worst category rather than the average. The figures default to **real** (inflation-adjusted) terms and can be switched to nominal on the chart, so consult [inflation](#inflation) and [limitations](#caveats) before drawing a conclusion from a single number.
 
@@ -192,7 +194,7 @@ Everything above yields a price in **dollars**, and the dollar itself changed ov
 
 **Yes — the default view is inflation-adjusted.** The chart opens on the **Real** series, which divides the index by **CPI-U** (the US Consumer Price Index for All Urban Consumers, city average, all items, seasonally adjusted, published by the Bureau of Labor Statistics). A real reading answers “how much of an ordinary basket of goods does this gig cost?” rather than “how many dollars does it cost?”. The **Nominal** toggle shows the undeflated dollar series, with CPI-U drawn alongside it as a dashed grey line so the gap between the two is visible directly.
 
-The adjustment matters a great deal here. US consumer prices rose **26.8%** between 2020Q1 and 2026Q1, and the composite IPI rose **78.4%** in nominal terms over the same window — so roughly **half of the nominal increase is the dollar losing value**, not intelligence work becoming more expensive. In real terms the composite rise is **+40.7%**. Some categories change character substantially once deflated: design is **+56.1% nominal** but **+23.2% real** over six years, and writing goes from **+101.8%** to **+59.2%**.
+The adjustment matters a great deal here. US consumer prices rose **26.8%** between 2020Q1 and 2026Q1, and the composite IPI rose **78.1%** in nominal terms over the same window — so roughly **half of the nominal increase is the dollar losing value**, not intelligence work becoming more expensive. In real terms the composite rise is **+40.6%**. Some categories change character substantially once deflated: design is **+56.1% nominal** but **+23.2% real** over six years, and writing goes from **+101.8%** to **+59.2%**.
 
 Two caveats worth stating. First, deflation removes *general* inflation and nothing else — it is not a control for sellers raising prices as they accumulate reviews and reputation, for shifts in Fiverr's seller mix, or for the fact that a matched-model index follows surviving gigs rather than new entrants. Those are separate corrections. Second, the BLS did not publish a CPI-U figure for **October 2025**, so the 2025Q4 deflator interpolates that one month from its neighbours; the quarter is flagged in the underlying data and in the chart tooltip.
 
@@ -220,7 +222,7 @@ The interface also opens up the material underneath the composite. Each category
 
 - **Pilot scale.** The figures rest on a sample of sellers rather than the whole marketplace, and are best read as indicative rather than settled.
 
-- **Chain drift is corrected, but the correction is itself an estimate.** The published series is the drift-free GEKS-Jevons index, not the chained one, which is why the levels here are far below what a naive chained construction reports (composite `+78.4%` nominal against `+282.9%` chained). Different drift-free estimators still disagree with one another by several index points in the thinner categories, so the *direction* of movement and the *ordering* across categories carry more weight than any absolute magnitude.
+- **Chain drift is corrected, but the correction is itself an estimate.** The published series is the drift-free GEKS-Jevons index, not the chained one, which is why the levels here are far below what a naive chained construction reports (composite `+78.1%` nominal against `+284.6%` chained). Different drift-free estimators still disagree with one another by several index points in the thinner categories, so the *direction* of movement and the *ordering* across categories carry more weight than any absolute magnitude.
 
 - **Sellers reprice as they build a reputation.** A gig's price rises with its accumulated review count independently of anything happening in the wider market: within the same gig, and after absorbing every platform-wide shock, a doubling of reviews is associated with a price roughly **7%** higher, and reputation accumulation of this kind accounts for something like **40%** of the within-gig price growth in the panel. Part of what the index records is therefore sellers ageing rather than intelligence work repricing. This cannot simply be subtracted out, because review counts are cumulative *sales* — if AI suppressed demand, review growth would slow too, and adjusting for reviews would absorb some of the very effect the index exists to measure.
 
