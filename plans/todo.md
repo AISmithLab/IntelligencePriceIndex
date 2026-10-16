@@ -2,6 +2,8 @@
 
 ## Active
 
+- [ ] **Orders in Queue — scale the step 97 pilot** (2026-10-16, `code/97-orders-in-queue.py`, `runs/orders-in-queue/pilot.md`). The field validates as demand (rho +0.53 with next-quarter review growth) and translation's queue falls 10-14% vs design from 2023Q2 with flat pre-trends. Next: run `--tag all` on the seven categories; exposure x post DiD on log(1+queue) and P(queue>0) with step 76's gates and wild-cluster p; separate demand from throughput (delivery days from step 89, review growth). Decide afterwards whether it enters §4.5/§4.8 as the first quantity margin with a break.
+
 - [ ] **SUBMISSION BLOCKER, 2 DAYS OUT (2026-09-08) — the citation blockers are the only thing between paper 1 and submittable.** Everything else on the paper is folded in and rendered (`drafts/draft-2026-09-08.html`, 24,555 words, number-checker passing). Two items, both in §2, both one-line reviewer kills: (1) **`related-work.test.md` R16** — seven citations remain UNVERIFIED (`ainsworth-nelson-2004`, `piazzesi-schneider-2016` (published 2020), `guha-2024` (NeurIPS 2023), `whalley-2024`, and three untraceable platform statistics). Each must be verified, replaced, or its sentence cut. (2) **§2.2 claims a Wayback literature and cites three papers that never used a web archive** — Cavallo & Rigobon is the Billion Prices Project (live prospective scraping; also miscited, it is JEP **30(2)**, 2016, 151-178). Replace with Arora, Li, Youtie & Shapira (2016), JASIST 67(8):1904-1915 and the CDX-sampling work (arXiv 2507.14752), and restate as *"web archives are rare in economics; the closest online-price work scrapes prospectively"* — a stronger originality claim than the current one. **Est. 2-4 hours. Do this first.**
 
 - [ ] **Before submission: a figure for §4.6.** The subsection carries an HTML placeholder only (`<!-- FIGURE: stacked-area chart of the five $50+ bands... -->`). `data/pilot/realised-value-series.csv` is built and `code/34-figures.py` is the existing figure path. Everything else in the paper has a rendered figure; this is the one gap a reviewer sees.
@@ -207,6 +209,7 @@
 - ~~Build Fiverr scraping pipeline (page-by-page)~~ — dropped 2026-03-21: replaced by bulk Wayback Machine archive download approach.
 
 ## Change Log
+- 2026-10-16: added the Orders-in-Queue item (step 97 pilot).
 - 2026-10-16: TD6 fixed and moved to Done; item 15's reputation numbers annotated with the re-run.
 - 2026-09-07 (night): added the realised-value item. 682k orders recovered from stored HTML with no new collection; the naive bucket-share read is an artefact and the corrected series is flat.
 - 2026-09-07 (late): corrected the 2026-window item. The "captures stop" claim came off half of one prefix; on 12 prefixes it is a 403 wall (up to 89.3%) with ~350-500 recoverable 2026Q3 gigs and still ~0 matched pairs. Wayback's block identified as a 429 rate limit, so the refresh is resumable.

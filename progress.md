@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-10-16 — step 97 pilot: "Orders in Queue" is a usable demand measure, and translation's queue breaks in 2023
+
+User asked whether the dataset has Fiverr's "orders in queue". No step extracted it, but stored pages carry it as
+`overview.gig.ordersInQueue` (next to the gig's own `ratingsCount`; visible text fallback in 2018). New
+`code/97-orders-in-queue.py` -> `data/pilot/queue-pilot.csv`, `runs/orders-in-queue/pilot.md`. Pilot: translation
++ design, all 70,759 balanced captures (7,807 gigs), 51 s.
+
+- Coverage 73% (2018, text only, cannot record 0), 92% (2019), ~100% 2020-2026. JSON and visible text agreed
+  on all 324 pages carrying both; one value per page. Median 1, p90 8-12, max 852.
+- **It measures demand.** Next-quarter review growth rises monotonically with queue (mean 12.8 at 0 -> 205.5
+  at >10); Spearman rho +0.53 pooled, +0.57 within quarter, +0.24 within gig.
+- **Translation vs design, gig-demeaned event study (2022Q3 = 0):** pre-period 0 of 11 quarters significant
+  (mean -0.008); **2023Q2-2024Q1 at -0.10 to -0.14 log points, all significant**, partial recovery 2024Q2-Q4
+  (2024Q4 -0.066*). Onset matches GPT-4 (2023-03) better than ChatGPT. Gig-paired means: translation 1.95 ->
+  1.66 (-15%), design 5.08 -> 6.05 (+19%).
+- Review growth over the same window points the same way (-0.05 to -0.09) but is too noisy to confirm
+  (pre-period swings, a +0.53 spike in 2024Q3) -- so throughput (AI letting translators clear queues faster)
+  is not yet ruled out.
+- Exploratory, two categories, survivor panel, not in the paper. Next: all seven categories with the
+  pre-registered exposure DiD and wild-cluster inference.
+
 ## 2026-10-16 — TD6 fixed: balanced-panel translation rebuilt, paper and data/real-prices updated
 
 User confirmed the per-quarter gig counts had been made after TD5 but before TD6, and approved finishing the TD6

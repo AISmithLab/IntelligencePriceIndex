@@ -1,0 +1,10 @@
+scanning 70,759 captures, 7,807 gigs
+wrote /home/exouser/IntelligencePriceIndex/data/pilot/queue-pilot.csv (70,759 rows)
+/home/exouser/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/exouser/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+/home/exouser/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/home/exouser/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
