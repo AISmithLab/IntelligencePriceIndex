@@ -1,5 +1,39 @@
 # Progress Log
 
+## 2026-10-16 — step 99: balanced-panel composite, 2020Q1-2024Q4, no headline inputs
+
+User asked for a composite built on the balanced panel only. `code/99-balanced-composite.py` takes step 98's seven
+category GEKS-Jevons indices and aggregates them as a fixed-weight geometric mean (the paper's formula). Headline
+weights (recent-panel gig shares, design 0.706) not used. Band = 1.96 x sqrt(sum w^2 se^2): categories are
+disjoint gig sets bootstrapped independently. Outputs `data/pilot/balanced-composite.csv`,
+`runs/balanced-composite/report.md`.
+
+- **Primary weights = sales proxy** (median price x reviews gained 2020Q1-2024Q4, per gig): design 0.290,
+  coding 0.194, writing 0.165, video 0.120, marketing 0.115, audio 0.106, translation 0.011. Balanced-panel gig
+  shares were rejected as primary because they are the sampling quotas, not the market; kept as robustness, with equal.
+- **2024Q4: +65.5% real [+62.0, +69.1], ±2.1%, +102.5% nominal; meets ±5% in all 19 quarters.** Equal weights
+  +57.4% (±2.3%), gig-share +61.7% (±2.5%). CPI-U +22.3%.
+- Not comparable with the headline (+40.6% real, but to 2026Q1 on a different frame, §3.7). Caveats: gig-level
+  (not seller-clustered) bootstrap and fixed weights, so the band excludes weight uncertainty. Not in the paper.
+- **Published** at user request: step 99 now also writes `data/real-prices/balanced-composite.csv` (identical, 60 rows,
+  3 weightings); README documents it and flags it as a new estimate, not a paper figure.
+
+## 2026-10-16 — step 98: broad-category trajectories 2020Q1-2024Q4 with 95% bands vs ±5% (post-TD6)
+
+User asked for each category's trajectory from 2020Q1 to 2024Q4 on the new data, with the 95% band and whether
+it meets ±5%. New `code/98-broad-trajectories.py` calls step 66's `build(level="category")` (balanced panel,
+GEKS-Jevons, 200 bootstrap draws, CPI-U) without touching `balanced-narrow-geks.csv` (step 66's `--broad` flag
+would overwrite it). Band = 1.96 x se_log, the site convention. Outputs `data/pilot/balanced-broad-trajectories.csv`
+(140 rows, nominal/real, exact band, `meets_5pct`) and `runs/broad-trajectories/report.md`. 34,967 gigs; pilot
+at 5 draws first.
+
+- 2024Q4 real (95% band, half-width): design +45.3% [+39.9, +50.9] ±3.8% **meets**; writing +69.1% ±4.3%
+  **meets**; video +59.4% ±5.2%; audio +70.2% ±5.8%; coding +99.9% ±6.0%; marketing +71.9% ±7.7%;
+  translation +4.5% [-3.6, +13.3] ±8.1%. CPI-U +22.3% over the window.
+- Only design and writing meet ±5% in all 19 quarters. Video 17 of 19, coding and translation 11, audio 10
+  (all through 2022Q3), marketing 1 (2020Q2 only). Bands widen with distance from the base, so most misses are 2023-24.
+- Translation is the only category whose real band includes zero at 2024Q4. Not in the paper.
+
 ## 2026-10-16 — step 97 pilot: "Orders in Queue" is a usable demand measure, and translation's queue breaks in 2023
 
 User asked whether the dataset has Fiverr's "orders in queue". No step extracted it, but stored pages carry it as
