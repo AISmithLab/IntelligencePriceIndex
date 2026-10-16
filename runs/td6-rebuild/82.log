@@ -1,0 +1,96 @@
+# The 2025-2026 backfill, measured on collected prices
+
+Matched gigs per (category, adjacent quarter pair): a gig counts for a pair only if a basic price extracted in **both** quarters. `before` is the balanced + expanded panels; `after` adds `refresh2025-prices.csv`.
+
+## Inputs
+
+| panel | rows | with a basic price | gigs |
+|---|---:|---:|---:|
+| before (balanced + expanded) | 375,413 | 375,413 | 55,695 |
+| refresh 2025-2026 | 35,924 | 35,924 | 24,345 |
+
+Gigs the refresh adds that the panel did not have: **21,768**. Rows whose gig carried no manifest category: 3,846 before, 331 refresh (counted as `uncategorized`).
+
+## Matched pairs, 2024Q2 onward (target 1,200)
+
+| pair | audio | coding | design | marketing | translation | video | writing |
+|---|---|---|---|---|---|---|---|
+| 2024Q2->2024Q3 | 1,423+ | 1,301+ | 1,427+ | **1,180** | **392** | 1,215+ | 1,224+ |
+| 2024Q3->2024Q4 | **929** | 4,660+ | 6,411+ | 1,820+ | **385** | 2,511+ | 4,754+ |
+| 2024Q4->2025Q1 | **48** | **537** | **1,037** | **272->274** | **36** | **218** | **421** |
+| 2025Q1->2025Q2 | **3->4** | **145->165** | **301->329** | **41->46** | **9** | **50->51** | **97->98** |
+| 2025Q2->2025Q3 | **6** | **76->86** | **171->195** | **29->31** | **2** | **28->32** | **50->56** |
+| 2025Q3->2025Q4 | **6->11** | **55->73** | **289->337** | **40->42** | **3** | **11->21** | **39->54** |
+| 2025Q4->2026Q1 | **7->9** | **59->70** | **301->334** | **60->62** | **4** | **31->38** | **50->62** |
+
+`+` marks a pair at or above the 1,200 target; bold marks a pair below it.
+
+## Per category, over the reported pairs
+
+| category | before | after | delta | x | pairs improved | pairs at target |
+|---|---:|---:|---:|---:|---:|---:|
+| audio | 2,422 | 2,430 | +8 | 1.00x | 3/7 | 1/7 |
+| coding | 6,833 | 6,892 | +59 | 1.01x | 4/7 | 2/7 |
+| design | 9,937 | 10,070 | +133 | 1.01x | 4/7 | 2/7 |
+| marketing | 3,442 | 3,455 | +13 | 1.00x | 5/7 | 1/7 |
+| translation | 831 | 831 | +0 | 1.00x | 0/7 | 0/7 |
+| video | 4,064 | 4,086 | +22 | 1.01x | 4/7 | 2/7 |
+| writing | 6,635 | 6,669 | +34 | 1.01x | 4/7 | 2/7 |
+| **all** | **34,164** | **34,433** | **+269** | **1.01x** | | |
+
+## Why the pairs barely moved: the refresh is one-shot captures
+
+| quarters a gig is priced in | gigs |
+|---:|---:|
+| 1 | 22,947 |
+| 2 | 1,101 |
+| 3 | 229 |
+| 4 | 46 |
+| 5 | 21 |
+| 6 | 1 |
+
+**22,947 of 24,345 (94.3%) of the refresh's gigs are captured in exactly one quarter**, and only **884** carry an adjacent pair inside the refresh at all. A gig seen once cannot be differenced at any price.
+
+The manifest holds 24,557 gigs and **893** of them have an adjacent pair, against the 884 recovered. The shortfall is download and extraction loss; the ceiling is the index, not the collection.
+
+## The archive stopped revisiting, and that is the second loss
+
+| year | gigs captured | with an adjacent-quarter pair | share |
+|---|---:|---:|---:|
+| 2010 | 14 | 11 | 78.6% |
+| 2011 | 219 | 35 | 16.0% |
+| 2012 | 695 | 336 | 48.3% |
+| 2013 | 6,389 | 5,448 | 85.3% |
+| 2014 | 7,047 | 5,692 | 80.8% |
+| 2015 | 6,143 | 1,699 | 27.7% |
+| 2016 | 9,231 | 4,800 | 52.0% |
+| 2017 | 3,866 | 2,350 | 60.8% |
+| 2018 | 15,276 | 11,323 | 74.1% |
+| 2019 | 50,507 | 41,212 | 81.6% |
+| 2020 | 87,884 | 70,461 | 80.2% |
+| 2021 | 108,706 | 82,387 | 75.8% |
+| 2022 | 100,068 | 76,501 | 76.4% |
+| 2023 | 57,931 | 43,665 | 75.4% |
+| 2024 | 60,009 | 44,557 | 74.3% |
+| 2025 | 8,132 | 3,583 | 44.1% |
+| 2026 | 1,482 | 512 | 34.5% |
+
+The revisit rate is flat at 74-82% for 2018-2024 and then breaks. Matched-model supply is the product of the two columns, so the right edge loses twice over: fewer gigs, each less likely to be seen again.
+
+## Where each category's series can still be differenced
+
+A pair with zero matched gigs is not thin, it is unidentified. Last pair with any matched gig, and with at least 30:
+
+| category | last pair >0 (before -> after) | last pair >=30 (before -> after) |
+|---|---|---|
+| audio | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2024Q4->2025Q1 -> 2024Q4->2025Q1 |
+| coding | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
+| design | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
+| marketing | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
+| translation | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2024Q4->2025Q1 -> 2024Q4->2025Q1 |
+| video | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
+| writing | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
+
+
+Written to /home/exouser/IntelligencePriceIndex/runs/cdx-refresh-2025/supply-realised.md
+82 exit 0 took 5s

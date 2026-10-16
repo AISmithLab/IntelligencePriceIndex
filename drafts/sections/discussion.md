@@ -14,7 +14,7 @@ The single most counterintuitive result is that the price of cognitive services 
 
 **Reading 1: composition within the survivor set.** The index follows continuing gigs. If AI displaced the low end of each category, surviving gigs would be systematically more complex over time, and a matched-model index reads that as price growth. Our matching holds the gig identifier fixed, which blocks entry-mix effects but not a *gig* repositioning upmarket while keeping its URL.
 
-**Reading 2: reputation, not price.** Within-gig prices rise +7.33% per doubling of reviews (169,337 gig-quarters, $t = 25.9$), and the reputation-adjusted composite is +39.7% against +79.0% raw. A large share of what the index calls price growth is a gig ageing on the platform. Because reviews are cumulative sales, this reading and an AI-suppressed-demand reading are entangled by construction—which is why we publish a band.
+**Reading 2: reputation, not price.** Within-gig prices rise +7.36% per doubling of reviews (167,113 gig-quarters, $t = 25.9$), and the reputation-adjusted composite is +39.7% against +79.0% raw. A large share of what the index calls price growth is a gig ageing on the platform. Because reviews are cumulative sales, this reading and an AI-suppressed-demand reading are entangled by construction—which is why we publish a band.
 
 **Reading 3: general inflation and platform maturation.** CPI-U accounts for roughly half the nominal rise, and Fiverr's transition from a "\$5 for everything" marketplace to a professional services platform is visible in the raw medians (Section 4.1). Both are real and neither is about AI.
 

@@ -1,0 +1,42 @@
+narrow GEKS-Jevons, 2020Q1=100 .. 2024Q4, 34,967 gigs, 200 bootstrap draws
+CPI-U (SA) over the same window: +22.3%
+
+category                     gigs   q  dens   nominal      real
+----------------------------------------------------------------
+Music Production            3,535  20  1.00   +124.0%    +83.1%
+Podcast & Sound               593  20  1.00    +78.4%    +45.9%
+Voiceover                   1,690  20  1.00    +98.9%    +62.6%
+Audio · other                 444  20  1.00    +90.9%    +56.0%
+Automation & Bots             343  20  1.00   +196.2%   +142.1%
+Backend & API                 554  20  1.00   +170.2%   +120.9%
+Data/ML & AI                  203  20  1.00   +111.3%    +72.8%
+Mobile App                    307  20  1.00   +158.0%   +110.9%
+Web Dev                     2,446  20  1.00   +144.6%   +100.0%
+Coding · other                966  20  1.00   +117.4%    +77.8%
+Illustration                  620  20  1.00    +46.7%    +19.9%
+Logo & Brand                1,173  20  1.00    +59.2%    +30.1%
+Print & Merch                 764  20  1.00    +84.4%    +50.7%
+Social Graphics               209  20  1.00   +141.5%    +97.4%
+3D & Product                  223  20  1.00    +73.2%    +41.6%
+UI/UX & Web                   121  20  1.00   +198.4%   +143.9%
+Design · other                969  20  1.00    +90.9%    +56.1%
+Ads & PPC                     846  20  1.00   +186.8%   +134.4%
+Email & Funnels               657  20  1.00   +203.7%   +148.3%
+SEO                         1,919  20  1.00    +70.4%    +39.3%
+Social Media                2,293  20  1.00    +88.3%    +53.9%
+Marketing · other           2,249  20  1.00   +132.3%    +89.9%
+Subtitles & Transcribe      1,387  20  1.00    +26.1%     +3.1%
+Translation                 2,021  20  1.00    +28.8%     +5.3%
+Animation                   1,498  20  1.00    +90.2%    +55.5%
+Motion & Intros               254  20  1.00    +78.8%    +46.2%
+Video Editing                 348  20  1.00    +86.1%    +52.1%
+Video · other               2,616  20  1.00   +100.6%    +64.0%
+Content & SEO                 691  20  1.00   +102.3%    +65.4%
+Copywriting                   172  20  1.00   +111.7%    +73.1%
+eBook & Ghostwrite            901  20  1.00   +105.2%    +67.8%
+Editing & Proofing            834  20  1.00   +109.8%    +71.5%
+Resume & Bio                  223  20  1.00   +122.2%    +81.7%
+Writing · other               898  20  1.00   +105.8%    +68.2%
+
+Wrote /home/exouser/IntelligencePriceIndex/data/pilot/balanced-narrow-geks.csv (680 rows)
+66 took 143.85s

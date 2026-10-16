@@ -98,27 +98,27 @@ The specification was $\ln I^c_t = \alpha_c + \beta_c \ln (A^c_t + 1) + \varepsi
 | 3 | The 500 sellers are a *stratified* sample | Both draws are simple uniform random samples from the qualifying pool, seeded for reproducibility. A stratification by snapshot count was written for an earlier sampling design and did not survive into the production pipeline | None on any estimate; the description was wrong |
 | 4 | The gig-quarter panel is 10.9% filled | **14.9%** filled on gigs × 25 quarters, and 15.0% before the non-gig exclusion. The earlier figure could not be reproduced under any definition we could recover | None. Bears only on how much the TPD alternative imputes |
 | 5 | Reputation elasticity $\beta = +0.103$, $t = 10.19$ | $\beta = +0.1068$, $t = 5.32$. The earlier standard error was unclustered on first differences drawn from the same gigs; gig-clustered errors are 1.93× larger | The coefficient survives comfortably; the $t$-statistic does not. We report the clustered one |
-| 7 | The exposure null is a power problem, not an identification problem | On 169,337 gig-quarters the estimate is still below its MDE, and the design now **fails** parallel trends and reverses sign against a linear trend — gates it passed at pilot scale | **Revised.** §4.8, §6.1 and §7 now state that more data of the same kind does not resolve this, and that a control group is the binding requirement |
+| 7 | The exposure null is a power problem, not an identification problem | On 167,113 gig-quarters the estimate is still below its MDE, and the design now **fails** parallel trends and reverses sign against a linear trend — gates it passed at pilot scale | **Revised.** §4.8, §6.1 and §7 now state that more data of the same kind does not resolve this, and that a control group is the binding requirement |
 | 6 | A real −21% fall in cognitive-labor prices in 2025, from a composite peak of 312 | An artifact of two defects now removed: the naive chained series (§3.4) and the non-gig section pages (§3.2) | **Retracted.** This is the only correction that changed a published finding; §4.7 gives the full before-and-after |
 
 One further defect is recorded here because it affects any future row-level use of these data, though it enters no result. The `rating` column carries a scale error: **217 historical rows report values in (5, 10]**, because pre-2019 Fiverr displayed a 10-point scale that the extractor wrote into the same column as the 5-point one. It does not touch the index, which uses prices only, and it does not move the hedonic result of §3.8 — halving those rows, dropping them, and leaving them raw give $b_1 = +0.310$, $+0.311$ and $+0.302$, since only 167 affected rows survive to a gig's latest capture — but it is not yet fixed upstream.
 
 ### A.8 The pre-registered exposure model: full diagnostics (§3.8, §4.8)
 
-Balanced panel, 169,337 gig-quarter observations across 15,676 gigs, 2019Q4–2024Q4, real terms, gig-clustered standard errors.
+Balanced panel, 167,113 gig-quarter observations across 15,333 gigs, 2019Q4–2024Q4, real terms, gig-clustered standard errors.
 
 | Gate | Specified test | Result | Verdict |
 |---|---|---|:--|
-| A | Exposure interacted with each pre-launch quarter; all insignificant | 4 of 11 significant (Exp × 2021Q3 −0.1455, $t$ −2.51; 2021Q4 −0.1445, $t$ −2.40; 2022Q1 −0.1510, $t$ −2.48; 2022Q2 −0.1326, $t$ −2.17) | **FAIL** |
-| B | Coefficient stable when Exposure × linear trend is added | Moves −0.0333 ($t$ −1.35) → **+0.0358** ($t$ +1.38); Exposure × trend is −0.00804 ($t$ −2.24) | **FAIL — sign flips** |
-| C | Placebo break inside the pre-period returns null | 2021Q2 break: −0.0595 ($t$ −1.78), 93,247 obs | PASS |
-| D | Estimate survives first differencing | +0.0081 ($t$ +0.59), 153,661 within-gig changes | **FAIL** |
-| E | Inference clustered on gig | Clustered SE 0.0246 vs unclustered 0.0121 — a 2.03× inflation | reported clustered |
-| F | Point estimate exceeds the minimum detectable effect | MDE at 80% power = 0.0689 log points; $|\hat\theta|$ = 0.0333 | **below MDE** |
+| A | Exposure interacted with each pre-launch quarter; all insignificant | 1 of 11 significant (Exp × 2021Q4 −0.1207, $t$ −1.96) | **FAIL** |
+| B | Coefficient stable when Exposure × linear trend is added | Moves −0.0199 ($t$ −0.78) → **+0.0199** ($t$ +0.74); Exposure × trend is −0.00458 ($t$ −1.23) | **FAIL — sign flips** |
+| C | Placebo break inside the pre-period returns null | 2021Q2 break: −0.0518 ($t$ −1.51), 92,082 obs | PASS |
+| D | Estimate survives first differencing | +0.0095 ($t$ +0.64), 151,780 within-gig changes | **FAIL** |
+| E | Inference clustered on gig | Clustered SE 0.0256 vs unclustered 0.0125 — a 2.04× inflation | reported clustered |
+| F | Point estimate exceeds the minimum detectable effect | MDE at 80% power = 0.0717 log points; $|\hat\theta|$ = 0.0199 | **below MDE** |
 
-Window extension (pooling the 2025 archival refresh, 172,934 obs / 15,864 gigs, through 2025Q4): $\hat\theta$ = **−0.0324** ($t$ −1.31); gate B moves it to +0.0332 ($t$ +1.29); MDE 0.0691. Every gate returns the same verdict as on the shorter window.
+Window extension (pooling the 2025 archival refresh, 170,681 obs / 15,516 gigs, through 2025Q4): $\hat\theta$ = **−0.0172** ($t$ −0.67); gate B moves it to +0.0157 ($t$ +0.59); MDE 0.0720. Every gate returns the same verdict as on the shorter window.
 
-Secondary exploratory specification (market-measured AI-branded share, category × quarter, **not pre-registered**): +1.2888 ($t$ +11.23), implying +13.76% per 10pp. With one linear trend per category: **+0.0727 ($t$ +0.84)**, implying +0.73%. It survives first differencing (+0.1434, $t$ +2.03), which is why the trend race rather than differencing is the decisive test here.
+Secondary exploratory specification (market-measured AI-branded share, category × quarter, **not pre-registered**): +1.3026 ($t$ +11.27), implying +13.91% per 10pp. With one linear trend per category: **+0.0901 ($t$ +1.03)**, implying +0.90%. It survives first differencing (+0.1409, $t$ +1.99), which is why the trend race rather than differencing is the decisive test here.
 
 ### A.9 Realised order value, full series (§4.6)
 
@@ -146,44 +146,43 @@ All 17 quarters; §4.6 shows alternate quarters. Conditioned on orders of \$50 o
 
 Recovered from 397,698 stored captures, deduplicated on `encrypted_order_id`: **681,668** distinct orders, **617,456** in this window. Field coverage — the share of orders carrying any price band — runs 54–67% through 2022–2023, 94% at 2024Q2, and 100% from 2024Q3 onward; the apparent sub-\$50 share tracks that coverage almost exactly, which is the artifact §4.6 describes.
 
-### A.10 The 35 narrow categories, real terms (§4.3)
+### A.10 The 34 narrow categories, real terms (§4.3)
 
-Each cell clears all 20 quarters at full pair density on the balanced panel. Deflated to 2020Q1 dollars with CPI-U. Sorted by real change; 33 of 35 intervals exclude zero.
+Each cell clears all 20 quarters at full pair density on the balanced panel. Deflated to 2020Q1 dollars with CPI-U. Sorted by real change; 32 of 34 intervals exclude zero. (Earlier drafts listed 35: the 35th, `translation · other`, held gigs misclassified as translation by a language-name keyword rule and is empty once translation is classified on what the gig does.)
 
 | Narrow category | Real Δ 2020Q1→2024Q4 | 95% CI | Excludes 0 |
 |---|---:|---|:--:|
-| translation · subtitle | +3.1% | [-11.6%, +20.3%] | **no** |
-| translation · translation | +5.5% | [-2.4%, +14.1%] | **no** |
-| design · illustration | +19.9% | [+8.2%, +32.9%] | yes |
-| design · logo brand | +30.2% | [+22.0%, +38.9%] | yes |
-| marketing · seo | +38.7% | [+23.1%, +56.4%] | yes |
-| design · threed product | +41.6% | [+22.8%, +63.2%] | yes |
-| video · motion intro | +45.9% | [+23.0%, +73.1%] | yes |
-| audio · podcast | +50.2% | [+20.5%, +87.3%] | yes |
+| translation · subtitle | +3.1% | [-13.5%, +22.9%] | **no** |
+| translation · translation | +5.3% | [-3.0%, +14.3%] | **no** |
+| design · illustration | +19.9% | [+8.0%, +33.1%] | yes |
+| design · logo brand | +30.2% | [+22.1%, +38.8%] | yes |
+| marketing · seo | +39.3% | [+23.1%, +57.6%] | yes |
+| design · threed product | +41.6% | [+24.5%, +61.0%] | yes |
+| audio · podcast | +45.9% | [+17.1%, +81.7%] | yes |
+| video · motion intro | +46.2% | [+23.1%, +73.7%] | yes |
 | design · print merch | +50.7% | [+41.7%, +60.4%] | yes |
-| translation · other | +51.2% | [+33.3%, +71.5%] | yes |
-| video · video editing | +53.2% | [+25.1%, +87.5%] | yes |
-| marketing · social media | +53.8% | [+37.0%, +72.7%] | yes |
-| video · animation | +56.0% | [+44.6%, +68.3%] | yes |
-| design · other | +56.1% | [+43.9%, +69.3%] | yes |
-| audio · other | +61.7% | [+21.0%, +116.1%] | yes |
-| video · other | +63.4% | [+52.8%, +74.8%] | yes |
-| writing · content seo | +65.4% | [+48.3%, +84.4%] | yes |
-| audio · voiceover | +66.2% | [+45.8%, +89.3%] | yes |
-| writing · ebook book | +67.8% | [+54.7%, +82.0%] | yes |
-| writing · other | +68.2% | [+54.3%, +83.5%] | yes |
-| writing · editing | +71.5% | [+55.7%, +88.9%] | yes |
-| coding · data ml ai | +72.8% | [+11.9%, +166.6%] | yes |
-| writing · copywriting | +73.1% | [+40.9%, +112.6%] | yes |
-| coding · other | +77.8% | [+55.0%, +103.8%] | yes |
-| writing · resume bio | +81.7% | [+54.6%, +113.5%] | yes |
-| audio · music prod | +83.4% | [+69.7%, +98.3%] | yes |
-| marketing · other | +89.7% | [+63.7%, +119.8%] | yes |
-| design · social graphics | +97.4% | [+68.6%, +131.1%] | yes |
-| coding · web dev | +100.0% | [+85.1%, +116.1%] | yes |
-| coding · mobile app | +110.9% | [+63.5%, +172.2%] | yes |
-| coding · backend api | +120.9% | [+78.4%, +173.6%] | yes |
-| coding · automation bot | +142.1% | [+68.3%, +248.2%] | yes |
-| design · ui ux web | +143.9% | [+82.6%, +225.9%] | yes |
-| marketing · ads ppc | +144.1% | [+97.0%, +202.4%] | yes |
-| marketing · email funnel | +155.1% | [+83.6%, +254.4%] | yes |
+| video · video editing | +52.1% | [+24.5%, +85.9%] | yes |
+| marketing · social media | +53.9% | [+36.5%, +73.6%] | yes |
+| video · animation | +55.5% | [+43.2%, +68.8%] | yes |
+| audio · other | +56.0% | [+15.9%, +110.1%] | yes |
+| design · other | +56.1% | [+44.5%, +68.6%] | yes |
+| audio · voiceover | +62.6% | [+48.4%, +78.1%] | yes |
+| video · other | +64.0% | [+52.9%, +75.8%] | yes |
+| writing · content seo | +65.4% | [+49.4%, +83.0%] | yes |
+| writing · ebook book | +67.8% | [+54.9%, +81.7%] | yes |
+| writing · other | +68.2% | [+54.8%, +82.9%] | yes |
+| writing · editing | +71.5% | [+55.2%, +89.4%] | yes |
+| coding · data ml ai | +72.8% | [+6.9%, +179.1%] | yes |
+| writing · copywriting | +73.1% | [+43.5%, +108.8%] | yes |
+| coding · other | +77.8% | [+55.8%, +102.9%] | yes |
+| writing · resume bio | +81.7% | [+54.5%, +113.6%] | yes |
+| audio · music prod | +83.1% | [+68.3%, +99.2%] | yes |
+| marketing · other | +89.9% | [+67.1%, +115.8%] | yes |
+| design · social graphics | +97.4% | [+66.7%, +133.7%] | yes |
+| coding · web dev | +100.0% | [+86.3%, +114.7%] | yes |
+| coding · mobile app | +110.9% | [+62.9%, +173.1%] | yes |
+| coding · backend api | +120.9% | [+81.2%, +169.4%] | yes |
+| marketing · ads ppc | +134.4% | [+85.6%, +196.1%] | yes |
+| coding · automation bot | +142.1% | [+64.7%, +255.9%] | yes |
+| design · ui ux web | +143.9% | [+79.7%, +231.1%] | yes |
+| marketing · email funnel | +148.3% | [+75.3%, +251.7%] | yes |

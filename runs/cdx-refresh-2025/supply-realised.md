@@ -11,15 +11,17 @@ Matched gigs per (category, adjacent quarter pair): a gig counts for a pair only
 
 Gigs the refresh adds that the panel did not have: **21,768**. Rows whose gig carried no manifest category: 3,846 before, 331 refresh (counted as `uncategorized`).
 
-## Matched pairs, 2024Q4 onward (target 1,200)
+## Matched pairs, 2024Q2 onward (target 1,200)
 
-| pair | accounting_consulting | audio | coding | customer_service_va | data_analysis | data_entry | design | ecommerce_ops | education_tutoring | engineering_cad | gaming | legal | lifestyle_control | marketing | photography | social_engagement | translation | uncategorized | video | writing |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2024Q4->2025Q1 | **0** | **48** | **537** | **0** | **0** | **0** | **1,037** | **0** | **0** | **0** | **0** | **0** | **0** | **272->274** | **0** | **0** | **37** | **163** | **217** | **421** |
-| 2025Q1->2025Q2 | **0->1** | **3->4** | **145->165** | **0** | **0** | **0->22** | **301->329** | **0->4** | **0->3** | **0->3** | **0->9** | **0** | **0** | **41->46** | **0->27** | **0->7** | **9** | **447->507** | **50->51** | **97->98** |
-| 2025Q2->2025Q3 | **0->1** | **5** | **76->86** | **0->1** | **0->2** | **0->10** | **171->195** | **0->4** | **0->1** | **0->2** | **0->3** | **0->1** | **0->1** | **29->31** | **0->18** | **0->2** | **3** | **334->370** | **28->32** | **50->56** |
-| 2025Q3->2025Q4 | **0->2** | **5->10** | **55->73** | **0** | **0->3** | **0->3** | **289->337** | **0->2** | **0->1** | **0->3** | **0->10** | **0->2** | **0->3** | **39->41** | **0->9** | **0->6** | **5** | **255->300** | **11->21** | **39->54** |
-| 2025Q4->2026Q1 | **0->1** | **6->8** | **59->70** | **0** | **0->4** | **0->9** | **301->334** | **0->4** | **0** | **0->4** | **0->13** | **0->1** | **0** | **59->61** | **0->8** | **0->9** | **6** | **115->160** | **31->38** | **50->62** |
+| pair | audio | coding | design | marketing | translation | video | writing |
+|---|---|---|---|---|---|---|---|
+| 2024Q2->2024Q3 | 1,423+ | 1,301+ | 1,427+ | **1,180** | **392** | 1,215+ | 1,224+ |
+| 2024Q3->2024Q4 | **929** | 4,660+ | 6,411+ | 1,820+ | **385** | 2,511+ | 4,754+ |
+| 2024Q4->2025Q1 | **48** | **537** | **1,037** | **272->274** | **36** | **218** | **421** |
+| 2025Q1->2025Q2 | **3->4** | **145->165** | **301->329** | **41->46** | **9** | **50->51** | **97->98** |
+| 2025Q2->2025Q3 | **6** | **76->86** | **171->195** | **29->31** | **2** | **28->32** | **50->56** |
+| 2025Q3->2025Q4 | **6->11** | **55->73** | **289->337** | **40->42** | **3** | **11->21** | **39->54** |
+| 2025Q4->2026Q1 | **7->9** | **59->70** | **301->334** | **60->62** | **4** | **31->38** | **50->62** |
 
 `+` marks a pair at or above the 1,200 target; bold marks a pair below it.
 
@@ -27,27 +29,14 @@ Gigs the refresh adds that the panel did not have: **21,768**. Rows whose gig ca
 
 | category | before | after | delta | x | pairs improved | pairs at target |
 |---|---:|---:|---:|---:|---:|---:|
-| accounting_consulting | 0 | 5 | +5 | n/a | 4/5 | 0/5 |
-| audio | 67 | 75 | +8 | 1.12x | 3/5 | 0/5 |
-| coding | 872 | 931 | +59 | 1.07x | 4/5 | 0/5 |
-| customer_service_va | 0 | 1 | +1 | n/a | 1/5 | 0/5 |
-| data_analysis | 0 | 9 | +9 | n/a | 3/5 | 0/5 |
-| data_entry | 0 | 44 | +44 | n/a | 4/5 | 0/5 |
-| design | 2,099 | 2,232 | +133 | 1.06x | 4/5 | 0/5 |
-| ecommerce_ops | 0 | 14 | +14 | n/a | 4/5 | 0/5 |
-| education_tutoring | 0 | 5 | +5 | n/a | 3/5 | 0/5 |
-| engineering_cad | 0 | 12 | +12 | n/a | 4/5 | 0/5 |
-| gaming | 0 | 35 | +35 | n/a | 4/5 | 0/5 |
-| legal | 0 | 4 | +4 | n/a | 3/5 | 0/5 |
-| lifestyle_control | 0 | 4 | +4 | n/a | 2/5 | 0/5 |
-| marketing | 440 | 453 | +13 | 1.03x | 5/5 | 0/5 |
-| photography | 0 | 62 | +62 | n/a | 4/5 | 0/5 |
-| social_engagement | 0 | 24 | +24 | n/a | 4/5 | 0/5 |
-| translation | 60 | 60 | +0 | 1.00x | 0/5 | 0/5 |
-| uncategorized | 1,314 | 1,500 | +186 | 1.14x | 4/5 | 0/5 |
-| video | 337 | 359 | +22 | 1.07x | 4/5 | 0/5 |
-| writing | 657 | 691 | +34 | 1.05x | 4/5 | 0/5 |
-| **all** | **5,846** | **6,520** | **+674** | **1.12x** | | |
+| audio | 2,422 | 2,430 | +8 | 1.00x | 3/7 | 1/7 |
+| coding | 6,833 | 6,892 | +59 | 1.01x | 4/7 | 2/7 |
+| design | 9,937 | 10,070 | +133 | 1.01x | 4/7 | 2/7 |
+| marketing | 3,442 | 3,455 | +13 | 1.00x | 5/7 | 1/7 |
+| translation | 831 | 831 | +0 | 1.00x | 0/7 | 0/7 |
+| video | 4,064 | 4,086 | +22 | 1.01x | 4/7 | 2/7 |
+| writing | 6,635 | 6,669 | +34 | 1.01x | 4/7 | 2/7 |
+| **all** | **34,164** | **34,433** | **+269** | **1.01x** | | |
 
 ## Why the pairs barely moved: the refresh is one-shot captures
 
@@ -94,23 +83,10 @@ A pair with zero matched gigs is not thin, it is unidentified. Last pair with an
 
 | category | last pair >0 (before -> after) | last pair >=30 (before -> after) |
 |---|---|---|
-| accounting_consulting | none -> 2025Q4->2026Q1 | none -> none |
 | audio | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2024Q4->2025Q1 -> 2024Q4->2025Q1 |
 | coding | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
-| customer_service_va | none -> 2025Q2->2025Q3 | none -> none |
-| data_analysis | none -> 2025Q4->2026Q1 | none -> none |
-| data_entry | none -> 2025Q4->2026Q1 | none -> none |
 | design | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
-| ecommerce_ops | none -> 2025Q4->2026Q1 | none -> none |
-| education_tutoring | none -> 2025Q3->2025Q4 | none -> none |
-| engineering_cad | none -> 2025Q4->2026Q1 | none -> none |
-| gaming | none -> 2025Q4->2026Q1 | none -> none |
-| legal | none -> 2025Q4->2026Q1 | none -> none |
-| lifestyle_control | none -> 2025Q3->2025Q4 | none -> none |
 | marketing | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
-| photography | none -> 2025Q4->2026Q1 | none -> none |
-| social_engagement | none -> 2025Q4->2026Q1 | none -> none |
 | translation | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2024Q4->2025Q1 -> 2024Q4->2025Q1 |
-| uncategorized | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
 | video | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |
 | writing | 2025Q4->2026Q1 -> 2025Q4->2026Q1 | 2025Q4->2026Q1 -> 2025Q4->2026Q1 |

@@ -1,0 +1,43 @@
+# A two-level task taxonomy, and a reference task value per node
+
+Built from gig titles (38,085 gigs, one title each). Domains are step 04's; subcategories are this step's, matched on the deliverable phrase with ORDERED first-match-wins rules. Nodes under 30 gigs are folded into `<domain>/other`.
+
+Panel: **265,862 gig-quarter observations**, **34,553 gigs**, **62 nodes** across **7 domains**. Prices are real, 2020Q1 dollars (CPI-U, SA quarterly mean).
+
+Reference values below are computed on the **estimation sample** — the rows `78-reputation-price.py` can fit, i.e. those carrying both a rating and a review count. That drops 15,982 of 281,844 gig-quarter rows (5.7%) and is deliberate: it keeps ONE reference task value in the project rather than one here and a different one in the model.
+
+## Coverage
+
+- gigs landing in a named subcategory: **80.0%** (30,485 of 38,085)
+- gigs in `<domain>/other`: **7,600**
+
+| domain | gigs | nodes | in `other` | share named |
+|---|---:|---:|---:|---:|
+| audio | 6,671 | 8 | 1,720 | 74.2% |
+| coding | 5,653 | 9 | 1,236 | 78.1% |
+| design | 4,188 | 10 | 936 | 77.7% |
+| marketing | 8,567 | 11 | 1,582 | 81.5% |
+| translation | 3,608 | 5 | 198 | 94.5% |
+| video | 5,255 | 10 | 1,520 | 71.1% |
+| writing | 4,143 | 9 | 408 | 90.2% |
+
+## Reference task value by node
+
+**Reference task value** is the mean of `ln(real price)` over the node's gig-quarters, reported in dollars as `exp(mean ln p)` -- a geometric mean, which is the right centre for a log-normal price and is not dragged by the few $10,000 listings. `sd` is the within-node spread in log points: a large one means the node is still mixing different jobs.
+
+| node | gigs | obs | reference task value | mean ln p | sd ln p | median reviews |
+|---|---:|---:|---:|---:|---:|---:|
+| marketing/content_strategy | 159 | 887 | $59.44 | +4.0850 | 1.3576 | 25 |
+| coding/site_builder | 230 | 2,207 | $58.18 | +4.0636 | 1.2196 | 115 |
+| video/explainer | 433 | 3,622 | $44.34 | +3.7920 | 1.5517 | 133 |
+| design/brand_identity | 218 | 2,896 | $44.04 | +3.7851 | 1.5721 | 244 |
+| coding/mobile_app | 382 | 3,284 | $43.03 | +3.7620 | 1.4971 | 75 |
+| marketing/paid_ads | 810 | 4,365 | $42.77 | +3.7560 | 1.2345 | 34 |
+| design/ui_ux | 106 | 1,300 | $42.08 | +3.7395 | 1.2406 | 177 |
+| coding/ecommerce | 823 | 6,651 | $40.95 | +3.7124 | 1.4416 | 156 |
+| writing/resume_career | 247 | 2,940 | $36.91 | +3.6085 | 1.1255 | 181 |
+| marketing/funnel_landing | 371 | 1,968 | $35.73 | +3.5761 | 1.1238 | 46 |
+| writing/copywriting | 153 | 1,551 | $32.21 | +3.4722 | 1.1955 | 134 |
+
+... wrote /home/exouser/IntelligencePriceIndex/runs/taxonomy/taxonomy.md and /home/exouser/IntelligencePriceIndex/data/pilot/taxonomy-assignment.csv.gz
+77 took 10.42s

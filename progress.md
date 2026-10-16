@@ -1,5 +1,32 @@
 # Progress Log
 
+## 2026-10-16 — TD6 fixed: balanced-panel translation rebuilt, paper and data/real-prices updated
+
+User confirmed the per-quarter gig counts had been made after TD5 but before TD6, and approved finishing the TD6
+rebuild. Step 96 (`code/96-fix-balanced-translation.py`) reclassifies step 04's translation on `translat,
+locali, subtitle, caption, transcri, interpreter, interpreting, interprete` (no language names); the unmodified
+classifier was first checked to reproduce the old file exactly. Balanced translation 6,368 -> 3,684 gigs; audio
++746, video +203, marketing +201, 1,534 out of the seven categories (`runs/td6-rebuild/reclassify.md`).
+
+- Re-run: 66, 76 (+ the `ext2025` variant), 77, 78, 88, 90, 93, 94, 95, 65, 82, 92. Logs in `runs/td6-rebuild/`.
+- **`translation · other` is empty**: every remaining translation gig is in `translation` or `subtitle`, so
+  34 narrow cells, 32 of 34 excluding zero. Translation +5.3% (-3.0, +14.3), subtitle +3.1% (-13.5, +22.9):
+  still the only two flat cells. The +51.2% "counter-evidence in the same family" was the leak. Abstract and
+  §4.3 rewritten to drop it; A.10 regenerated (formula checked against the old table first).
+- **Exposure DiD (§4.8)**: 167,113 gig-quarters / 15,333 gigs (was 169,337 / 15,676). `Exposure x Post`
+  -0.0333 (t -1.35) -> **-0.0199 (t -0.78)**, MDE 0.0717. Parallel trends still FAIL but **1 of 11** (was 4);
+  sign still flips under a trend but the trend term is no longer significant (t -1.23). ext2025: -0.0324 ->
+  -0.0172. Market-measured exposure +13.91% -> +0.90% with trends (was 13.76 -> 0.73). Reputation +7.36% per
+  doubling (was 7.33). Gate-B and limitations wording softened to match; overall conclusions unchanged.
+- Updated: abstract, introduction, method, findings, discussion, limitations, conclusion, appendix A.8/A.10;
+  tests R16/R18 + new R19 (findings), R41/R44 (method). Rendered `drafts/draft-2026-10-16.html` and
+  `drafts/paper-page.html`.
+- `data/real-prices` re-exported: gig counts per quarter now post-TD6 (translation 1,679 -> 1,227 in 2020Q1;
+  totals 110-480 lower through 2024), gig panel 281,844 rows / 38,085 gigs, `narrow-real-indices.csv` 34 cells.
+  README's TD6 caveat replaced with what changed.
+- Not in the paper but moved: step 90 margin tests, step 94 narrow-exposure tests, step 95 experience x
+  exposure, step 78 reputation-by-node (reversal stands: -9.16% between, +7.62% within).
+
 ## 2026-10-15 — gig counts per quarter published in data/real-prices
 
 User asked to publish how many gigs were collected per quarter from 2020. Step 92 now also writes
